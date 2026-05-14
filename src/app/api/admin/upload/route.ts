@@ -45,9 +45,10 @@ export async function POST(request: NextRequest) {
           token: blobToken,
         });
       } catch (pubError: any) {
-        // If public access fails (private store), try without access param (uses store default)
+        // If public access fails (private store), try with explicit private access
         if (pubError?.message?.includes('private') || pubError?.message?.includes('Cannot use public access')) {
           blob = await put(filename, file, {
+            access: 'private',
             token: blobToken,
           });
         } else {
@@ -55,10 +56,9 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // For public blobs, use the direct URL.
-      // For private blobs, use the proxy path so images work via our API.
-      const isPublic = blob.url && !blob.url.includes('private');
-      const path = isPublic ? blob.url : `/api/image?url=${encodeURIComponent(blob.url)}`;
+      // For private blobs, use the proxy path so images work via our /api/image endpoint.
+      // The proxy adds Authorization header to access private blobs.
+      const path = `/api/image?url=${encodeURIComponent(blob.url)}`;
       return NextResponse.json({ path, url: blob.url });
     } catch (blobError: any) {
       console.error('Blob upload failed:', blobError);
