@@ -40,12 +40,10 @@ export default function VehicleDetailPage({ vehicle }: Props) {
   const categoryLabel = isCommercial ? 'FUSO Commercial' : isNiagaRingan ? 'Kendaraan Niaga Ringan' : 'Passenger Cars';
 
   // Determine which image to show:
-  // Priority: 1) Variant-specific image → 2) Color-specific image → 3) Vehicle default image
-  // Variant image takes priority because different variants = different car models/trims
-  // Color image shows when the specific color has an uploaded photo
+  // Priority: 1) Color-specific image → 2) Variant-specific image → 3) Vehicle default image
   const currentColorImage = vehicle.colors[selectedColor]?.image;
   const currentVariantImage = vehicle.variants[selectedVariant]?.image;
-  const displayImage = currentVariantImage || currentColorImage || vehicle.image;
+  const displayImage = currentColorImage || currentVariantImage || vehicle.image;
   const hasColorImage = !!currentColorImage;
   const hasVariantImage = !!currentVariantImage;
 
