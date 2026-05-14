@@ -47,6 +47,9 @@ export default function VehicleDetailPage({ vehicle }: Props) {
   const hasColorImage = !!currentColorImage;
   const hasVariantImage = !!currentVariantImage;
 
+  // Price follows selected variant
+  const displayPrice = vehicle.variants[selectedVariant]?.price || vehicle.basePrice;
+
   const tabs: { id: TabId; label: string }[] = [
     { id: 'overview', label: 'Ikhtisar' },
     { id: 'specs', label: 'Spesifikasi' },
@@ -96,7 +99,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   src={displayImage}
                   alt={`Mitsubishi ${vehicle.name} ${vehicle.colors[selectedColor]?.name || ''}`}
                   fill
-                  className="object-contain p-6 sm:p-10"
+                  className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
                   unoptimized={displayImage.startsWith('/api/')}
@@ -112,7 +115,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 {/* Price badge */}
                 <div className="absolute top-4 left-4">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r ${isCommercial ? 'from-mitsu-fuso-yellow to-mitsu-fuso-yellow-dark text-mitsu-dark' : 'from-mitsu-red to-red-700 text-white'} text-xs font-bold rounded-lg shadow-lg`}>
-                    {vehicle.basePrice}
+                    {displayPrice}
                   </span>
                 </div>
                 {/* Payload badge */}

@@ -32,13 +32,18 @@ export default function HeroSection() {
 
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const [hero, setHero] = useState<HeroData>(fallbackHero);
-  const [imageSrc, setImageSrc] = useState(fallbackHero.imagePath);
+  const [imageSrc, setImageSrc] = useState<string | null>(null); // null = still loading
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchHero() {
       try {
         const res = await fetch('/api/hero');
-        if (!res.ok) return;
+        if (!res.ok) {
+          setImageSrc(fallbackHero.imagePath);
+          setLoading(false);
+          return;
+        }
         const data = await res.json();
         if (data && data.imagePath) {
           setHero({
@@ -49,9 +54,13 @@ export default function HeroSection() {
             ctaLink: data.ctaLink || fallbackHero.ctaLink,
           });
           setImageSrc(data.imagePath);
+        } else {
+          setImageSrc(fallbackHero.imagePath);
         }
       } catch {
-        // Use fallback
+        setImageSrc(fallbackHero.imagePath);
+      } finally {
+        setLoading(false);
       }
     }
     fetchHero();
@@ -67,20 +76,24 @@ export default function HeroSection() {
     >
       {/* Image — scales naturally with viewport width, NO cropping ever */}
       <div className="relative w-full">
-        <Image
-          src={imageSrc}
-          alt="Mitsubishi Motor Indonesia"
-          width={1344}
-          height={768}
-          priority
-          className="w-full h-auto block"
-          sizes="100vw"
-          unoptimized={imageSrc.startsWith('/api/')}
-          onError={() => {
-            // Fallback to static image if the dynamic one fails
-            setImageSrc('/images/hero-cinematic.png');
-          }}
-        />
+        {loading ? (
+          // Skeleton placeholder while loading — no flash of old image
+          <div className="w-full h-[50vh] sm:h-[60vh] lg:h-[75vh] bg-mitsu-obsidian animate-pulse" />
+        ) : (
+          <Image
+            src={imageSrc || fallbackHero.imagePath}
+            alt="Mitsubishi Motor Indonesia"
+            width={1344}
+            height={768}
+            priority
+            className="w-full h-auto block"
+            sizes="100vw"
+            unoptimized={(imageSrc || '').startsWith('/api/')}
+            onError={() => {
+              setImageSrc('/images/hero-cinematic.png');
+            }}
+          />
+        )}
 
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30 pointer-events-none" />
