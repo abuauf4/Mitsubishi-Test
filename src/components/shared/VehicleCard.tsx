@@ -77,18 +77,18 @@ export default function VehicleCard({
         <div className="rounded-2xl overflow-hidden bg-white">
           {/* Vehicle Image - clickable */}
           <Link href={detailPath} className="block">
-            <div className="relative h-[200px] sm:h-[240px] overflow-hidden bg-mitsu-light">
+            <div className={`relative h-[200px] sm:h-[240px] overflow-hidden ${useYellowAccent ? 'vehicle-image-bg-yellow' : 'vehicle-image-bg'}`}>
               <Image
                 src={image}
                 alt={`Mitsubishi ${name}`}
                 fill
-                className="object-contain p-4 sm:p-6 transition-transform duration-700 group-hover:scale-110"
+                className="object-cover relative z-[1] transition-transform duration-700 group-hover:scale-110"
                 sizes="(max-width: 768px) 100vw, 50vw"
                 unoptimized={image.startsWith('/api/')}
               />
 
               {/* Price Badge */}
-              <div className="absolute top-3 left-3">
+              <div className="absolute top-3 left-3 z-[2]">
                 <span className={`inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r ${useYellowAccent ? 'from-mitsu-fuso-yellow to-mitsu-fuso-yellow-dark text-mitsu-dark' : 'from-mitsu-red to-red-700 text-white'} text-[10px] sm:text-xs font-bold rounded-md shadow-md ${useYellowAccent ? 'shadow-mitsu-fuso-yellow/20' : 'shadow-mitsu-red/20'}`}>
                   {price}
                 </span>
@@ -96,13 +96,13 @@ export default function VehicleCard({
 
               {/* Payload Badge (commercial only) */}
               {payload && (
-                <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-mitsu-fuso-yellow/5 border border-mitsu-fuso-yellow/10 rounded-md">
+                <div className="absolute top-3 right-3 z-[2] flex items-center gap-1 px-2 py-1 bg-mitsu-fuso-yellow/5 border border-mitsu-fuso-yellow/10 rounded-md">
                   <span className="text-mitsu-fuso-yellow-dark text-[10px] font-bold">{payload}</span>
                 </div>
               )}
 
               {/* Hover overlay */}
-              <div className={`absolute inset-0 bg-gradient-to-t ${useYellowAccent ? 'from-mitsu-fuso-yellow/10' : 'from-mitsu-red/10'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center`}>
+              <div className={`absolute inset-0 z-[3] bg-gradient-to-t ${useYellowAccent ? 'from-mitsu-fuso-yellow/10' : 'from-mitsu-red/10'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center`}>
                 <span className={`px-4 py-2 ${useYellowAccent ? 'bg-mitsu-fuso-yellow' : 'bg-mitsu-red'} text-white text-xs font-bold rounded-lg shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-400`}>
                   Lihat Detail
                 </span>

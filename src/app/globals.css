@@ -1281,6 +1281,77 @@ a, button {
   background-size: 60px 60px;
 }
 
+/* ============================================
+   VEHICLE IMAGE LUXURY BACKGROUND PATTERN
+   Black + Red luxury pattern for car image backgrounds
+   ============================================ */
+.vehicle-image-bg {
+  background: linear-gradient(135deg, #0A0A0A 0%, #1A0808 30%, #0A0A0A 60%, #120505 100%);
+  background-image:
+    radial-gradient(ellipse at 20% 80%, rgba(230, 0, 18, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(230, 0, 18, 0.06) 0%, transparent 40%),
+    linear-gradient(135deg, #0A0A0A 0%, #1A0808 30%, #0A0A0A 60%, #120505 100%);
+}
+
+.vehicle-image-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 18px,
+      rgba(230, 0, 18, 0.04) 18px,
+      rgba(230, 0, 18, 0.04) 19px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 18px,
+      rgba(230, 0, 18, 0.04) 18px,
+      rgba(230, 0, 18, 0.04) 19px
+    ),
+    radial-gradient(circle at 1px 1px, rgba(230, 0, 18, 0.03) 1px, transparent 0);
+  background-size: auto, auto, 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Commercial (FUSO) variant: black + yellow luxury pattern */
+.vehicle-image-bg-yellow {
+  background: linear-gradient(135deg, #0A0A0A 0%, #12120A 30%, #0A0A0A 60%, #0F0E05 100%);
+  background-image:
+    radial-gradient(ellipse at 20% 80%, rgba(255, 214, 0, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(255, 214, 0, 0.06) 0%, transparent 40%),
+    linear-gradient(135deg, #0A0A0A 0%, #12120A 30%, #0A0A0A 60%, #0F0E05 100%);
+}
+
+.vehicle-image-bg-yellow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 18px,
+      rgba(255, 214, 0, 0.04) 18px,
+      rgba(255, 214, 0, 0.04) 19px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 18px,
+      rgba(255, 214, 0, 0.04) 18px,
+      rgba(255, 214, 0, 0.04) 19px
+    ),
+    radial-gradient(circle at 1px 1px, rgba(255, 214, 0, 0.03) 1px, transparent 0);
+  background-size: auto, auto, 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* Safe area bottom for mobile notched devices */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);

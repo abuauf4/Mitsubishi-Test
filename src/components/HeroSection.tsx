@@ -38,7 +38,7 @@ export default function HeroSection() {
   useEffect(() => {
     async function fetchHero() {
       try {
-        const res = await fetch('/api/hero');
+        const res = await fetch('/api/hero', { cache: 'no-store' });
         if (!res.ok) {
           setImageSrc(fallbackHero.imagePath);
           setLoading(false);

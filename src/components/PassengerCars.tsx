@@ -185,13 +185,13 @@ export default function PassengerCars() {
               <a href={getVehicleLink(vehicle)} className="block">
                 <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100">
                   {/* Vehicle Image */}
-                  <div className="relative h-[320px] sm:h-[360px] bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+                  <div className="relative h-[320px] sm:h-[360px] vehicle-image-bg overflow-hidden">
                     <img
                       src={vehicle.image}
                       alt={`Mitsubishi ${vehicle.name}`}
-                      className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
+                      className="w-full h-full object-cover relative z-[1] transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute top-4 left-4">
+                    <div className="absolute top-4 left-4 z-[2]">
                       <span className="inline-block px-3 py-1 bg-mitsu-red text-white text-xs font-semibold rounded-full">
                         {vehicle.price}
                       </span>

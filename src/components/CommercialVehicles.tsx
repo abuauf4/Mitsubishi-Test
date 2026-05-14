@@ -205,14 +205,14 @@ export default function CommercialVehicles() {
                   <a href={getVehicleLink(vehicle)} className="block">
                     <div className="bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-mitsu-red/50 transition-all duration-500 card-shine-red">
                       {/* Vehicle Image */}
-                      <div className="relative h-[280px] sm:h-[300px] bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
+                      <div className="relative h-[280px] sm:h-[300px] vehicle-image-bg overflow-hidden">
                         <img
                           src={vehicle.image}
                           alt={`Mitsubishi ${vehicle.name}`}
-                          className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
+                          className="w-full h-full object-cover relative z-[1] transition-transform duration-700 group-hover:scale-105"
                         />
                         {/* Payload Badge */}
-                        <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 bg-mitsu-red rounded-lg">
+                        <div className="absolute top-4 right-4 z-[2] flex items-center gap-2 px-3 py-2 bg-mitsu-red rounded-lg">
                           <IconComponent className="w-4 h-4 text-white" />
                           <span className="text-white text-sm font-bold">{vehicle.payload}</span>
                         </div>
@@ -281,14 +281,14 @@ export default function CommercialVehicles() {
                   <a href={getVehicleLink(vehicle)} className="block">
                     <div className="bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-mitsu-fuso-yellow/50 transition-all duration-500 card-shine-yellow">
                       {/* Vehicle Image */}
-                      <div className="relative h-[280px] sm:h-[300px] bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
+                      <div className="relative h-[280px] sm:h-[300px] vehicle-image-bg-yellow overflow-hidden">
                         <img
                           src={vehicle.image}
                           alt={`Mitsubishi ${vehicle.name}`}
-                          className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
+                          className="w-full h-full object-cover relative z-[1] transition-transform duration-700 group-hover:scale-105"
                         />
                         {/* Payload Badge */}
-                        <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 bg-mitsu-fuso-yellow rounded-lg">
+                        <div className="absolute top-4 right-4 z-[2] flex items-center gap-2 px-3 py-2 bg-mitsu-fuso-yellow rounded-lg">
                           <IconComponent className="w-4 h-4 text-mitsu-dark" />
                           <span className="text-mitsu-dark text-sm font-bold">{vehicle.payload}</span>
                         </div>

@@ -93,34 +93,34 @@ export default function VehicleDetailPage({ vehicle }: Props) {
               </Link>
 
               {/* Main Image Container */}
-              <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-mitsu-light border border-gray-100">
+              <div className={`relative aspect-[16/10] rounded-2xl overflow-hidden border ${isCommercial ? 'vehicle-image-bg-yellow border-white/10' : 'vehicle-image-bg border-gray-800'}`}>
                 <Image
                   key={displayImage}
                   src={displayImage}
                   alt={`Mitsubishi ${vehicle.name} ${vehicle.colors[selectedColor]?.name || ''}`}
                   fill
-                  className="object-cover"
+                  className="object-cover relative z-[1]"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
                   unoptimized={displayImage.startsWith('/api/')}
                 />
                 {/* Image source indicator */}
                 {(hasVariantImage || hasColorImage) && (
-                  <div className="absolute bottom-4 right-4">
+                  <div className="absolute bottom-4 right-4 z-[2]">
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[9px] text-white font-medium">
                       {hasVariantImage && hasColorImage ? '📷 Varian + Warna' : hasVariantImage ? '📷 Varian' : '📷 Warna'}
                     </span>
                   </div>
                 )}
                 {/* Price badge */}
-                <div className="absolute top-4 left-4">
+                <div className="absolute top-4 left-4 z-[2]">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r ${isCommercial ? 'from-mitsu-fuso-yellow to-mitsu-fuso-yellow-dark text-mitsu-dark' : 'from-mitsu-red to-red-700 text-white'} text-xs font-bold rounded-lg shadow-lg`}>
                     {displayPrice}
                   </span>
                 </div>
                 {/* Payload badge */}
                 {vehicle.payload && (
-                  <div className="absolute top-4 right-4">
+                  <div className="absolute top-4 right-4 z-[2]">
                     <span className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-mitsu-dark/80 text-white text-[10px] font-bold rounded-lg backdrop-blur-sm">
                       <Truck className="w-3 h-3" />
                       {vehicle.payload}
@@ -128,7 +128,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   </div>
                 )}
                 {/* Color name label */}
-                <div className="absolute bottom-4 left-4">
+                <div className="absolute bottom-4 left-4 z-[2]">
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-lg text-[11px] font-semibold text-mitsu-dark border border-gray-100 shadow-sm">
                     <span
                       className="w-3 h-3 rounded-full border border-gray-200 shadow-inner"
