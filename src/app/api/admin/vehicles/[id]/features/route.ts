@@ -32,6 +32,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
   try {
     const { id } = await params;
+    if (id.startsWith('static-')) {
+      return NextResponse.json({ error: 'Cannot add items to a static vehicle. Save it to the database first.', hint: 'Click "Save to Database" in the admin panel to create a DB record.' }, { status: 400 });
+    }
     const body = await request.json();
     const featureId = crypto.randomUUID();
 

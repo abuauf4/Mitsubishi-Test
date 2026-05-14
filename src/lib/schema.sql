@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS Vehicle (
   imagePath TEXT NOT NULL DEFAULT '',
   payload TEXT,
   specsShort TEXT NOT NULL DEFAULT '[]',
+  gallery TEXT,
   displayOrder INTEGER NOT NULL DEFAULT 0,
   active INTEGER NOT NULL DEFAULT 1,
   createdAt TEXT NOT NULL DEFAULT (datetime('now')),
@@ -105,6 +106,8 @@ CREATE TABLE IF NOT EXISTS VehicleVariant (
   priceNum INTEGER NOT NULL DEFAULT 0,
   transmission TEXT NOT NULL DEFAULT '',
   drivetrain TEXT,
+  imagePath TEXT,
+  description TEXT,
   highlights TEXT NOT NULL DEFAULT '[]',
   displayOrder INTEGER NOT NULL DEFAULT 0,
   FOREIGN KEY (vehicleId) REFERENCES Vehicle(id) ON DELETE CASCADE

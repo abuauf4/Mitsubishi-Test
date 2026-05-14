@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Save, Plus, Trash2, ArrowLeft, Palette, Wrench, Sparkles, Layers } from 'lucide-react';
+import { Save, Plus, Trash2, ArrowLeft, Palette, Wrench, Sparkles, Layers, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import ImageUpload from '@/components/admin/ImageUpload';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
@@ -26,6 +26,7 @@ interface VehicleData {
   imagePath: string;
   payload: string | null;
   specsShort: string;
+  gallery?: string;
   displayOrder: number;
   active: boolean;
   variants: VehicleVariantData[];
@@ -71,6 +72,7 @@ interface VehicleFeatureData {
 export default function VehicleDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const isNew = id === 'new';
+  const isStatic = id.startsWith('static-');
   const [vehicle, setVehicle] = useState<VehicleData | null>(null);
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
@@ -130,6 +132,12 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
     finally { setLoading(false); }
   }
 
+  /**
+   * For static vehicles (loaded from code, not DB), we need to save them
+   * to the database first before they can have sub-entities added.
+   * This function creates a DB record from the current form data and
+   * redirects to the new DB-backed vehicle page.
+   */
   async function handleSaveBasic() {
     setSaving(true);
     try {
@@ -137,24 +145,51 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
         ...form,
         payload: form.payload || null,
       };
-      const url = isNew ? '/api/admin/vehicles' : `/api/admin/vehicles/${id}`;
-      const method = isNew ? 'POST' : 'PUT';
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        const saved = await res.json();
-        toast.success(isNew ? 'Vehicle created' : 'Vehicle updated');
-        if (isNew) {
+
+      if (isStatic) {
+        // For static vehicles, always create a NEW DB record (POST)
+        const res = await fetch('/api/admin/vehicles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          toast.success('Vehicle saved to database');
+          // Redirect to the new DB-backed vehicle page
           window.location.href = `/admin/vehicles/${saved.id}`;
         } else {
-          fetchVehicle();
+          const err = await res.json().catch(() => ({}));
+          toast.error(err.error || 'Failed to save vehicle', { description: err.detail || err.hint, duration: 6000 });
+        }
+      } else if (isNew) {
+        const res = await fetch('/api/admin/vehicles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          const saved = await res.json();
+          toast.success('Vehicle created');
+          window.location.href = `/admin/vehicles/${saved.id}`;
+        } else {
+          const err = await res.json().catch(() => ({}));
+          toast.error(err.error || 'Failed to create vehicle', { description: err.detail || err.hint, duration: 6000 });
         }
       } else {
-        const err = await res.json().catch(() => ({}));
-        toast.error(err.error || 'Failed to save vehicle', { description: err.detail || err.hint, duration: 6000 });
+        // Existing DB vehicle, just update
+        const res = await fetch(`/api/admin/vehicles/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          toast.success('Vehicle updated');
+          fetchVehicle();
+        } else {
+          const err = await res.json().catch(() => ({}));
+          toast.error(err.error || 'Failed to update vehicle', { description: err.detail || err.hint, duration: 6000 });
+        }
       }
     } catch (error: any) { toast.error(`Network error: ${error?.message || 'Save failed'}`); }
     finally { setSaving(false); }
@@ -163,6 +198,13 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
   // Sub-entity CRUD helpers
   async function addSubEntity(type: string, data: Record<string, unknown>) {
     if (!vehicle) return;
+    if (vehicle.id.startsWith('static-')) {
+      toast.error('Save this vehicle to database first', {
+        description: 'Click "Save to Database" button at the top to create a DB record before adding sub-items.',
+        duration: 6000,
+      });
+      return;
+    }
     try {
       const res = await fetch(`/api/admin/vehicles/${vehicle.id}/${type}`, {
         method: 'POST',
@@ -178,6 +220,10 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
   }
 
   async function deleteSubEntity(type: string, subId: string) {
+    if (vehicle?.id.startsWith('static-')) {
+      toast.error('Cannot delete items from a static vehicle');
+      return;
+    }
     try {
       const res = await fetch(`/api/admin/vehicles/${vehicle?.id}/${type}?id=${subId}`, { method: 'DELETE' });
       if (res.ok) { toast.success('Deleted'); fetchVehicle(); }
@@ -206,9 +252,25 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
           </p>
         </div>
         <Button onClick={handleSaveBasic} disabled={saving} className="bg-mitsu-red hover:bg-red-700 text-white">
-          <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : 'Save Basic Info'}
+          <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : isStatic ? 'Save to Database' : isNew ? 'Create Vehicle' : 'Save Basic Info'}
         </Button>
       </div>
+
+      {/* Static vehicle warning */}
+      {isStatic && (
+        <Card className="mb-4 border-yellow-500/50 bg-yellow-500/5">
+          <CardContent className="p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-semibold text-yellow-600">This vehicle is loaded from static code, not from the database.</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                To add variants, colors, specs, or features, you must first save this vehicle to the database.
+                Click the <strong>&quot;Save to Database&quot;</strong> button above. This will create a new database record and redirect you.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="basic" className="space-y-4">
         <TabsList className="grid w-full grid-cols-5">
@@ -287,6 +349,12 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
         <TabsContent value="variants">
           {!vehicle ? (
             <Card><CardContent className="p-8 text-center text-muted-foreground">Save the vehicle first to manage variants.</CardContent></Card>
+          ) : isStatic ? (
+            <Card><CardContent className="p-8 text-center text-muted-foreground">
+              <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-yellow-500" />
+              <p className="font-semibold">Save this vehicle to database first</p>
+              <p className="text-sm mt-1">Click &quot;Save to Database&quot; at the top, then you can manage variants.</p>
+            </CardContent></Card>
           ) : (
             <div className="space-y-4">
               {/* Add Variant Form */}
@@ -348,6 +416,12 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
         <TabsContent value="colors">
           {!vehicle ? (
             <Card><CardContent className="p-8 text-center text-muted-foreground">Save the vehicle first to manage colors.</CardContent></Card>
+          ) : isStatic ? (
+            <Card><CardContent className="p-8 text-center text-muted-foreground">
+              <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-yellow-500" />
+              <p className="font-semibold">Save this vehicle to database first</p>
+              <p className="text-sm mt-1">Click &quot;Save to Database&quot; at the top, then you can manage colors.</p>
+            </CardContent></Card>
           ) : (
             <div className="space-y-4">
               <Card>
@@ -401,6 +475,12 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
         <TabsContent value="specs">
           {!vehicle ? (
             <Card><CardContent className="p-8 text-center text-muted-foreground">Save the vehicle first to manage specs.</CardContent></Card>
+          ) : isStatic ? (
+            <Card><CardContent className="p-8 text-center text-muted-foreground">
+              <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-yellow-500" />
+              <p className="font-semibold">Save this vehicle to database first</p>
+              <p className="text-sm mt-1">Click &quot;Save to Database&quot; at the top, then you can manage specs.</p>
+            </CardContent></Card>
           ) : (
             <div className="space-y-4">
               <Card>
@@ -456,6 +536,12 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
         <TabsContent value="features">
           {!vehicle ? (
             <Card><CardContent className="p-8 text-center text-muted-foreground">Save the vehicle first to manage features.</CardContent></Card>
+          ) : isStatic ? (
+            <Card><CardContent className="p-8 text-center text-muted-foreground">
+              <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-yellow-500" />
+              <p className="font-semibold">Save this vehicle to database first</p>
+              <p className="text-sm mt-1">Click &quot;Save to Database&quot; at the top, then you can manage features.</p>
+            </CardContent></Card>
           ) : (
             <div className="space-y-4">
               <Card>
