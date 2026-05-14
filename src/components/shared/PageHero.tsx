@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Breadcrumb from './Breadcrumb';
 import ParticleField from '../ParticleField';
@@ -36,15 +36,33 @@ export default function PageHero({
 
   return (
     <section ref={sectionRef} className="relative w-full min-h-[40vh] sm:min-h-[50vh] lg:min-h-[55vh] overflow-hidden bg-mitsu-obsidian">
-      {/* Background Image with Parallax */}
+      {/* Background Image with Parallax — uses AnimatePresence for seamless crossfade */}
       <motion.div className="absolute inset-0 will-change-transform" style={{ y: bgY }}>
-        <Image
-          src={backgroundImage}
-          alt={title}
-          fill
-          className="object-cover object-center"
-          sizes="100vw"
-        />
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={backgroundImage}
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+          >
+            <Image
+              src={backgroundImage}
+              alt={title}
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+              priority
+              unoptimized={backgroundImage.startsWith('/api/') || backgroundImage.includes('vercel-storage.com')}
+              onError={(e) => {
+                // Prevent blank by keeping the image element but suppressing error
+                const target = e.target as HTMLImageElement;
+                target.style.opacity = '0.5';
+              }}
+            />
+          </motion.div>
+        </AnimatePresence>
       </motion.div>
 
       {/* Gradient overlay */}

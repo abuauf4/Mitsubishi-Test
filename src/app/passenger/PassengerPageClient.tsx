@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { MessageCircle, Car, Sparkles } from 'lucide-react';
 import PageHero from '@/components/shared/PageHero';
 import VehicleCard from '@/components/shared/VehicleCard';
-import CreditSimulation from '@/components/CreditSimulation';
 import { VehicleData } from '@/data/vehicles';
 
 interface Props {
@@ -138,11 +137,6 @@ export default function PassengerPageClient({ vehicles }: Props) {
           </div>
         </div>
       </section>
-
-      {/* Credit Simulation */}
-      <div id="credit">
-        <CreditSimulation />
-      </div>
 
       {/* CTA */}
       <section className="relative py-20 sm:py-24 bg-mitsu-light overflow-hidden">

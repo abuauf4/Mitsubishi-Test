@@ -18,6 +18,7 @@ export default async function PassengerVehiclePage({ params }: PageProps) {
   const { slug } = await params;
 
   // Try database first, fall back to static data
+  // Passenger page now includes Triton, L300, L100EV
   const vehicle = await fetchVehicleBySlug(slug) || getPassengerVehicle(slug);
 
   if (!vehicle) {

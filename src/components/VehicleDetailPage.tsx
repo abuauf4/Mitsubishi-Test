@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageCircle, ChevronRight, ChevronDown, ArrowLeft,
@@ -11,6 +11,7 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { VehicleData } from '@/data/vehicles';
+import CreditSimulation from '@/components/CreditSimulation';
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -22,7 +23,7 @@ interface Props {
   vehicle: VehicleData;
 }
 
-type TabId = 'overview' | 'specs' | 'compare';
+type TabId = 'overview' | 'specs' | 'credit' | 'compare';
 
 export default function VehicleDetailPage({ vehicle }: Props) {
   const isCommercial = vehicle.category === 'commercial';
@@ -33,6 +34,11 @@ export default function VehicleDetailPage({ vehicle }: Props) {
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [expandedSpec, setExpandedSpec] = useState<number>(0);
+
+  // Swipe state
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
   const waLink = `https://wa.me/6281234567890?text=${encodeURIComponent(`Halo Andi, saya tertarik dengan Mitsubishi ${vehicle.name} varian ${vehicle.variants[selectedVariant]?.name || ''}`)}`;
 
@@ -49,12 +55,70 @@ export default function VehicleDetailPage({ vehicle }: Props) {
 
   // Price follows selected variant
   const displayPrice = vehicle.variants[selectedVariant]?.price || vehicle.basePrice;
+  const displayPriceNum = vehicle.variants[selectedVariant]?.priceNum || 0;
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'overview', label: 'Ikhtisar' },
     { id: 'specs', label: 'Spesifikasi' },
+    { id: 'credit', label: 'Simulasi Kredit' },
     ...(vehicle.variants.length > 1 ? [{ id: 'compare' as TabId, label: 'Bandingkan' }] : []),
   ];
+
+  // Swipe handler for color change
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    if (vehicle.colors.length <= 1) return;
+
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+
+    // Only trigger if horizontal swipe is dominant and significant
+    if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+      if (deltaX > 0) {
+        // Swipe right → previous color
+        setSelectedColor((prev) => (prev - 1 + vehicle.colors.length) % vehicle.colors.length);
+      } else {
+        // Swipe left → next color
+        setSelectedColor((prev) => (prev + 1) % vehicle.colors.length);
+      }
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+  }, [vehicle.colors.length]);
+
+  // Mouse drag handler for desktop
+  const mouseStartX = useRef<number | null>(null);
+  const mouseStartY = useRef<number | null>(null);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    mouseStartX.current = e.clientX;
+    mouseStartY.current = e.clientY;
+  }, []);
+
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    if (mouseStartX.current === null || mouseStartY.current === null) return;
+    if (vehicle.colors.length <= 1) return;
+
+    const deltaX = e.clientX - mouseStartX.current;
+    const deltaY = e.clientY - mouseStartY.current;
+
+    if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+      if (deltaX > 0) {
+        setSelectedColor((prev) => (prev - 1 + vehicle.colors.length) % vehicle.colors.length);
+      } else {
+        setSelectedColor((prev) => (prev + 1) % vehicle.colors.length);
+      }
+    }
+
+    mouseStartX.current = null;
+    mouseStartY.current = null;
+  }, [vehicle.colors.length]);
 
   return (
     <>
@@ -92,21 +156,50 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 Kembali ke {categoryLabel}
               </Link>
 
-              {/* Main Image Container */}
-              <div className={`relative aspect-[16/10] rounded-2xl overflow-hidden border ${isCommercial ? 'vehicle-image-bg-yellow border-white/10' : 'vehicle-image-bg border-gray-800'}`}>
-                <Image
-                  key={displayImage}
-                  src={displayImage}
-                  alt={`Mitsubishi ${vehicle.name} ${vehicle.colors[selectedColor]?.name || ''}`}
-                  fill
-                  className="object-cover relative z-[1]"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  priority
-                  unoptimized={displayImage.startsWith('/api/')}
-                />
+              {/* Main Image Container — swipeable */}
+              <div
+                ref={imageContainerRef}
+                className={`relative aspect-[16/10] rounded-2xl overflow-hidden border ${isCommercial ? 'vehicle-image-bg-yellow border-white/10' : 'vehicle-image-bg border-gray-800'} ${vehicle.colors.length > 1 ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+              >
+                {/* Stacked images for seamless crossfade — NO flash */}
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    key={selectedColor}
+                    className="absolute inset-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.35, ease: 'easeInOut' }}
+                  >
+                    <Image
+                      src={displayImage}
+                      alt={`Mitsubishi ${vehicle.name} ${vehicle.colors[selectedColor]?.name || ''}`}
+                      fill
+                      className="object-cover relative z-[1]"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      priority
+                      unoptimized={displayImage.startsWith('/api/')}
+                      draggable={false}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Swipe hint — only show when multiple colors */}
+                {vehicle.colors.length > 1 && (
+                  <div className="absolute top-4 right-4 z-[3] sm:hidden">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-black/40 backdrop-blur-sm rounded text-[9px] text-white/70 font-medium">
+                      ← Geser ganti warna →
+                    </span>
+                  </div>
+                )}
+
                 {/* Image source indicator */}
                 {(hasVariantImage || hasColorImage) && (
-                  <div className="absolute bottom-4 right-4 z-[2]">
+                  <div className="absolute bottom-4 right-4 z-[2] hidden sm:block">
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[9px] text-white font-medium">
                       {hasVariantImage && hasColorImage ? '📷 Varian + Warna' : hasVariantImage ? '📷 Varian' : '📷 Warna'}
                     </span>
@@ -170,6 +263,10 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                     </button>
                   ))}
                 </div>
+                {/* Desktop swipe hint */}
+                {vehicle.colors.length > 1 && (
+                  <span className="hidden sm:inline text-[10px] text-gray-300 ml-auto">← Drag gambar ganti warna →</span>
+                )}
               </div>
             </motion.div>
 
@@ -440,6 +537,22 @@ export default function VehicleDetailPage({ vehicle }: Props) {
               </motion.div>
             )}
 
+            {activeTab === 'credit' && (
+              <motion.div
+                key="credit"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+              >
+                <CreditSimulation
+                  defaultPrice={displayPriceNum}
+                  vehicleName={vehicle.name}
+                  accentTheme={isCommercial ? 'yellow' : 'red'}
+                />
+              </motion.div>
+            )}
+
             {activeTab === 'compare' && (
               <motion.div
                 key="compare"
@@ -476,14 +589,12 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                       </tr>
                     </thead>
                     <tbody>
-                      {/* Transmission */}
                       <tr className="border-t border-gray-50">
                         <td className="p-3 text-xs text-gray-500">Transmisi</td>
                         {vehicle.variants.map((v) => (
                           <td key={v.name} className="p-3 text-xs text-center font-medium text-mitsu-dark">{v.transmission}</td>
                         ))}
                       </tr>
-                      {/* Drivetrain */}
                       {vehicle.variants.some((v) => v.drivetrain) && (
                         <tr className="border-t border-gray-50">
                           <td className="p-3 text-xs text-gray-500">Drivetrain</td>
@@ -492,7 +603,6 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                           ))}
                         </tr>
                       )}
-                      {/* Highlights */}
                       {(() => {
                         const allHighlights = [...new Set(vehicle.variants.flatMap((v) => v.highlights))];
                         return allHighlights.map((highlight) => (

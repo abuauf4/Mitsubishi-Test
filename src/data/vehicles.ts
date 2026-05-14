@@ -53,8 +53,8 @@ export interface VehicleData {
   specsShort: string[];
 }
 
-// ===================== KENDARAAN PENUMPANG (7 models) =====================
-// Source: mitsubishi-motors.co.id — Xpander, Xpander Cross, Pajero Sport, Destinator, Xforce, L100 EV, L300
+// ===================== KENDARAAN PENUMPANG (8 models) =====================
+// Source: mitsubishi-motors.co.id — Xpander, Xpander Cross, Pajero Sport, Destinator, Xforce, L100 EV, L300, Triton
 
 export const passengerVehicles: VehicleData[] = [
   {
@@ -258,7 +258,7 @@ export const passengerVehicles: VehicleData[] = [
     features: [
       { icon: 'Zap', title: 'Zero Emission', description: 'Kendaraan listrik tanpa emisi — bebas ganjil genap Jakarta dan ramah lingkungan untuk logistik kota' },
       { icon: 'Gauge', title: '180 km Range', description: 'Jangkauan 180 km per pengisian penuh, cukup untuk rute distribusi harian di perkotaan' },
-      { icon: 'Clock', title: 'DC Fast Charging', description: 'Pengisian cepat 0-80% hanya 42 menit untuk minimalkan downtime operasional' },
+      { icon: 'Zap', title: 'DC Fast Charging', description: 'Pengisian cepat 0-80% hanya 42 menit untuk minimalkan downtime operasional' },
       { icon: 'DollarSign', title: 'Biaya Operasional Rendah', description: 'Tanpa bahan bakar, tanpa oli mesin, perawatan minimal — penghematan besar jangka panjang' },
     ],
     specsShort: ['Electric Motor', '180 km Range', '425 Kg Payload'],
@@ -291,18 +291,11 @@ export const passengerVehicles: VehicleData[] = [
     ],
     specsShort: ['2.2L DOHC Turbo Diesel', 'Manual', 'Euro 4'],
   },
-];
-
-// ===================== KENDARAAN NIAGA RINGAN (1 model) =====================
-// Source: mitsubishi-motors.co.id — Triton
-// Note: L300 & L100 EV moved to Passenger section per official site categorization
-
-export const niagaRinganVehicles: VehicleData[] = [
   {
     slug: 'triton',
     name: 'Triton',
     tagline: 'Engineered Beyond Tough — Double Cabin Andalan',
-    category: 'niaga-ringan',
+    category: 'passenger',
     basePrice: 'Mulai Rp 325 Juta',
     image: '/images/l200.png',
     colors: [
@@ -333,6 +326,12 @@ export const niagaRinganVehicles: VehicleData[] = [
     specsShort: ['2.4L MIVEC Turbo', 'Manual / 6AT', 'Super Select 4WD'],
   },
 ];
+
+// ===================== KENDARAAN NIAGA RINGAN (0 models) =====================
+// Note: Triton, L300 & L100 EV moved to Passenger section per user request
+// Niaga Ringan section is now empty — all vehicles are in Passenger
+
+export const niagaRinganVehicles: VehicleData[] = [];
 
 // ===================== FUSO COMMERCIAL VEHICLES (5 models) =====================
 // Source: ktbfuso.co.id — Canter, Fighter X, Heavy Duty
