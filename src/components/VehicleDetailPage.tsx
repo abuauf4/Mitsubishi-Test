@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageCircle, ChevronRight, ChevronDown, ArrowLeft,
@@ -40,23 +40,14 @@ export default function VehicleDetailPage({ vehicle }: Props) {
   const categoryLabel = isCommercial ? 'FUSO Commercial' : isNiagaRingan ? 'Kendaraan Niaga Ringan' : 'Passenger Cars';
 
   // Determine which image to show:
-  // Priority: 1) Color-specific image → 2) Variant-specific image → 3) Vehicle default image
+  // Priority: 1) Variant-specific image → 2) Color-specific image → 3) Vehicle default image
+  // Variant image takes priority because different variants = different car models/trims
+  // Color image shows when the specific color has an uploaded photo
   const currentColorImage = vehicle.colors[selectedColor]?.image;
   const currentVariantImage = vehicle.variants[selectedVariant]?.image;
-  const displayImage = currentColorImage || currentVariantImage || vehicle.image;
+  const displayImage = currentVariantImage || currentColorImage || vehicle.image;
   const hasColorImage = !!currentColorImage;
   const hasVariantImage = !!currentVariantImage;
-  const hasSpecificImage = hasColorImage || hasVariantImage;
-
-  // Color tint overlay for simulating different car colors (only when no color-specific image)
-  const colorTintStyle = useMemo(() => {
-    if (hasSpecificImage) return {}; // No tint when we have a real color or variant image
-    const color = vehicle.colors[selectedColor];
-    if (!color) return {};
-    return {
-      background: `linear-gradient(135deg, ${color.hex}22 0%, ${color.hex}08 50%, transparent 100%)`,
-    };
-  }, [vehicle.colors, selectedColor, hasSpecificImage]);
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'overview', label: 'Ikhtisar' },
@@ -112,8 +103,14 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   priority
                   unoptimized={displayImage.startsWith('/api/')}
                 />
-                {/* Color tint overlay */}
-                <div className="absolute inset-0 pointer-events-none transition-all duration-700" style={colorTintStyle} />
+                {/* Image source indicator */}
+                {(hasVariantImage || hasColorImage) && (
+                  <div className="absolute bottom-4 right-4">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[9px] text-white font-medium">
+                      {hasVariantImage && hasColorImage ? '📷 Varian + Warna' : hasVariantImage ? '📷 Varian' : '📷 Warna'}
+                    </span>
+                  </div>
+                )}
                 {/* Price badge */}
                 <div className="absolute top-4 left-4">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r ${isCommercial ? 'from-mitsu-fuso-yellow to-mitsu-fuso-yellow-dark text-mitsu-dark' : 'from-mitsu-red to-red-700 text-white'} text-xs font-bold rounded-lg shadow-lg`}>
@@ -222,14 +219,10 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          {variant.image && (
-                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
-                              <img src={variant.image} alt={variant.name} className="w-full h-full object-cover" />
-                            </div>
-                          )}
                           <div>
                             <p className={`text-sm font-bold ${selectedVariant === i ? 'text-mitsu-dark' : 'text-gray-600'}`}>
                               {variant.name}
+                              {variant.image && <span className="ml-1.5 text-[9px] text-green-600 font-normal">📷</span>}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
                               {variant.highlights.slice(0, 3).map((h) => (
