@@ -94,8 +94,8 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
   });
 
   // Sub-entity forms
-  const [variantForm, setVariantForm] = useState({ name: '', price: '', priceNum: 0, transmission: '', drivetrain: '', highlights: '[]', displayOrder: 0 });
-  const [colorForm, setColorForm] = useState({ name: '', hex: '#000000', displayOrder: 0 });
+  const [variantForm, setVariantForm] = useState({ name: '', price: '', priceNum: 0, transmission: '', drivetrain: '', highlights: '[]', imagePath: '', displayOrder: 0 });
+  const [colorForm, setColorForm] = useState({ name: '', hex: '#000000', imagePath: '', displayOrder: 0 });
   const [specForm, setSpecForm] = useState({ category: '', items: '[]', displayOrder: 0 });
   const [featureForm, setFeatureForm] = useState({ icon: 'Zap', title: '', description: '', displayOrder: 0 });
 
@@ -377,7 +377,8 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                     <Label>Highlights (JSON array)</Label>
                     <Textarea value={variantForm.highlights} onChange={(e) => setVariantForm({ ...variantForm, highlights: e.target.value })} className="mt-1 font-mono text-xs" rows={2} />
                   </div>
-                  <Button onClick={() => { addSubEntity('variants', variantForm); setVariantForm({ name: '', price: '', priceNum: 0, transmission: '', drivetrain: '', highlights: '[]', displayOrder: 0 }); }} className="bg-mitsu-red hover:bg-red-700 text-white">
+                  <ImageUpload value={variantForm.imagePath} onChange={(path) => setVariantForm({ ...variantForm, imagePath: path })} label="Variant Image (optional)" />
+                  <Button onClick={() => { addSubEntity('variants', variantForm); setVariantForm({ name: '', price: '', priceNum: 0, transmission: '', drivetrain: '', highlights: '[]', imagePath: '', displayOrder: 0 }); }} className="bg-mitsu-red hover:bg-red-700 text-white">
                     <Plus className="w-4 h-4 mr-2" /> Add Variant
                   </Button>
                 </CardContent>
@@ -442,7 +443,10 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                     <div><Label>Display Order</Label><Input type="number" value={colorForm.displayOrder} onChange={(e) => setColorForm({ ...colorForm, displayOrder: parseInt(e.target.value) || 0 })} className="mt-1" /></div>
                   </div>
-                  <Button onClick={() => { addSubEntity('colors', colorForm); setColorForm({ name: '', hex: '#000000', displayOrder: 0 }); }} className="mt-4 bg-mitsu-red hover:bg-red-700 text-white">
+                  <div className="mt-4">
+                    <ImageUpload value={colorForm.imagePath} onChange={(path) => setColorForm({ ...colorForm, imagePath: path })} label="Color Image (optional — shown when this color is selected)" />
+                  </div>
+                  <Button onClick={() => { addSubEntity('colors', colorForm); setColorForm({ name: '', hex: '#000000', imagePath: '', displayOrder: 0 }); }} className="mt-4 bg-mitsu-red hover:bg-red-700 text-white">
                     <Plus className="w-4 h-4 mr-2" /> Add Color
                   </Button>
                 </CardContent>
@@ -452,9 +456,16 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                 {vehicle.colors.map((c) => (
                   <Card key={c.id} className="relative group">
                     <CardContent className="p-3 text-center">
-                      <div className="w-full h-12 rounded-lg mb-2 border" style={{ backgroundColor: c.hex }} />
+                      {c.imagePath ? (
+                        <div className="w-full h-12 rounded-lg mb-2 border overflow-hidden bg-muted/30">
+                          <img src={c.imagePath} alt={c.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                        </div>
+                      ) : (
+                        <div className="w-full h-12 rounded-lg mb-2 border" style={{ backgroundColor: c.hex }} />
+                      )}
                       <p className="text-xs font-medium text-foreground truncate">{c.name}</p>
                       <p className="text-xs text-muted-foreground">{c.hex}</p>
+                      {c.imagePath && <p className="text-[10px] text-green-600 mt-0.5">✓ has image</p>}
                       <Button
                         variant="ghost"
                         size="icon"

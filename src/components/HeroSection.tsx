@@ -1,10 +1,27 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRef } from 'react';
+
+interface HeroData {
+  title: string;
+  subtitle: string;
+  imagePath: string;
+  ctaText: string;
+  ctaLink: string;
+}
+
+const fallbackHero: HeroData = {
+  title: 'Drive Your Ambition',
+  subtitle: 'Temukan kendaraan Mitsubishi terbaik untuk hidup dan bisnis Anda',
+  imagePath: '/images/hero-cinematic.png',
+  ctaText: 'Selengkapnya',
+  ctaLink: '#audience-gateway',
+};
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -14,6 +31,33 @@ export default function HeroSection() {
   });
 
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const [hero, setHero] = useState<HeroData>(fallbackHero);
+  const [imageSrc, setImageSrc] = useState(fallbackHero.imagePath);
+
+  useEffect(() => {
+    async function fetchHero() {
+      try {
+        const res = await fetch('/api/hero');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && data.imagePath) {
+          setHero({
+            title: data.title || fallbackHero.title,
+            subtitle: data.subtitle || fallbackHero.subtitle,
+            imagePath: data.imagePath,
+            ctaText: data.ctaText || fallbackHero.ctaText,
+            ctaLink: data.ctaLink || fallbackHero.ctaLink,
+          });
+          setImageSrc(data.imagePath);
+        }
+      } catch {
+        // Use fallback
+      }
+    }
+    fetchHero();
+  }, []);
+
+  const ctaLink = hero.ctaLink || '#audience-gateway';
 
   return (
     <section
@@ -24,13 +68,18 @@ export default function HeroSection() {
       {/* Image — scales naturally with viewport width, NO cropping ever */}
       <div className="relative w-full">
         <Image
-          src="/images/hero-cinematic.png"
+          src={imageSrc}
           alt="Mitsubishi Motor Indonesia"
           width={1344}
           height={768}
           priority
           className="w-full h-auto block"
           sizes="100vw"
+          unoptimized={imageSrc.startsWith('/api/')}
+          onError={() => {
+            // Fallback to static image if the dynamic one fails
+            setImageSrc('/images/hero-cinematic.png');
+          }}
         />
 
         {/* Subtle gradient overlay */}
@@ -48,14 +97,17 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <Link
-            href="#audience-gateway"
+            href={ctaLink}
             onClick={(e) => {
-              e.preventDefault();
-              document.querySelector('#audience-gateway')?.scrollIntoView({ behavior: 'smooth' });
+              if (ctaLink.startsWith('#')) {
+                e.preventDefault();
+                const id = ctaLink.slice(1);
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+              }
             }}
             className="group inline-flex items-center gap-2 px-8 py-3 sm:px-10 sm:py-3.5 rounded-xl transition-all duration-500 min-h-[44px] text-sm sm:text-base tracking-wider font-semibold bg-transparent border-2 border-white/60 text-white hover:bg-white/10 hover:border-white min-w-[44px]"
           >
-            Selengkapnya
+            {hero.ctaText || 'Selengkapnya'}
             <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
           </Link>
         </motion.div>

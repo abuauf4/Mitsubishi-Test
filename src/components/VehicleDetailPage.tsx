@@ -39,14 +39,20 @@ export default function VehicleDetailPage({ vehicle }: Props) {
   const categoryPath = isCommercial ? '/commercial' : isNiagaRingan ? '/commercial' : '/passenger';
   const categoryLabel = isCommercial ? 'FUSO Commercial' : isNiagaRingan ? 'Kendaraan Niaga Ringan' : 'Passenger Cars';
 
-  // Color tint overlay for simulating different car colors
+  // Determine which image to show: color-specific image or default vehicle image
+  const currentColorImage = vehicle.colors[selectedColor]?.image;
+  const displayImage = currentColorImage || vehicle.image;
+  const hasColorImage = !!currentColorImage;
+
+  // Color tint overlay for simulating different car colors (only when no color-specific image)
   const colorTintStyle = useMemo(() => {
+    if (hasColorImage) return {}; // No tint when we have a real color image
     const color = vehicle.colors[selectedColor];
     if (!color) return {};
     return {
       background: `linear-gradient(135deg, ${color.hex}22 0%, ${color.hex}08 50%, transparent 100%)`,
     };
-  }, [vehicle.colors, selectedColor]);
+  }, [vehicle.colors, selectedColor, hasColorImage]);
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'overview', label: 'Ikhtisar' },
@@ -93,14 +99,14 @@ export default function VehicleDetailPage({ vehicle }: Props) {
               {/* Main Image Container */}
               <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-mitsu-light border border-gray-100">
                 <Image
-                  key={vehicle.image}
-                  src={vehicle.image}
-                  alt={`Mitsubishi ${vehicle.name}`}
+                  key={displayImage}
+                  src={displayImage}
+                  alt={`Mitsubishi ${vehicle.name} ${vehicle.colors[selectedColor]?.name || ''}`}
                   fill
                   className="object-contain p-6 sm:p-10"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
-                  unoptimized={vehicle.image.startsWith('/api/')}
+                  unoptimized={displayImage.startsWith('/api/')}
                 />
                 {/* Color tint overlay */}
                 <div className="absolute inset-0 pointer-events-none transition-all duration-700" style={colorTintStyle} />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   MessageCircle, Mail, Camera, Phone, MapPin,
@@ -7,40 +8,25 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 
-const contacts = [
-  {
-    icon: MessageCircle,
-    label: 'WhatsApp',
-    value: '0812-3456-7890',
-    href: 'https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20ingin%20bertanya%20tentang%20kendaraan%20Mitsubishi',
-    gradient: 'from-green-500 to-emerald-600',
-    hoverGradient: 'hover:from-green-600 hover:to-emerald-700',
-  },
-  {
-    icon: Camera,
-    label: 'Instagram',
-    value: '@andi.mitsubishi',
-    href: 'https://instagram.com/andi.mitsubishi',
-    gradient: 'from-pink-500 via-purple-500 to-indigo-600',
-    hoverGradient: 'hover:from-pink-600 hover:via-purple-600 hover:to-indigo-700',
-  },
-  {
-    icon: Mail,
-    label: 'Email',
-    value: 'andi.pratama@mitsubishi.co.id',
-    href: 'mailto:andi.pratama@mitsubishi.co.id',
-    gradient: 'from-blue-500 to-cyan-600',
-    hoverGradient: 'hover:from-blue-600 hover:to-cyan-700',
-  },
-  {
-    icon: Phone,
-    label: 'Telepon',
-    value: '0812-3456-7890',
-    href: 'tel:+6281234567890',
-    gradient: 'from-amber-500 to-orange-600',
-    hoverGradient: 'hover:from-amber-600 hover:to-orange-700',
-  },
-];
+interface SalesData {
+  name: string;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  title: string;
+  description: string;
+  imagePath: string;
+}
+
+const fallbackSales: SalesData = {
+  name: 'Andi Pratama',
+  phone: '0812-3456-7890',
+  whatsapp: '081234567890',
+  email: 'andi.pratama@mitsubishi.co.id',
+  title: 'Sales Consultant',
+  description: 'Saya adalah Sales Consultant resmi Mitsubishi dengan pengalaman lebih dari 10 tahun. Siap membantu Anda menemukan kendaraan yang tepat — mulai dari konsultasi, test drive, simulasi kredit, hingga proses pengiriman kendaraan.',
+  imagePath: '/images/andi-profile.png',
+};
 
 const achievements = [
   { icon: Award, label: 'Top Sales 2024', desc: 'Penghargaan tertinggi' },
@@ -50,6 +36,73 @@ const achievements = [
 ];
 
 export default function SalesConsultant() {
+  const [sales, setSales] = useState<SalesData>(fallbackSales);
+  const [photoSrc, setPhotoSrc] = useState(fallbackSales.imagePath);
+
+  useEffect(() => {
+    async function fetchSales() {
+      try {
+        const res = await fetch('/api/sales');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const c = data[0];
+          setSales({
+            name: c.name || fallbackSales.name,
+            phone: c.phone || fallbackSales.phone,
+            whatsapp: c.whatsapp || fallbackSales.whatsapp,
+            email: c.email || fallbackSales.email,
+            title: c.title || fallbackSales.title,
+            description: c.description || fallbackSales.description,
+            imagePath: c.imagePath || fallbackSales.imagePath,
+          });
+          if (c.imagePath) {
+            setPhotoSrc(c.imagePath);
+          }
+        }
+      } catch {
+        // Use fallback
+      }
+    }
+    fetchSales();
+  }, []);
+
+  // Build contact links dynamically from sales data
+  const contacts = [
+    {
+      icon: MessageCircle,
+      label: 'WhatsApp',
+      value: sales.phone,
+      href: `https://wa.me/${sales.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Halo ${sales.name}, saya ingin bertanya tentang kendaraan Mitsubishi`)}`,
+      gradient: 'from-green-500 to-emerald-600',
+      hoverGradient: 'hover:from-green-600 hover:to-emerald-700',
+    },
+    {
+      icon: Camera,
+      label: 'Instagram',
+      value: `@${sales.name.split(' ')[0].toLowerCase()}.mitsubishi`,
+      href: `https://instagram.com/${sales.name.split(' ')[0].toLowerCase()}.mitsubishi`,
+      gradient: 'from-pink-500 via-purple-500 to-indigo-600',
+      hoverGradient: 'hover:from-pink-600 hover:via-purple-600 hover:to-indigo-700',
+    },
+    {
+      icon: Mail,
+      label: 'Email',
+      value: sales.email,
+      href: `mailto:${sales.email}`,
+      gradient: 'from-blue-500 to-cyan-600',
+      hoverGradient: 'hover:from-blue-600 hover:to-cyan-700',
+    },
+    {
+      icon: Phone,
+      label: 'Telepon',
+      value: sales.phone,
+      href: `tel:+${sales.phone.replace(/\D/g, '')}`,
+      gradient: 'from-amber-500 to-orange-600',
+      hoverGradient: 'hover:from-amber-600 hover:to-orange-700',
+    },
+  ];
+
   return (
     <section id="sales" className="relative py-24 sm:py-28 lg:py-32 bg-white overflow-hidden">
       {/* Luxury grid pattern */}
@@ -113,11 +166,15 @@ export default function SalesConsultant() {
                   {/* Half-body photo */}
                   <div className="relative w-36 sm:w-44 h-48 sm:h-56 rounded-2xl overflow-hidden border-2 border-mitsu-red/15 shadow-lg shadow-mitsu-red/5 mb-4">
                     <Image
-                      src="/images/andi-profile.png"
-                      alt="Andi Pratama - Sales Consultant"
+                      src={photoSrc}
+                      alt={`${sales.name} - ${sales.title}`}
                       fill
                       className="object-cover object-top"
                       sizes="(max-width: 640px) 144px, 176px"
+                      unoptimized={photoSrc.startsWith('/api/')}
+                      onError={() => {
+                        setPhotoSrc('/images/andi-profile.png');
+                      }}
                     />
                     {/* Online indicator */}
                     <div className="absolute bottom-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-green-500/90 rounded-full">
@@ -126,8 +183,8 @@ export default function SalesConsultant() {
                     </div>
                   </div>
                   <div className="text-center">
-                    <h3 className="text-xl sm:text-2xl font-bold text-mitsu-dark font-serif">Andi Pratama</h3>
-                    <p className="text-mitsu-red text-xs font-medium mt-0.5 tracking-wide">Sales Consultant</p>
+                    <h3 className="text-xl sm:text-2xl font-bold text-mitsu-dark font-serif">{sales.name}</h3>
+                    <p className="text-mitsu-red text-xs font-medium mt-0.5 tracking-wide">{sales.title}</p>
                     <p className="text-gray-400 text-[11px] mt-1 flex items-center gap-1.5 justify-center">
                       <MapPin className="w-3 h-3" />
                       PT. Mitsubishi Motors Jakarta
@@ -137,9 +194,7 @@ export default function SalesConsultant() {
 
                 {/* Bio */}
                 <p className="text-gray-500 text-sm leading-relaxed mb-6">
-                  Saya adalah Sales Consultant resmi Mitsubishi dengan pengalaman lebih dari 10 tahun.
-                  Siap membantu Anda menemukan kendaraan yang tepat — mulai dari konsultasi,
-                  test drive, simulasi kredit, hingga proses pengiriman kendaraan.
+                  {sales.description}
                 </p>
 
                 {/* Quick Stats */}
@@ -218,7 +273,7 @@ export default function SalesConsultant() {
                   </p>
                 </div>
                 <a
-                  href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20ingin%20konsultasi%20tentang%20kendaraan%20Mitsubishi"
+                  href={`https://wa.me/${sales.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Halo ${sales.name}, saya ingin konsultasi tentang kendaraan Mitsubishi`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-lg transition-all duration-300 text-xs tracking-wide hover:shadow-lg hover:shadow-green-500/15 active:scale-95"
