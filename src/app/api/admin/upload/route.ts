@@ -36,20 +36,35 @@ export async function POST(request: NextRequest) {
     try {
       const { put } = await import('@vercel/blob');
       const filename = `vehicles/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      const blob = await put(filename, file, {
-        access: 'public',
-        token: blobToken,
-      });
 
-      // Return the blob URL — the frontend will store this in the database
-      // We use the proxy path so images work in all environments
-      const proxyPath = `/api/image?url=${encodeURIComponent(blob.url)}`;
-      return NextResponse.json({ path: proxyPath, url: blob.url });
+      // Try public access first, fall back to private if store is configured as private
+      let blob: any;
+      try {
+        blob = await put(filename, file, {
+          access: 'public',
+          token: blobToken,
+        });
+      } catch (pubError: any) {
+        // If public access fails (private store), try without access param (uses store default)
+        if (pubError?.message?.includes('private') || pubError?.message?.includes('Cannot use public access')) {
+          blob = await put(filename, file, {
+            token: blobToken,
+          });
+        } else {
+          throw pubError;
+        }
+      }
+
+      // For public blobs, use the direct URL.
+      // For private blobs, use the proxy path so images work via our API.
+      const isPublic = blob.url && !blob.url.includes('private');
+      const path = isPublic ? blob.url : `/api/image?url=${encodeURIComponent(blob.url)}`;
+      return NextResponse.json({ path, url: blob.url });
     } catch (blobError: any) {
       console.error('Blob upload failed:', blobError);
       return NextResponse.json({
         error: 'Failed to upload to blob storage',
-        hint: blobError?.message || 'Try using URL mode instead.',
+        hint: `${blobError?.message || 'Unknown error'}. Try using URL mode to paste an image URL directly.`,
       }, { status: 500 });
     }
   } catch (error: any) {

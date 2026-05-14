@@ -62,14 +62,22 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       db.execute({ sql: 'SELECT * FROM VehicleFeature WHERE vehicleId = ? ORDER BY displayOrder ASC', args: [id] }),
     ]);
 
+    // Safe JSON parse helper - returns fallback if parsing fails
+    function safeJsonParse(val: unknown, fallback: unknown = null) {
+      if (val === null || val === undefined) return fallback;
+      if (typeof val !== 'string') return val;
+      try { return JSON.parse(val); }
+      catch { return fallback; }
+    }
+
     const vehicle = {
       ...row,
       active: row.active === 1,
       displayOrder: Number(row.displayOrder),
-      gallery: typeof row.gallery === 'string' ? JSON.parse(row.gallery) : row.gallery,
+      gallery: safeJsonParse(row.gallery, []),
       variants: variantsRes.rows.map(v => ({
         ...v,
-        highlights: typeof v.highlights === 'string' ? JSON.parse(v.highlights) : v.highlights,
+        highlights: safeJsonParse(v.highlights, []),
         priceNum: Number(v.priceNum),
         displayOrder: Number(v.displayOrder),
       })),
@@ -79,7 +87,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       })),
       specs: specsRes.rows.map(s => ({
         ...s,
-        items: typeof s.items === 'string' ? JSON.parse(s.items) : s.items,
+        items: safeJsonParse(s.items, []),
         displayOrder: Number(s.displayOrder),
       })),
       features: featuresRes.rows.map(f => ({
