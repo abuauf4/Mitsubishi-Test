@@ -52,3 +52,13 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Agent task/planning files — NEVER commit these
+worklog.md
+AGENTS.md
+CLAUDE.md
+todo*.md
+task*.md
+agent-ctx/
+Rencana_*
+download/Rencana_*.docx
