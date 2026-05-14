@@ -1,31 +1,23 @@
-'use client'
+import HeroSection from '@/components/HeroSection';
+import DriveYourAmbition from '@/components/DriveYourAmbition';
+import AudienceGateway from '@/components/AudienceGateway';
+import WhyMitsubishi from '@/components/WhyMitsubishi';
+import TestimonialSection from '@/components/TestimonialSection';
+import SalesConsultant from '@/components/SalesConsultant';
+import PromoSection from '@/components/PromoSection';
+import TestDriveCTA from '@/components/TestDriveCTA';
 
 export default function Home() {
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      gap: '2rem',
-      padding: '1rem'
-    }}>
-      <div style={{
-        position: 'relative',
-        width: '6rem',
-        height: '6rem'
-      }}>
-        <img
-          src="/logo.svg"
-          alt="Z.ai Logo"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain'
-          }}
-        />
-      </div>
-    </div>
-  )
+    <>
+      <HeroSection />
+      <DriveYourAmbition />
+      <AudienceGateway />
+      <WhyMitsubishi />
+      <TestimonialSection />
+      <SalesConsultant />
+      <PromoSection />
+      <TestDriveCTA />
+    </>
+  );
 }

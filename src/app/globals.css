@@ -8,6 +8,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-playfair);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -41,75 +42,89 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-mitsu-red: #E60012;
+  --color-mitsu-dark: #1A1A1A;
+  --color-mitsu-light: #F5F5F5;
+  --color-mitsu-silver: #C0C0C0;
+  --color-mitsu-text: #333333;
+  --color-mitsu-gold: #C9A96E;
+  --color-mitsu-gold-light: #E2CC9C;
+  --color-mitsu-gold-dark: #A68B4B;
+  --color-mitsu-champagne: #D4B896;
+  --color-mitsu-obsidian: #0A0A0A;
+  --color-mitsu-onyx: #121212;
+  --color-mitsu-fuso-yellow: #FFD600;
+  --color-mitsu-fuso-yellow-light: #FFE44D;
+  --color-mitsu-fuso-yellow-dark: #E6BF00;
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #FFFFFF;
+  --foreground: #333333;
+  --card: #FFFFFF;
+  --card-foreground: #333333;
+  --popover: #FFFFFF;
+  --popover-foreground: #333333;
+  --primary: #E60012;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F5F5;
+  --secondary-foreground: #1A1A1A;
+  --muted: #F5F5F5;
+  --muted-foreground: #666666;
+  --accent: #F5F5F5;
+  --accent-foreground: #1A1A1A;
+  --destructive: #E60012;
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #E60012;
+  --chart-1: #E60012;
+  --chart-2: #1A1A1A;
+  --chart-3: #C0C0C0;
+  --chart-4: #F5F5F5;
+  --chart-5: #666666;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #333333;
+  --sidebar-primary: #E60012;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F5F5F5;
+  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #E60012;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #1A1A1A;
+  --foreground: #F5F5F5;
+  --card: #222222;
+  --card-foreground: #F5F5F5;
+  --popover: #222222;
+  --popover-foreground: #F5F5F5;
+  --primary: #E60012;
+  --primary-foreground: #FFFFFF;
+  --secondary: #2A2A2A;
+  --secondary-foreground: #F5F5F5;
+  --muted: #2A2A2A;
+  --muted-foreground: #999999;
+  --accent: #2A2A2A;
+  --accent-foreground: #F5F5F5;
+  --destructive: #E60012;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #E60012;
+  --chart-1: #E60012;
+  --chart-2: #F5F5F5;
+  --chart-3: #C0C0C0;
+  --chart-4: #2A2A2A;
+  --chart-5: #999999;
+  --sidebar: #1A1A1A;
+  --sidebar-foreground: #F5F5F5;
+  --sidebar-primary: #E60012;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #2A2A2A;
+  --sidebar-accent-foreground: #F5F5F5;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #E60012;
 }
 
 @layer base {
@@ -119,4 +134,1154 @@
   body {
     @apply bg-background text-foreground;
   }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ============================================
+   LUXURY CUSTOM SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #E60012, #CC0010);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #FF1A2E, #E60012);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #E60012, #CC0010);
+}
+
+/* ============================================
+   LUXURY GLASSMORPHISM
+   ============================================ */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-dark {
+  background: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(201, 169, 110, 0.08);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(201, 169, 110, 0.15);
+}
+
+.glass-gold {
+  background: rgba(201, 169, 110, 0.06);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(201, 169, 110, 0.15);
+}
+
+/* ============================================
+   LUXURY GRADIENT BORDER
+   ============================================ */
+.gradient-border {
+  position: relative;
+  border-radius: 1rem;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(201, 169, 110, 0.5), rgba(230, 0, 18, 0.3), rgba(201, 169, 110, 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.gradient-border-glow::before {
+  background: linear-gradient(135deg, rgba(201, 169, 110, 0.7), rgba(230, 0, 18, 0.4), rgba(226, 204, 156, 0.5));
+  filter: blur(0.5px);
+}
+
+/* ============================================
+   3D TILT CARD
+   ============================================ */
+.tilt-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.tilt-card-inner {
+  transition: transform 0.3s ease;
+  transform-style: preserve-3d;
+}
+
+/* ============================================
+   LUXURY ANIMATED GRADIENT MESH
+   ============================================ */
+@keyframes gradient-mesh {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 100% 0%; }
+  75% { background-position: 0% 100%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-mesh {
+  background: linear-gradient(
+    -45deg,
+    #0a0a0a,
+    #1a0f0a,
+    #0a0a1a,
+    #0f0a0a,
+    #0a0a0a
+  );
+  background-size: 400% 400%;
+  animation: gradient-mesh 15s ease infinite;
+}
+
+/* ============================================
+   LUXURY HERO GRADIENT
+   ============================================ */
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 10, 0.95) 0%,
+    rgba(10, 10, 10, 0.7) 35%,
+    rgba(201, 169, 110, 0.05) 70%,
+    rgba(10, 10, 10, 0.5) 100%
+  );
+}
+
+.hero-gradient-v2 {
+  background: 
+    radial-gradient(ellipse at 15% 50%, rgba(201, 169, 110, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(230, 0, 18, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(201, 169, 110, 0.04) 0%, transparent 40%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.97) 0%, rgba(10, 10, 10, 0.6) 50%, rgba(10, 10, 10, 0.9) 100%);
+}
+
+/* ============================================
+   LUXURY CARD SHINE
+   ============================================ */
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 35%,
+    rgba(201, 169, 110, 0.04) 42%,
+    rgba(201, 169, 110, 0.12) 48%,
+    rgba(201, 169, 110, 0.04) 54%,
+    transparent 61%
+  );
+  transform: translateX(-100%);
+  transition: transform 1s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.card-shine:hover::after {
+  transform: translateX(100%);
+}
+
+/* ============================================
+   LUXURY GLOW EFFECTS
+   ============================================ */
+.glow-red {
+  box-shadow: 0 0 15px rgba(230, 0, 18, 0.3), 0 0 30px rgba(230, 0, 18, 0.1);
+}
+
+.glow-red-hover:hover {
+  box-shadow: 0 0 20px rgba(230, 0, 18, 0.4), 0 0 40px rgba(230, 0, 18, 0.15);
+}
+
+.glow-green {
+  box-shadow: 0 0 15px rgba(37, 211, 102, 0.3), 0 0 30px rgba(37, 211, 102, 0.1);
+}
+
+.glow-gold {
+  box-shadow: 0 0 15px rgba(201, 169, 110, 0.25), 0 0 30px rgba(201, 169, 110, 0.1);
+}
+
+.glow-gold-hover:hover {
+  box-shadow: 0 0 20px rgba(201, 169, 110, 0.35), 0 0 40px rgba(201, 169, 110, 0.15);
+}
+
+/* ============================================
+   GOLD TEXT SHIMMER
+   ============================================ */
+@keyframes gold-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.text-gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    #C9A96E 0%,
+    #E2CC9C 25%,
+    #FFF5E0 50%,
+    #E2CC9C 75%,
+    #C9A96E 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gold-shimmer 4s linear infinite;
+}
+
+/* ============================================
+   TEXT REVEAL ANIMATION
+   ============================================ */
+@keyframes text-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(60px) rotateX(-10deg);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+    filter: blur(0);
+  }
+}
+
+.text-reveal {
+  animation: text-reveal-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* ============================================
+   LUXURY FLOATING ANIMATION
+   ============================================ */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(0.5deg); }
+  66% { transform: translateY(-4px) rotate(-0.5deg); }
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+/* ============================================
+   LUXURY PULSE ANIMATIONS
+   ============================================ */
+@keyframes whatsapp-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); }
+  70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+.whatsapp-pulse {
+  animation: whatsapp-pulse 2s infinite;
+}
+
+@keyframes red-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(230, 0, 18, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(230, 0, 18, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(230, 0, 18, 0); }
+}
+
+.red-pulse {
+  animation: red-pulse 2s infinite;
+}
+
+@keyframes gold-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(201, 169, 110, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(201, 169, 110, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 169, 110, 0); }
+}
+
+.gold-pulse {
+  animation: gold-pulse 2.5s infinite;
+}
+
+/* ============================================
+   BOUNCE SLOW
+   ============================================ */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+.bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+/* ============================================
+   SCROLL INDICATOR
+   ============================================ */
+@keyframes scroll-indicator {
+  0% { opacity: 1; transform: translateY(0); }
+  50% { opacity: 0.5; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.scroll-indicator {
+  animation: scroll-indicator 2.5s ease-in-out infinite;
+}
+
+/* ============================================
+   TYPEWRITER CURSOR
+   ============================================ */
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typewriter-cursor {
+  color: #E60012;
+  font-weight: 100;
+  animation: blink-cursor 0.8s step-end infinite;
+  margin-left: 1px;
+}
+
+/* ============================================
+   MARQUEE ANNOUNCEMENT BAR
+   ============================================ */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 60s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ============================================
+   LUXURY SHIMMER
+   ============================================ */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.08), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite;
+}
+
+/* ============================================
+   COUNTER ANIMATION
+   ============================================ */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.count-up {
+  animation: count-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ============================================
+   HORIZONTAL SCROLL HIDE SCROLLBAR
+   ============================================ */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   MAGNETIC BUTTON
+   ============================================ */
+.magnetic-btn {
+  transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* ============================================
+   LUXURY SECTION DIVIDERS
+   ============================================ */
+.wave-top {
+  position: relative;
+}
+
+.wave-top::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1440 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,20 C360,40 720,0 1080,20 C1260,30 1380,25 1440,20 L1440,0 L0,0 Z' fill='%23FFFFFF'/%3E%3C/svg%3E") no-repeat center bottom;
+  background-size: cover;
+}
+
+.wave-top-dark::before {
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1440 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,20 C360,40 720,0 1080,20 C1260,30 1380,25 1440,20 L1440,0 L0,0 Z' fill='%230A0A0A'/%3E%3C/svg%3E") no-repeat center bottom;
+  background-size: cover;
+}
+
+/* ============================================
+   LUXURY ORNAMENTAL DIVIDER
+   ============================================ */
+.luxury-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.luxury-divider::before,
+.luxury-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.3), transparent);
+}
+
+.luxury-divider-diamond {
+  width: 6px;
+  height: 6px;
+  background: #C9A96E;
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+/* ============================================
+   PARTICLE DOT
+   ============================================ */
+@keyframes particle-drift {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translate(var(--drift-x, 20px), var(--drift-y, -100px)) scale(0); opacity: 0; }
+}
+
+/* ============================================
+   NOISE TEXTURE OVERLAY
+   ============================================ */
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============================================
+   DIAGONAL CLIP
+   ============================================ */
+.clip-diagonal-right {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 85%);
+}
+
+.clip-diagonal-left {
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
+
+/* ============================================
+   LUXURY RANGE SLIDER
+   ============================================ */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #E60012, #FF3333) no-repeat, #e5e7eb;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E60012, #FF3333);
+  cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(230, 0, 18, 0.15), 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 6px rgba(230, 0, 18, 0.2), 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #E60012, #FF3333);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 0 4px rgba(230, 0, 18, 0.15), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   SELECTION STYLE
+   ============================================ */
+::selection {
+  background: rgba(230, 0, 18, 0.2);
+  color: inherit;
+}
+
+/* ============================================
+   FOCUS VISIBLE
+   ============================================ */
+:focus-visible {
+  outline: 2px solid rgba(230, 0, 18, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   SMOOTH TRANSITION
+   ============================================ */
+a, button {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY
+   ============================================ */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* ============================================
+   LUXURY UNDERLINE EFFECT
+   ============================================ */
+.luxury-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.luxury-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #E60012, #FF3333, #E60012);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.luxury-underline:hover::after {
+  transform: scaleX(1);
+}
+
+/* ============================================
+   LUXURY BADGE STYLES
+   ============================================ */
+.badge-luxury {
+  background: linear-gradient(135deg, rgba(201, 169, 110, 0.15), rgba(201, 169, 110, 0.05));
+  border: 1px solid rgba(201, 169, 110, 0.25);
+  color: #C9A96E;
+}
+
+/* ============================================
+   LUXURY BUTTON PRIMARY
+   ============================================ */
+.btn-luxury {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #C9A96E, #A68B4B);
+  color: #0A0A0A;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.btn-luxury:hover {
+  box-shadow: 0 0 25px rgba(201, 169, 110, 0.3), 0 0 50px rgba(201, 169, 110, 0.1);
+  transform: translateY(-2px);
+}
+
+.btn-luxury::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.btn-luxury:hover::before {
+  left: 100%;
+}
+
+/* ============================================
+   LUXURY SECTION PATTERN
+   ============================================ */
+.luxury-pattern {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(201, 169, 110, 0.04) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* ============================================
+   LUXURY GOLD BORDER GLOW ON HOVER
+   ============================================ */
+.hover-gold-border {
+  border: 1px solid transparent;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.hover-gold-border:hover {
+  border-color: rgba(201, 169, 110, 0.3);
+  box-shadow: 0 0 20px rgba(201, 169, 110, 0.08);
+}
+
+/* ============================================
+   LUXURY DARK CARD
+   ============================================ */
+.luxury-dark-card {
+  background: linear-gradient(145deg, #121212, #0A0A0A);
+  border: 1px solid rgba(201, 169, 110, 0.1);
+}
+
+/* ============================================
+   LUXURY ENTRANCE ANIMATION
+   ============================================ */
+@keyframes luxury-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.luxury-entrance {
+  animation: luxury-entrance 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* ============================================
+   LUXURY ROTATING RING
+   ============================================ */
+@keyframes luxury-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.luxury-rotate-slow {
+  animation: luxury-rotate 30s linear infinite;
+}
+
+/* ============================================
+   RED SHIMMER TEXT (for passenger)
+   ============================================ */
+@keyframes red-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.text-red-shimmer {
+  background: linear-gradient(90deg, #E60012 0%, #FF3333 25%, #FF6666 50%, #FF3333 75%, #E60012 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: red-shimmer 4s linear infinite;
+}
+
+/* YELLOW SHIMMER TEXT (for commercial) */
+@keyframes yellow-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.text-yellow-shimmer {
+  background: linear-gradient(90deg, #FFD600 0%, #FFE44D 25%, #FFF5B3 50%, #FFE44D 75%, #FFD600 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: yellow-shimmer 4s linear infinite;
+}
+
+/* GLASS RED */
+.glass-red {
+  background: rgba(230, 0, 18, 0.06);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(230, 0, 18, 0.15);
+}
+
+/* GLASS YELLOW */
+.glass-yellow {
+  background: rgba(255, 214, 0, 0.06);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 214, 0, 0.15);
+}
+
+/* RED GLOW */
+.glow-red-intense {
+  box-shadow: 0 0 20px rgba(230, 0, 18, 0.4), 0 0 40px rgba(230, 0, 18, 0.15);
+}
+
+/* YELLOW GLOW */
+.glow-yellow {
+  box-shadow: 0 0 15px rgba(255, 214, 0, 0.3), 0 0 30px rgba(255, 214, 0, 0.1);
+}
+
+.glow-yellow-hover:hover {
+  box-shadow: 0 0 20px rgba(255, 214, 0, 0.4), 0 0 40px rgba(255, 214, 0, 0.15);
+}
+
+/* YELLOW PULSE */
+@keyframes yellow-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 214, 0, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(255, 214, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 214, 0, 0); }
+}
+
+.yellow-pulse {
+  animation: yellow-pulse 2s infinite;
+}
+
+/* MITSUBISHI RED BUTTON */
+.btn-mitsu-red {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #E60012, #CC0010);
+  color: #FFFFFF;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.btn-mitsu-red:hover {
+  box-shadow: 0 0 25px rgba(230, 0, 18, 0.35), 0 0 50px rgba(230, 0, 18, 0.1);
+  transform: translateY(-2px);
+}
+
+.btn-mitsu-red::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.btn-mitsu-red:hover::before {
+  left: 100%;
+}
+
+/* FUSO YELLOW BUTTON */
+.btn-fuso-yellow {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #FFD600, #E6BF00);
+  color: #0A0A0A;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.btn-fuso-yellow:hover {
+  box-shadow: 0 0 25px rgba(255, 214, 0, 0.35), 0 0 50px rgba(255, 214, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.btn-fuso-yellow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.btn-fuso-yellow:hover::before {
+  left: 100%;
+}
+
+/* BADGE RED */
+.badge-red {
+  background: linear-gradient(135deg, rgba(230, 0, 18, 0.15), rgba(230, 0, 18, 0.05));
+  border: 1px solid rgba(230, 0, 18, 0.25);
+  color: #E60012;
+}
+
+/* BADGE YELLOW */
+.badge-yellow {
+  background: linear-gradient(135deg, rgba(255, 214, 0, 0.15), rgba(255, 214, 0, 0.05));
+  border: 1px solid rgba(255, 214, 0, 0.25);
+  color: #FFD600;
+}
+
+/* LUXURY RED CARD */
+.luxury-red-card {
+  background: linear-gradient(145deg, #1A0A0A, #0A0A0A);
+  border: 1px solid rgba(230, 0, 18, 0.1);
+}
+
+/* LUXURY YELLOW CARD */
+.luxury-yellow-card {
+  background: linear-gradient(145deg, #1A1A0A, #0A0A0A);
+  border: 1px solid rgba(255, 214, 0, 0.1);
+}
+
+/* HOVER RED BORDER */
+.hover-red-border {
+  border: 1px solid transparent;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.hover-red-border:hover {
+  border-color: rgba(230, 0, 18, 0.3);
+  box-shadow: 0 0 20px rgba(230, 0, 18, 0.08);
+}
+
+/* HOVER YELLOW BORDER */
+.hover-yellow-border {
+  border: 1px solid transparent;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.hover-yellow-border:hover {
+  border-color: rgba(255, 214, 0, 0.3);
+  box-shadow: 0 0 20px rgba(255, 214, 0, 0.08);
+}
+
+/* GRADIENT BORDER RED */
+.gradient-border-red::before {
+  background: linear-gradient(135deg, rgba(230, 0, 18, 0.5), rgba(230, 0, 18, 0.2), rgba(230, 0, 18, 0.1)) !important;
+}
+
+/* GRADIENT BORDER YELLOW */
+.gradient-border-yellow::before {
+  background: linear-gradient(135deg, rgba(255, 214, 0, 0.5), rgba(255, 214, 0, 0.2), rgba(255, 214, 0, 0.1)) !important;
+}
+
+/* RED UNDERLINE EFFECT */
+.luxury-underline-red::after {
+  background: linear-gradient(90deg, #E60012, #FF3333, #E60012) !important;
+}
+
+/* YELLOW UNDERLINE EFFECT */
+.luxury-underline-yellow::after {
+  background: linear-gradient(90deg, #FFD600, #FFE44D, #FFD600) !important;
+}
+
+/* HERO GRADIENT RED */
+.hero-gradient-red {
+  background: 
+    radial-gradient(ellipse at 15% 50%, rgba(230, 0, 18, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(230, 0, 18, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(230, 0, 18, 0.04) 0%, transparent 40%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.97) 0%, rgba(10, 10, 10, 0.6) 50%, rgba(10, 10, 10, 0.9) 100%);
+}
+
+/* HERO GRADIENT YELLOW */
+.hero-gradient-yellow {
+  background: 
+    radial-gradient(ellipse at 15% 50%, rgba(255, 214, 0, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(255, 214, 0, 0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(255, 214, 0, 0.04) 0%, transparent 40%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.97) 0%, rgba(10, 10, 10, 0.6) 50%, rgba(10, 10, 10, 0.9) 100%);
+}
+
+/* LUXURY PATTERN RED */
+.luxury-pattern-red {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(230, 0, 18, 0.04) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* LUXURY PATTERN YELLOW */
+.luxury-pattern-yellow {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(255, 214, 0, 0.04) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* CARD SHINE RED */
+.card-shine-red {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine-red::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 35%,
+    rgba(230, 0, 18, 0.04) 42%,
+    rgba(230, 0, 18, 0.12) 48%,
+    rgba(230, 0, 18, 0.04) 54%,
+    transparent 61%
+  );
+  transform: translateX(-100%);
+  transition: transform 1s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.card-shine-red:hover::after {
+  transform: translateX(100%);
+}
+
+/* CARD SHINE YELLOW */
+.card-shine-yellow {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine-yellow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 35%,
+    rgba(255, 214, 0, 0.04) 42%,
+    rgba(255, 214, 0, 0.12) 48%,
+    rgba(255, 214, 0, 0.04) 54%,
+    transparent 61%
+  );
+  transform: translateX(-100%);
+  transition: transform 1s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.card-shine-yellow:hover::after {
+  transform: translateX(100%);
+}
+
+/* ============================================
+   LIGHT THEME UTILITIES
+   ============================================ */
+
+/* White card for light theme */
+.card-light {
+  background: #FFFFFF;
+  border: 1px solid #F0F0F0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.card-light-red {
+  background: #FFFFFF;
+  border: 1px solid rgba(230, 0, 18, 0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.card-light-yellow {
+  background: #FFFFFF;
+  border: 1px solid rgba(255, 214, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+}
+
+/* Light glass for light theme */
+.glass-light-red {
+  background: rgba(230, 0, 18, 0.04);
+  border: 1px solid rgba(230, 0, 18, 0.08);
+}
+
+.glass-light-yellow {
+  background: rgba(255, 214, 0, 0.04);
+  border: 1px solid rgba(255, 214, 0, 0.08);
+}
+
+/* Light pattern (very subtle dots on white) */
+.luxury-pattern-light {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* Hover border for light theme */
+.hover-red-border-light {
+  border: 1px solid #F0F0F0;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.hover-red-border-light:hover {
+  border-color: rgba(230, 0, 18, 0.2);
+  box-shadow: 0 4px 12px rgba(230, 0, 18, 0.06);
+}
+
+.hover-yellow-border-light {
+  border: 1px solid #F0F0F0;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.hover-yellow-border-light:hover {
+  border-color: rgba(255, 214, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(255, 214, 0, 0.06);
+}
+
+/* Badge for light theme */
+.badge-red-light {
+  background: rgba(230, 0, 18, 0.06);
+  border: 1px solid rgba(230, 0, 18, 0.12);
+  color: #E60012;
+}
+
+.badge-yellow-light {
+  background: rgba(255, 214, 0, 0.06);
+  border: 1px solid rgba(255, 214, 0, 0.12);
+  color: #B8960A;
+}
+
+/* Navigation white */
+.nav-white {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================
+   LUXURY DIAGONAL LINE PATTERN
+   ============================================ */
+.luxury-pattern-diagonal {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 20px,
+    rgba(0,0,0,0.015) 20px,
+    rgba(0,0,0,0.015) 21px
+  );
+}
+
+/* ============================================
+   LUXURY CROSSHATCH PATTERN
+   ============================================ */
+.luxury-pattern-crosshatch {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 30px,
+      rgba(0,0,0,0.012) 30px,
+      rgba(0,0,0,0.012) 31px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 30px,
+      rgba(0,0,0,0.012) 30px,
+      rgba(0,0,0,0.012) 31px
+    );
+}
+
+/* ============================================
+   LUXURY DIAMOND PATTERN (for premium feel)
+   ============================================ */
+.luxury-pattern-diamond {
+  background-image:
+    linear-gradient(45deg, rgba(0,0,0,0.02) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0,0,0,0.02) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.02) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.02) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+}
+
+/* ============================================
+   LUXURY RED DOT PATTERN (for passenger sections)
+   ============================================ */
+.luxury-pattern-red-dots {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(230, 0, 18, 0.035) 1px, transparent 0);
+  background-size: 32px 32px;
+}
+
+/* ============================================
+   LUXURY YELLOW DOT PATTERN (for commercial sections)
+   ============================================ */
+.luxury-pattern-yellow-dots {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 214, 0, 0.04) 1px, transparent 0);
+  background-size: 32px 32px;
+}
+
+/* ============================================
+   LUXURY GRID PATTERN
+   ============================================ */
+.luxury-pattern-grid {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Safe area bottom for mobile notched devices */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }

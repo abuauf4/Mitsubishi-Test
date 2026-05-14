@@ -1,7 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import ClientProviders from "@/components/ClientProviders";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,25 +16,50 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
+});
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
 export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
+  title: "Mitsubishi Motor Indonesia | Drive Your Ambition",
+  description:
+    "Website resmi Mitsubishi Motor Indonesia. Temukan kendaraan passenger & commercial terbaik. Konsultasi dengan sales consultant kami untuk penawaran spesial.",
+  keywords: [
+    "Mitsubishi",
+    "Mitsubishi Indonesia",
+    "Mitsubishi Motors",
+    "Xpander",
+    "Pajero Sport",
+    "Xforce",
+    "Triton",
+    "L300",
+    "Canter",
+    "FUSO",
+    "mobil Mitsubishi",
+    "truk Mitsubishi",
+    "MPV",
+    "SUV",
+    "double cabin",
+    "commercial vehicle",
+    "kredit Mitsubishi",
+    "promo Mitsubishi",
+  ],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/logo.svg",
   },
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "Mitsubishi Motor Indonesia | Drive Your Ambition",
+    description: "Solusi kendaraan terpercaya untuk hidup & bisnis Anda. Konsultasi dengan sales consultant kami.",
     type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
   },
 };
 
@@ -41,12 +69,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased bg-white text-mitsu-dark pb-14 sm:pb-0`}
       >
-        {children}
-        <Toaster />
+        <ClientProviders>
+          <div className="min-h-screen flex flex-col">
+            <Navigation />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </ClientProviders>
       </body>
     </html>
   );
