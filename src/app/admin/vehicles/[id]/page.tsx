@@ -377,7 +377,12 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                     <Label>Highlights (JSON array)</Label>
                     <Textarea value={variantForm.highlights} onChange={(e) => setVariantForm({ ...variantForm, highlights: e.target.value })} className="mt-1 font-mono text-xs" rows={2} />
                   </div>
-                  <ImageUpload value={variantForm.imagePath} onChange={(path) => setVariantForm({ ...variantForm, imagePath: path })} label="Variant Image (optional)" />
+                  {/* IMAGE UPLOAD - PENTING! Upload gambar spesifik per varian */}
+                  <div className="p-4 border-2 border-dashed border-green-300 bg-green-50/50 rounded-xl">
+                    <p className="text-sm font-bold text-green-700 mb-2">📷 Upload Gambar Varian Ini</p>
+                    <p className="text-xs text-muted-foreground mb-3">Upload foto mobil untuk varian ini. Kalau ada gambar, foto asli yang muncul di website saat varian dipilih.</p>
+                    <ImageUpload value={variantForm.imagePath} onChange={(path) => setVariantForm({ ...variantForm, imagePath: path })} label="Gambar Mobil (Varian Ini)" />
+                  </div>
                   <Button onClick={() => { addSubEntity('variants', variantForm); setVariantForm({ name: '', price: '', priceNum: 0, transmission: '', drivetrain: '', highlights: '[]', imagePath: '', displayOrder: 0 }); }} className="bg-mitsu-red hover:bg-red-700 text-white">
                     <Plus className="w-4 h-4 mr-2" /> Add Variant
                   </Button>
@@ -433,7 +438,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div><Label>Name</Label><Input value={colorForm.name} onChange={(e) => setColorForm({ ...colorForm, name: e.target.value })} className="mt-1" /></div>
+                    <div><Label>Name</Label><Input value={colorForm.name} onChange={(e) => setColorForm({ ...colorForm, name: e.target.value })} className="mt-1" placeholder="contoh: White Pearl" /></div>
                     <div>
                       <Label>Hex Color</Label>
                       <div className="flex gap-2 mt-1">
@@ -443,8 +448,11 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                     <div><Label>Display Order</Label><Input type="number" value={colorForm.displayOrder} onChange={(e) => setColorForm({ ...colorForm, displayOrder: parseInt(e.target.value) || 0 })} className="mt-1" /></div>
                   </div>
-                  <div className="mt-4">
-                    <ImageUpload value={colorForm.imagePath} onChange={(path) => setColorForm({ ...colorForm, imagePath: path })} label="Color Image (optional — shown when this color is selected)" />
+                  {/* IMAGE UPLOAD - PENTING! Upload gambar spesifik per warna */}
+                  <div className="mt-6 p-4 border-2 border-dashed border-blue-300 bg-blue-50/50 rounded-xl">
+                    <p className="text-sm font-bold text-blue-700 mb-2">📷 Upload Gambar Warna Ini</p>
+                    <p className="text-xs text-muted-foreground mb-3">Upload foto mobil dalam warna ini. Kalau ada gambar, foto asli yang muncul di website. Kalau tidak, pakai tint overlay.</p>
+                    <ImageUpload value={colorForm.imagePath} onChange={(path) => setColorForm({ ...colorForm, imagePath: path })} label="Gambar Mobil (Warna Ini)" />
                   </div>
                   <Button onClick={() => { addSubEntity('colors', colorForm); setColorForm({ name: '', hex: '#000000', imagePath: '', displayOrder: 0 }); }} className="mt-4 bg-mitsu-red hover:bg-red-700 text-white">
                     <Plus className="w-4 h-4 mr-2" /> Add Color
