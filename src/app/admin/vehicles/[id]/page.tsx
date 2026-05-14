@@ -43,6 +43,7 @@ interface VehicleVariantData {
   transmission: string;
   drivetrain: string | null;
   highlights: string;
+  imagePath: string | null;
   displayOrder: number;
 }
 
@@ -193,6 +194,27 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
       }
     } catch (error: any) { toast.error(`Network error: ${error?.message || 'Save failed'}`); }
     finally { setSaving(false); }
+  }
+
+  // Update sub-entity imagePath
+  async function updateSubEntityImage(type: string, subId: string, imagePath: string) {
+    if (!vehicle || vehicle.id.startsWith('static-')) return;
+    try {
+      const res = await fetch(`/api/admin/vehicles/${vehicle.id}/${type}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: subId, imagePath }),
+      });
+      if (res.ok) {
+        toast.success('Image updated successfully');
+        fetchVehicle();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error || 'Failed to update image');
+      }
+    } catch (error: any) {
+      toast.error(`Network error: ${error?.message || 'Update failed'}`);
+    }
   }
 
   // Sub-entity CRUD helpers
@@ -393,8 +415,8 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
               {vehicle.variants.map((v) => (
                 <Card key={v.id}>
                   <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
                         <h4 className="font-semibold text-foreground">{v.name}</h4>
                         <p className="text-sm text-muted-foreground">{v.price} • {v.transmission}{v.drivetrain ? ` • ${v.drivetrain}` : ''}</p>
                         <div className="flex gap-1 mt-1 flex-wrap">
@@ -407,9 +429,18 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                           })()}
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => { setDeleteSubId(v.id); setDeleteSubType('variants'); }} className="text-destructive">
+                      <Button variant="ghost" size="icon" onClick={() => { setDeleteSubId(v.id); setDeleteSubType('variants'); }} className="text-destructive flex-shrink-0">
                         <Trash2 className="w-4 h-4" />
                       </Button>
+                    </div>
+                    {/* Upload gambar untuk varian yang sudah ada */}
+                    <div className="mt-4 p-3 border border-dashed border-green-300 bg-green-50/50 rounded-lg">
+                      <p className="text-xs font-semibold text-green-700 mb-2">📷 Gambar Varian Ini</p>
+                      <ImageUpload
+                        value={v.imagePath || ''}
+                        onChange={(path) => updateSubEntityImage('variants', v.id, path)}
+                        label="Upload/Ubah Gambar Varian"
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -460,28 +491,41 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                 </CardContent>
               </Card>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {vehicle.colors.map((c) => (
                   <Card key={c.id} className="relative group">
-                    <CardContent className="p-3 text-center">
-                      {c.imagePath ? (
-                        <div className="w-full h-12 rounded-lg mb-2 border overflow-hidden bg-muted/30">
-                          <img src={c.imagePath} alt={c.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        {c.imagePath ? (
+                          <div className="w-12 h-12 rounded-lg border overflow-hidden bg-muted/30 flex-shrink-0">
+                            <img src={c.imagePath} alt={c.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          </div>
+                        ) : (
+                          <div className="w-12 h-12 rounded-lg border flex-shrink-0" style={{ backgroundColor: c.hex }} />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
+                          <p className="text-xs text-muted-foreground">{c.hex}</p>
+                          {c.imagePath && <p className="text-[10px] text-green-600 mt-0.5">✓ has image</p>}
                         </div>
-                      ) : (
-                        <div className="w-full h-12 rounded-lg mb-2 border" style={{ backgroundColor: c.hex }} />
-                      )}
-                      <p className="text-xs font-medium text-foreground truncate">{c.name}</p>
-                      <p className="text-xs text-muted-foreground">{c.hex}</p>
-                      {c.imagePath && <p className="text-[10px] text-green-600 mt-0.5">✓ has image</p>}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute -top-1 -right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity bg-destructive text-white"
-                        onClick={() => { setDeleteSubId(c.id); setDeleteSubType('colors'); }}
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="flex-shrink-0 text-destructive h-8 w-8"
+                          onClick={() => { setDeleteSubId(c.id); setDeleteSubType('colors'); }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      {/* Upload gambar untuk warna yang sudah ada */}
+                      <div className="p-3 border border-dashed border-blue-300 bg-blue-50/50 rounded-lg">
+                        <p className="text-xs font-semibold text-blue-700 mb-2">📷 Gambar Warna Ini</p>
+                        <ImageUpload
+                          value={c.imagePath || ''}
+                          onChange={(path) => updateSubEntityImage('colors', c.id, path)}
+                          label="Upload/Ubah Gambar Warna"
+                        />
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
