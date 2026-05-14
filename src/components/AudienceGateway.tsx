@@ -1,10 +1,20 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight, Car, Truck, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+
+interface DBCategory {
+  id: string;
+  title: string;
+  description: string;
+  imagePath: string;
+  linkHref: string;
+  displayOrder: number;
+  active: boolean;
+}
 
 function ModernGatewayCard({
   href,
@@ -207,7 +217,125 @@ function ModernGatewayCard({
   );
 }
 
+/** Default hardcoded cards as fallback */
+const HARDCODED_CARDS = [
+  {
+    href: '/passenger',
+    image: '/images/xpander.png',
+    imageAlt: 'Mitsubishi Passenger Cars',
+    badge: 'Passenger Cars',
+    badgeBg: 'bg-mitsu-red/90',
+    titleLine1: 'Untuk Hidup',
+    titleLine2: 'yang Lebih Baik',
+    titleAccent: '#FF6B6B',
+    description: 'MPV keluarga, SUV tangguh, hingga kendaraan listrik. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.',
+    stats: [
+      { label: 'Model', value: '7' },
+      { label: 'Mulai', value: 'Rp 240Jt' },
+      { label: 'Kategori', value: 'MPV, SUV & EV' },
+    ],
+    accentColor: '#E60012',
+    hoverAccent: '#E60012',
+    direction: 'left' as const,
+  },
+  {
+    href: '/commercial',
+    image: '/images/l300.png',
+    imageAlt: 'Mitsubishi Commercial Vehicles',
+    badge: 'Commercial Vehicles',
+    badgeBg: 'bg-mitsu-fuso-yellow/90',
+    titleLine1: 'Bisnis yang',
+    titleLine2: 'Lebih Kuat',
+    titleAccent: '#FFD600',
+    description: 'Niaga ringan hingga heavy duty. Triton dan FUSO Commercial untuk UMKM hingga enterprise.',
+    stats: [
+      { label: 'Model', value: '6' },
+      { label: 'Mulai', value: 'Rp 325Jt' },
+      { label: 'Payload', value: '3.4-44 Ton' },
+    ],
+    accentColor: '#FFD600',
+    hoverAccent: '#FFD600',
+    direction: 'right' as const,
+  },
+];
+
+function getCategoryTheme(linkHref: string) {
+  if (linkHref.includes('passenger')) {
+    return {
+      accentColor: '#E60012',
+      hoverAccent: '#E60012',
+      badgeBg: 'bg-mitsu-red/90',
+      titleAccent: '#FF6B6B',
+    };
+  }
+  if (linkHref.includes('commercial')) {
+    return {
+      accentColor: '#FFD600',
+      hoverAccent: '#FFD600',
+      badgeBg: 'bg-mitsu-fuso-yellow/90',
+      titleAccent: '#FFD600',
+    };
+  }
+  return {
+    accentColor: '#E60012',
+    hoverAccent: '#E60012',
+    badgeBg: 'bg-mitsu-red/90',
+    titleAccent: '#FF6B6B',
+  };
+}
+
 export default function AudienceGateway() {
+  const [dbCategories, setDbCategories] = useState<DBCategory[] | null>(null);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch('/api/audience-categories');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0 && !data[0]?.id?.startsWith('static-')) {
+          setDbCategories(data);
+        }
+      } catch {
+        // Silently fall back to hardcoded cards
+      }
+    }
+    fetchCategories();
+  }, []);
+
+  // Build cards from DB data or use hardcoded fallback
+  const cards = dbCategories && dbCategories.length > 0
+    ? dbCategories.map((cat, index) => {
+        const theme = getCategoryTheme(cat.linkHref);
+        const isRed = cat.linkHref.includes('passenger');
+        return {
+          href: cat.linkHref,
+          image: cat.imagePath || (isRed ? '/images/xpander.png' : '/images/l300.png'),
+          imageAlt: cat.title,
+          badge: cat.title,
+          badgeBg: theme.badgeBg,
+          titleLine1: cat.title,
+          titleLine2: isRed ? 'yang Lebih Baik' : 'Lebih Kuat',
+          titleAccent: theme.titleAccent,
+          description: cat.description,
+          stats: isRed
+            ? [
+                { label: 'Model', value: '7' },
+                { label: 'Mulai', value: 'Rp 240Jt' },
+                { label: 'Kategori', value: 'MPV, SUV & EV' },
+              ]
+            : [
+                { label: 'Model', value: '6' },
+                { label: 'Mulai', value: 'Rp 325Jt' },
+                { label: 'Payload', value: '3.4-44 Ton' },
+              ],
+          accentColor: theme.accentColor,
+          hoverAccent: theme.hoverAccent,
+          direction: (index % 2 === 0 ? 'left' : 'right') as 'left' | 'right',
+        };
+      })
+    : HARDCODED_CARDS;
+
   return (
     <section id="audience-gateway" className="relative w-full bg-white">
       <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
@@ -234,46 +362,10 @@ export default function AudienceGateway() {
 
       {/* Cards Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 sm:pb-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-          <ModernGatewayCard
-            href="/passenger"
-            image="/images/xpander.png"
-            imageAlt="Mitsubishi Passenger Cars"
-            badge="Passenger Cars"
-            badgeBg="bg-mitsu-red/90"
-            titleLine1="Untuk Hidup"
-            titleLine2="yang Lebih Baik"
-            titleAccent="#FF6B6B"
-            description="MPV keluarga, SUV tangguh, hingga kendaraan listrik. Temukan kendaraan yang tepat untuk setiap perjalanan Anda."
-            stats={[
-              { label: 'Model', value: '7' },
-              { label: 'Mulai', value: 'Rp 240Jt' },
-              { label: 'Kategori', value: 'MPV, SUV & EV' },
-            ]}
-            accentColor="#E60012"
-            hoverAccent="#E60012"
-            direction="left"
-          />
-
-          <ModernGatewayCard
-            href="/commercial"
-            image="/images/l300.png"
-            imageAlt="Mitsubishi Commercial Vehicles"
-            badge="Commercial Vehicles"
-            badgeBg="bg-mitsu-fuso-yellow/90"
-            titleLine1="Bisnis yang"
-            titleLine2="Lebih Kuat"
-            titleAccent="#FFD600"
-            description="Niaga ringan hingga heavy duty. Triton dan FUSO Commercial untuk UMKM hingga enterprise."
-            stats={[
-              { label: 'Model', value: '6' },
-              { label: 'Mulai', value: 'Rp 325Jt' },
-              { label: 'Payload', value: '3.4-44 Ton' },
-            ]}
-            accentColor="#FFD600"
-            hoverAccent="#FFD600"
-            direction="right"
-          />
+        <div className={`grid ${cards.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'} gap-4 sm:gap-5`}>
+          {cards.map((card, index) => (
+            <ModernGatewayCard key={card.href + '-' + index} {...card} />
+          ))}
         </div>
       </div>
 

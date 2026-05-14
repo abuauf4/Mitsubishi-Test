@@ -2,21 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb, isTursoAvailable } from '@/lib/db';
 import { getStaticHero } from '@/lib/static-data';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const page = searchParams.get('page') || 'home';
+
   const db = getDb();
   if (!db) {
     return NextResponse.json(getStaticHero());
   }
   try {
     const result = await db.execute({
-      sql: 'SELECT * FROM Hero WHERE active = 1 LIMIT 1',
-      args: []
+      sql: 'SELECT * FROM Hero WHERE active = 1 AND page = ? LIMIT 1',
+      args: [page],
     });
     if (result.rows.length === 0) {
-      // No hero in DB yet, try to get any hero
+      // No active hero for this page, try to get any hero for this page
       const anyHero = await db.execute({
-        sql: 'SELECT * FROM Hero LIMIT 1',
-        args: []
+        sql: 'SELECT * FROM Hero WHERE page = ? LIMIT 1',
+        args: [page],
       });
       if (anyHero.rows.length === 0) {
         return NextResponse.json(null);
@@ -50,6 +53,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { id, ...data } = body;
     const now = new Date().toISOString();
+    const page = data.page || 'home';
 
     if (id && !id.startsWith('static-')) {
       // Update existing
@@ -62,6 +66,7 @@ export async function PUT(request: NextRequest) {
       if (data.ctaText !== undefined) { fields.push('ctaText = ?'); args.push(data.ctaText); }
       if (data.ctaLink !== undefined) { fields.push('ctaLink = ?'); args.push(data.ctaLink); }
       if (data.active !== undefined) { fields.push('active = ?'); args.push(data.active ? 1 : 0); }
+      if (data.page !== undefined) { fields.push('page = ?'); args.push(data.page); }
 
       fields.push('updatedAt = ?');
       args.push(now);
@@ -90,8 +95,8 @@ export async function PUT(request: NextRequest) {
       // Create new (id is null or static-*)
       const newId = crypto.randomUUID();
       await db.execute({
-        sql: `INSERT INTO Hero (id, title, subtitle, imagePath, ctaText, ctaLink, active, createdAt, updatedAt)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        sql: `INSERT INTO Hero (id, title, subtitle, imagePath, ctaText, ctaLink, page, active, createdAt, updatedAt)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [
           newId,
           data.title ?? '',
@@ -99,6 +104,7 @@ export async function PUT(request: NextRequest) {
           data.imagePath ?? '/images/hero-cinematic.png',
           data.ctaText ?? 'Selengkapnya',
           data.ctaLink ?? '#audience-gateway',
+          page,
           data.active !== false ? 1 : 0,
           now,
           now,
@@ -112,6 +118,7 @@ export async function PUT(request: NextRequest) {
         imagePath: data.imagePath ?? '/images/hero-cinematic.png',
         ctaText: data.ctaText ?? 'Selengkapnya',
         ctaLink: data.ctaLink ?? '#audience-gateway',
+        page,
         active: data.active !== false,
         createdAt: now,
         updatedAt: now,

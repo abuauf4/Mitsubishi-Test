@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle, Car, Sparkles } from 'lucide-react';
 import PageHero from '@/components/shared/PageHero';
@@ -12,13 +13,35 @@ interface Props {
 }
 
 export default function PassengerPageClient({ vehicles }: Props) {
+  const [heroImage, setHeroImage] = useState('/images/xpander.png');
+  const [heroTitle, setHeroTitle] = useState('Passenger Cars Mitsubishi');
+  const [heroSubtitle, setHeroSubtitle] = useState('Dari MPV keluarga hingga SUV premium. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.');
+
+  useEffect(() => {
+    async function fetchHero() {
+      try {
+        const res = await fetch('/api/hero?page=passenger');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && !data.error && data.imagePath) {
+          setHeroImage(data.imagePath);
+          if (data.title) setHeroTitle(data.title);
+          if (data.subtitle) setHeroSubtitle(data.subtitle);
+        }
+      } catch {
+        // Silently fall back to defaults
+      }
+    }
+    fetchHero();
+  }, []);
+
   return (
     <>
       {/* Hero */}
       <PageHero
-        title="Passenger Cars Mitsubishi"
-        subtitle="Dari MPV keluarga hingga SUV premium. Temukan kendaraan yang tepat untuk setiap perjalanan Anda."
-        backgroundImage="/images/xpander.png"
+        title={heroTitle}
+        subtitle={heroSubtitle}
+        backgroundImage={heroImage}
         breadcrumbs={[
           { label: 'Passenger Cars', href: '/passenger' },
         ]}

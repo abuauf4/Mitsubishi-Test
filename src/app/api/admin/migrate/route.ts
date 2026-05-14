@@ -26,6 +26,10 @@ export async function POST() {
       sql: 'ALTER TABLE VehicleVariant ADD COLUMN description TEXT',
       description: 'Add description column to VehicleVariant',
     },
+    {
+      sql: 'ALTER TABLE Hero ADD COLUMN page TEXT NOT NULL DEFAULT \'home\'',
+      description: 'Add page column to Hero',
+    },
   ];
 
   const results: { description: string; status: string; error?: string }[] = [];

@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS Hero (
   imagePath TEXT NOT NULL DEFAULT '/images/hero-cinematic.png',
   ctaText TEXT NOT NULL DEFAULT 'Selengkapnya',
   ctaLink TEXT NOT NULL DEFAULT '#audience-gateway',
+  page TEXT NOT NULL DEFAULT 'home',
   active INTEGER NOT NULL DEFAULT 1,
   createdAt TEXT NOT NULL DEFAULT (datetime('now')),
   updatedAt TEXT NOT NULL DEFAULT (datetime('now'))

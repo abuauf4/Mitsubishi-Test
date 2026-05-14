@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle, Truck, Sparkles, Zap, Car } from 'lucide-react';
 import PageHero from '@/components/shared/PageHero';
@@ -13,13 +14,35 @@ interface Props {
 }
 
 export default function CommercialPageClient({ niagaRingan, commercial }: Props) {
+  const [heroImage, setHeroImage] = useState('/images/l300.png');
+  const [heroTitle, setHeroTitle] = useState('Commercial Vehicles Mitsubishi');
+  const [heroSubtitle, setHeroSubtitle] = useState('Dari niaga ringan hingga heavy duty. Solusi armada terpercaya untuk bisnis Anda.');
+
+  useEffect(() => {
+    async function fetchHero() {
+      try {
+        const res = await fetch('/api/hero?page=commercial');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data && !data.error && data.imagePath) {
+          setHeroImage(data.imagePath);
+          if (data.title) setHeroTitle(data.title);
+          if (data.subtitle) setHeroSubtitle(data.subtitle);
+        }
+      } catch {
+        // Silently fall back to defaults
+      }
+    }
+    fetchHero();
+  }, []);
+
   return (
     <>
       {/* Hero */}
       <PageHero
-        title="Commercial Vehicles Mitsubishi"
-        subtitle="Dari niaga ringan hingga heavy duty. Solusi armada terpercaya untuk bisnis Anda."
-        backgroundImage="/images/l300.png"
+        title={heroTitle}
+        subtitle={heroSubtitle}
+        backgroundImage={heroImage}
         breadcrumbs={[
           { label: 'Commercial Vehicles', href: '/commercial' },
         ]}

@@ -17,27 +17,46 @@ interface HeroData {
   imagePath: string;
   ctaText: string;
   ctaLink: string;
+  page: string;
   active: boolean;
 }
+
+const PAGES = [
+  { value: 'home', label: 'Home' },
+  { value: 'passenger', label: 'Passenger' },
+  { value: 'commercial', label: 'Commercial' },
+] as const;
+
+const DEFAULT_HERO: Omit<HeroData, 'id'> = {
+  title: 'Drive Your Ambition',
+  subtitle: 'Temukan kendaraan Mitsubishi terbaik untuk hidup dan bisnis Anda',
+  imagePath: '/images/hero-cinematic.png',
+  ctaText: 'Selengkapnya',
+  ctaLink: '#audience-gateway',
+  page: 'home',
+  active: true,
+};
 
 export default function HeroPage() {
   const [hero, setHero] = useState<HeroData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dbStatus, setDbStatus] = useState<'connected' | 'fallback' | 'unknown'>('unknown');
+  const [currentPage, setCurrentPage] = useState<string>('home');
 
   useEffect(() => {
-    fetchHero();
-  }, []);
+    fetchHero(currentPage);
+  }, [currentPage]);
 
-  async function fetchHero() {
+  async function fetchHero(page: string) {
+    setLoading(true);
     try {
-      const res = await fetch('/api/admin/hero');
+      const res = await fetch(`/api/admin/hero?page=${page}`);
       const data = await res.json();
       if (data && !data.error && data.id) {
         // If ID starts with "static-", we're using fallback data
         setDbStatus(data.id.startsWith('static-') ? 'fallback' : 'connected');
-        setHero(data);
+        setHero({ ...data, page });
       } else if (data && data.error) {
         toast.error(data.error);
       } else {
@@ -57,7 +76,7 @@ export default function HeroPage() {
       const res = await fetch('/api/admin/hero', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(hero),
+        body: JSON.stringify({ ...hero, page: currentPage }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -77,6 +96,10 @@ export default function HeroPage() {
     }
   }
 
+  function handlePageChange(page: string) {
+    setCurrentPage(page);
+  }
+
   if (loading) {
     return (
       <Card className="animate-pulse">
@@ -90,11 +113,31 @@ export default function HeroPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Hero Section</h1>
-          <p className="text-muted-foreground mt-1">Edit the main hero section of the homepage</p>
+          <p className="text-muted-foreground mt-1">Edit the hero section for each page</p>
         </div>
         <Button onClick={handleSave} disabled={saving} className="bg-mitsu-red hover:bg-red-700 text-white">
           <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : 'Save Changes'}
         </Button>
+      </div>
+
+      {/* Page Selector Tabs */}
+      <div className="mb-6">
+        <Label className="mb-2 block text-sm font-medium text-muted-foreground">Select Page</Label>
+        <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 bg-muted/50 p-1 gap-1">
+          {PAGES.map((p) => (
+            <button
+              key={p.value}
+              onClick={() => handlePageChange(p.value)}
+              className={`px-5 py-2.5 text-sm font-semibold rounded-md transition-all duration-200 ${
+                currentPage === p.value
+                  ? 'bg-mitsu-red text-white shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-background'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Database Status Warning */}
@@ -112,14 +155,11 @@ export default function HeroPage() {
 
       {!hero ? (
         <div className="text-center py-12 text-muted-foreground">
-          No hero section found. <Button variant="link" onClick={() => setHero({
+          No hero section found for <strong>{PAGES.find(p => p.value === currentPage)?.label}</strong> page.{' '}
+          <Button variant="link" onClick={() => setHero({
+            ...DEFAULT_HERO,
             id: '',
-            title: 'Drive Your Ambition',
-            subtitle: 'Temukan kendaraan Mitsubishi terbaik untuk hidup dan bisnis Anda',
-            imagePath: '/images/hero-cinematic.png',
-            ctaText: 'Selengkapnya',
-            ctaLink: '#audience-gateway',
-            active: true,
+            page: currentPage,
           })}>Create one</Button>
         </div>
       ) : (
