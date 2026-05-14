@@ -1,10 +1,22 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Truck, Weight, Gauge, Zap } from 'lucide-react';
-import { niagaRinganVehicles, commercialVehicles } from '@/data/vehicles';
+import { ArrowRight, Truck, Weight, Gauge, Zap, LucideIcon } from 'lucide-react';
 
-const niagaRinganCards = [
+interface VehicleCard {
+  name: string;
+  tagline: string;
+  payload: string;
+  image: string;
+  specs: string[];
+  icon: LucideIcon;
+  slug?: string;
+  category?: string;
+  basePrice?: string;
+}
+
+const fallbackNiagaRingan: VehicleCard[] = [
   {
     name: 'Triton',
     tagline: 'Engineered Beyond Tough — Double Cabin Andalan',
@@ -12,10 +24,12 @@ const niagaRinganCards = [
     image: '/images/l200.png',
     specs: ['2.4L MIVEC Turbo Diesel', '181 PS', 'Super Select 4WD'],
     icon: Truck,
+    slug: 'triton',
+    category: 'niaga-ringan',
   },
 ];
 
-const fusoCommercialCards = [
+const fallbackFuso: VehicleCard[] = [
   {
     name: 'Canter FE 71',
     tagline: 'Light Duty Truck Andalan UMKM — 110 PS',
@@ -23,6 +37,8 @@ const fusoCommercialCards = [
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708367639-commercial_canter-fe-71_main_fe-71-a.webp',
     specs: ['3.9L Turbo Intercooler 110 PS', 'Payload 3.4 Ton', 'Engkel 4-Wheeler'],
     icon: Weight,
+    slug: 'canter-fe-71',
+    category: 'commercial',
   },
   {
     name: 'Canter FE 74',
@@ -31,6 +47,8 @@ const fusoCommercialCards = [
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708377768-commercial_canter-fe-74_main_CANTER-FE-74.webp',
     specs: ['3.9L Turbo Intercooler 125 PS', 'Payload 5.2 Ton', '6-Wheeler'],
     icon: Weight,
+    slug: 'canter-fe-74',
+    category: 'commercial',
   },
   {
     name: 'Canter FE 84G',
@@ -39,6 +57,8 @@ const fusoCommercialCards = [
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708386401-commercial_canter-fe-84g_main_CANTER-FE-84G-1.webp',
     specs: ['3.9L Turbo Intercooler 136 PS', 'Payload 6.2 Ton', '6-Wheeler HD'],
     icon: Weight,
+    slug: 'canter-fe-84g',
+    category: 'commercial',
   },
   {
     name: 'FUSO Fighter X',
@@ -47,6 +67,8 @@ const fusoCommercialCards = [
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708418762-commercial_fighter-x-fm65-th_main_th-home-img.webp',
     specs: ['7.5L 6M60 VGT 240-270 PS', 'Eaton 9-Speed', 'Euro 4'],
     icon: Truck,
+    slug: 'fighter-x',
+    category: 'commercial',
   },
   {
     name: 'FUSO Heavy Duty',
@@ -55,10 +77,72 @@ const fusoCommercialCards = [
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708486155-commercial_fz-heavy-duty_main_FZ.jpg',
     specs: ['7.5L 6M60 VGT 270 PS', 'Tractor Head', 'Euro 4'],
     icon: Truck,
+    slug: 'fz-heavy-duty',
+    category: 'commercial',
   },
 ];
 
 export default function CommercialVehicles() {
+  const [niagaRinganCards, setNiagaRinganCards] = useState<VehicleCard[]>(fallbackNiagaRingan);
+  const [fusoCommercialCards, setFusoCommercialCards] = useState<VehicleCard[]>(fallbackFuso);
+
+  useEffect(() => {
+    async function fetchVehicles() {
+      try {
+        // Fetch niaga-ringan
+        const resNR = await fetch('/api/vehicles?category=niaga-ringan');
+        if (resNR.ok) {
+          const dataNR = await resNR.json();
+          if (Array.isArray(dataNR) && dataNR.length > 0) {
+            const mapped = dataNR.map((v: any) => ({
+              name: v.name || '',
+              tagline: v.tagline || '',
+              payload: v.payload || '',
+              image: v.imagePath || v.image || '/images/canter.png',
+              specs: Array.isArray(v.specsShort) ? v.specsShort : [],
+              icon: Truck,
+              slug: v.slug || '',
+              category: v.category || 'niaga-ringan',
+              basePrice: v.basePrice || '',
+            }));
+            setNiagaRinganCards(mapped);
+          }
+        }
+
+        // Fetch commercial
+        const resC = await fetch('/api/vehicles?category=commercial');
+        if (resC.ok) {
+          const dataC = await resC.json();
+          if (Array.isArray(dataC) && dataC.length > 0) {
+            const mapped = dataC.map((v: any) => ({
+              name: v.name || '',
+              tagline: v.tagline || '',
+              payload: v.payload || '',
+              image: v.imagePath || v.image || '/images/canter.png',
+              specs: Array.isArray(v.specsShort) ? v.specsShort : [],
+              icon: v.payload && parseInt(v.payload) > 10 ? Truck : Weight,
+              slug: v.slug || '',
+              category: v.category || 'commercial',
+              basePrice: v.basePrice || '',
+            }));
+            setFusoCommercialCards(mapped);
+          }
+        }
+      } catch {
+        // Keep fallback data
+      }
+    }
+    fetchVehicles();
+  }, []);
+
+  // Build link for each vehicle card
+  const getVehicleLink = (vehicle: VehicleCard) => {
+    if (vehicle.slug) {
+      return `/commercial/${vehicle.slug}`;
+    }
+    return `/commercial/${vehicle.name.toLowerCase().replace(/\s+/g, '-')}`;
+  };
+
   return (
     <section id="commercial" className="relative py-16 sm:py-20 lg:py-24 bg-mitsu-dark overflow-hidden">
       {/* Background Pattern */}
@@ -118,45 +202,47 @@ export default function CommercialVehicles() {
                   viewport={{ once: true }}
                   className="group"
                 >
-                  <div className="bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-mitsu-red/50 transition-all duration-500 card-shine-red">
-                    {/* Vehicle Image */}
-                    <div className="relative h-[280px] sm:h-[300px] bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
-                      <img
-                        src={vehicle.image}
-                        alt={`Mitsubishi ${vehicle.name}`}
-                        className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
-                      />
-                      {/* Payload Badge */}
-                      <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 bg-mitsu-red rounded-lg">
-                        <IconComponent className="w-4 h-4 text-white" />
-                        <span className="text-white text-sm font-bold">{vehicle.payload}</span>
-                      </div>
-                    </div>
-
-                    {/* Vehicle Info */}
-                    <div className="p-6">
-                      <h3 className="text-xl sm:text-2xl font-bold text-white">
-                        Mitsubishi {vehicle.name}
-                      </h3>
-                      <p className="mt-1 text-white/50 text-sm">{vehicle.tagline}</p>
-
-                      {/* Specs */}
-                      <div className="mt-4 space-y-2">
-                        {vehicle.specs.map((spec) => (
-                          <div key={spec} className="flex items-center gap-2 text-white/70 text-sm">
-                            <div className="w-1 h-1 bg-mitsu-red rounded-full" />
-                            {spec}
-                          </div>
-                        ))}
+                  <a href={getVehicleLink(vehicle)} className="block">
+                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-mitsu-red/50 transition-all duration-500 card-shine-red">
+                      {/* Vehicle Image */}
+                      <div className="relative h-[280px] sm:h-[300px] bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
+                        <img
+                          src={vehicle.image}
+                          alt={`Mitsubishi ${vehicle.name}`}
+                          className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
+                        />
+                        {/* Payload Badge */}
+                        <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 bg-mitsu-red rounded-lg">
+                          <IconComponent className="w-4 h-4 text-white" />
+                          <span className="text-white text-sm font-bold">{vehicle.payload}</span>
+                        </div>
                       </div>
 
-                      {/* CTA */}
-                      <button className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-mitsu-red hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300 min-h-[44px] text-sm tracking-wide">
-                        Lihat Detail
-                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                      </button>
+                      {/* Vehicle Info */}
+                      <div className="p-6">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white">
+                          Mitsubishi {vehicle.name}
+                        </h3>
+                        <p className="mt-1 text-white/50 text-sm">{vehicle.tagline}</p>
+
+                        {/* Specs */}
+                        <div className="mt-4 space-y-2">
+                          {vehicle.specs.map((spec) => (
+                            <div key={spec} className="flex items-center gap-2 text-white/70 text-sm">
+                              <div className="w-1 h-1 bg-mitsu-red rounded-full" />
+                              {spec}
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* CTA */}
+                        <div className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-mitsu-red hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300 min-h-[44px] text-sm tracking-wide">
+                          Lihat Detail
+                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </a>
                 </motion.div>
               );
             })}
@@ -192,45 +278,47 @@ export default function CommercialVehicles() {
                   viewport={{ once: true }}
                   className="group"
                 >
-                  <div className="bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-mitsu-fuso-yellow/50 transition-all duration-500 card-shine-yellow">
-                    {/* Vehicle Image */}
-                    <div className="relative h-[280px] sm:h-[300px] bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
-                      <img
-                        src={vehicle.image}
-                        alt={`Mitsubishi ${vehicle.name}`}
-                        className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
-                      />
-                      {/* Payload Badge */}
-                      <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 bg-mitsu-fuso-yellow rounded-lg">
-                        <IconComponent className="w-4 h-4 text-mitsu-dark" />
-                        <span className="text-mitsu-dark text-sm font-bold">{vehicle.payload}</span>
-                      </div>
-                    </div>
-
-                    {/* Vehicle Info */}
-                    <div className="p-6">
-                      <h3 className="text-xl sm:text-2xl font-bold text-white">
-                        {vehicle.name}
-                      </h3>
-                      <p className="mt-1 text-white/50 text-sm">{vehicle.tagline}</p>
-
-                      {/* Specs */}
-                      <div className="mt-4 space-y-2">
-                        {vehicle.specs.map((spec) => (
-                          <div key={spec} className="flex items-center gap-2 text-white/70 text-sm">
-                            <div className="w-1 h-1 bg-mitsu-fuso-yellow rounded-full" />
-                            {spec}
-                          </div>
-                        ))}
+                  <a href={getVehicleLink(vehicle)} className="block">
+                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-mitsu-fuso-yellow/50 transition-all duration-500 card-shine-yellow">
+                      {/* Vehicle Image */}
+                      <div className="relative h-[280px] sm:h-[300px] bg-gradient-to-b from-white/5 to-transparent overflow-hidden">
+                        <img
+                          src={vehicle.image}
+                          alt={`Mitsubishi ${vehicle.name}`}
+                          className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
+                        />
+                        {/* Payload Badge */}
+                        <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 bg-mitsu-fuso-yellow rounded-lg">
+                          <IconComponent className="w-4 h-4 text-mitsu-dark" />
+                          <span className="text-mitsu-dark text-sm font-bold">{vehicle.payload}</span>
+                        </div>
                       </div>
 
-                      {/* CTA */}
-                      <button className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-mitsu-fuso-yellow hover:bg-mitsu-fuso-yellow-dark text-mitsu-dark font-semibold rounded-lg transition-all duration-300 min-h-[44px] text-sm tracking-wide">
-                        Hubungi Sales
-                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                      </button>
+                      {/* Vehicle Info */}
+                      <div className="p-6">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white">
+                          {vehicle.name}
+                        </h3>
+                        <p className="mt-1 text-white/50 text-sm">{vehicle.tagline}</p>
+
+                        {/* Specs */}
+                        <div className="mt-4 space-y-2">
+                          {vehicle.specs.map((spec) => (
+                            <div key={spec} className="flex items-center gap-2 text-white/70 text-sm">
+                              <div className="w-1 h-1 bg-mitsu-fuso-yellow rounded-full" />
+                              {spec}
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* CTA */}
+                        <div className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-mitsu-fuso-yellow hover:bg-mitsu-fuso-yellow-dark text-mitsu-dark font-semibold rounded-lg transition-all duration-300 min-h-[44px] text-sm tracking-wide">
+                          Hubungi Sales
+                          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </a>
                 </motion.div>
               );
             })}

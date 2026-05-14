@@ -1,6 +1,14 @@
+import { fetchVehiclesByCategory } from '@/lib/fetch-vehicle';
 import { passengerVehicles } from '@/data/vehicles';
 import PassengerPageClient from './PassengerPageClient';
 
-export default function PassengerPage() {
-  return <PassengerPageClient vehicles={passengerVehicles} />;
+export const dynamic = 'force-dynamic';
+
+export default async function PassengerPage() {
+  // Try fetching from database first, fall back to static data
+  let vehicles = await fetchVehiclesByCategory('passenger');
+  if (vehicles.length === 0) {
+    vehicles = passengerVehicles;
+  }
+  return <PassengerPageClient vehicles={vehicles} />;
 }

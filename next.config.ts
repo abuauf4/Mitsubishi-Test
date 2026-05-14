@@ -7,6 +7,22 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.vercel-storage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.blob.vercel-storage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'vercel-storage.com',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
