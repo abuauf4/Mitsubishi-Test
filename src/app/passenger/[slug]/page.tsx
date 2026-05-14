@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation';
 import { getPassengerVehicle, getAllVehicles } from '@/data/vehicles';
+import { fetchVehicleBySlug } from '@/lib/fetch-vehicle';
 import VehicleDetailPage from '@/components/VehicleDetailPage';
+
+export const dynamic = 'force-dynamic';
 
 export function generateStaticParams() {
   const vehicles = getAllVehicles();
@@ -13,7 +16,9 @@ interface PageProps {
 
 export default async function PassengerVehiclePage({ params }: PageProps) {
   const { slug } = await params;
-  const vehicle = getPassengerVehicle(slug);
+
+  // Try database first, fall back to static data
+  const vehicle = await fetchVehicleBySlug(slug) || getPassengerVehicle(slug);
 
   if (!vehicle) {
     notFound();

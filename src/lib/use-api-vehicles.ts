@@ -42,6 +42,7 @@ export function mapApiVehicleToVehicleData(apiVehicle: any): VehicleData {
       priceNum: Number(v.priceNum) || 0,
       transmission: v.transmission || '',
       drivetrain: v.drivetrain || undefined,
+      image: v.imagePath || undefined,
       highlights: Array.isArray(v.highlights)
         ? v.highlights
         : typeof v.highlights === 'string'

@@ -39,20 +39,24 @@ export default function VehicleDetailPage({ vehicle }: Props) {
   const categoryPath = isCommercial ? '/commercial' : isNiagaRingan ? '/commercial' : '/passenger';
   const categoryLabel = isCommercial ? 'FUSO Commercial' : isNiagaRingan ? 'Kendaraan Niaga Ringan' : 'Passenger Cars';
 
-  // Determine which image to show: color-specific image or default vehicle image
+  // Determine which image to show:
+  // Priority: 1) Color-specific image → 2) Variant-specific image → 3) Vehicle default image
   const currentColorImage = vehicle.colors[selectedColor]?.image;
-  const displayImage = currentColorImage || vehicle.image;
+  const currentVariantImage = vehicle.variants[selectedVariant]?.image;
+  const displayImage = currentColorImage || currentVariantImage || vehicle.image;
   const hasColorImage = !!currentColorImage;
+  const hasVariantImage = !!currentVariantImage;
+  const hasSpecificImage = hasColorImage || hasVariantImage;
 
   // Color tint overlay for simulating different car colors (only when no color-specific image)
   const colorTintStyle = useMemo(() => {
-    if (hasColorImage) return {}; // No tint when we have a real color image
+    if (hasSpecificImage) return {}; // No tint when we have a real color or variant image
     const color = vehicle.colors[selectedColor];
     if (!color) return {};
     return {
       background: `linear-gradient(135deg, ${color.hex}22 0%, ${color.hex}08 50%, transparent 100%)`,
     };
-  }, [vehicle.colors, selectedColor, hasColorImage]);
+  }, [vehicle.colors, selectedColor, hasSpecificImage]);
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'overview', label: 'Ikhtisar' },
@@ -151,7 +155,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                           : 'hover:scale-105 ring-1 ring-gray-200'
                       }`}
                       style={{ backgroundColor: color.hex }}
-                      title={color.name}
+                      title={`${color.name}${color.image ? ' (has image)' : ''}`}
                       aria-label={`Pilih warna ${color.name}`}
                     >
                       {selectedColor === i && (
@@ -161,6 +165,9 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                         >
                           <Check className={`w-3.5 h-3.5 ${color.hex === '#1A1A1A' || color.hex === '#2E5090' ? 'text-white' : 'text-mitsu-dark'}`} strokeWidth={3} />
                         </motion.div>
+                      )}
+                      {color.image && (
+                        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border border-white" />
                       )}
                     </button>
                   ))}
@@ -214,14 +221,21 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <div>
-                          <p className={`text-sm font-bold ${selectedVariant === i ? 'text-mitsu-dark' : 'text-gray-600'}`}>
-                            {variant.name}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            {variant.highlights.slice(0, 3).map((h) => (
-                              <span key={h} className="text-[10px] text-gray-400">{h}</span>
-                            ))}
+                        <div className="flex items-center gap-2">
+                          {variant.image && (
+                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
+                              <img src={variant.image} alt={variant.name} className="w-full h-full object-cover" />
+                            </div>
+                          )}
+                          <div>
+                            <p className={`text-sm font-bold ${selectedVariant === i ? 'text-mitsu-dark' : 'text-gray-600'}`}>
+                              {variant.name}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              {variant.highlights.slice(0, 3).map((h) => (
+                                <span key={h} className="text-[10px] text-gray-400">{h}</span>
+                              ))}
+                            </div>
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0 ml-3">

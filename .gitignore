@@ -62,3 +62,17 @@ task*.md
 agent-ctx/
 Rencana_*
 download/Rencana_*.docx
+v2
+v2.*
+
+# Annoying directories that keep coming back
+mitsubishi-test/
+Mitsubishi-Test/
+toyota-digital-showroom/
+autosell/
+db/
+mini-services/
+examples/
+upload/
+.zscripts/
+mitsu-project/
