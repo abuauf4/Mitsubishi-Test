@@ -1,73 +1,107 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
+import { getStaticCategories } from '@/lib/static-data';
 
-export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+/**
+ * GET /api/admin/audience-categories
+ * Returns all audience categories (including inactive) for admin management.
+ */
+export async function GET() {
   const db = getDb();
   if (!db) {
-    return NextResponse.json({ error: 'Database not configured. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars.', hint: 'Vercel Dashboard → Settings → Environment Variables' }, { status: 503 });
+    // Return static categories with static- prefix IDs
+    const staticCats = getStaticCategories();
+    return NextResponse.json(staticCats.map((cat: any, i: number) => ({
+      ...cat,
+      id: `static-${i}`,
+      active: true,
+      displayOrder: i,
+    })));
   }
+
   try {
-    const { id } = await params;
-    if (id.startsWith('static-')) {
-      return NextResponse.json({ error: 'Cannot update static-prefixed record. Please create a new record instead.', hint: 'Use POST on the parent route to create a new database record.' }, { status: 400 });
-    }
-    const body = await request.json();
-    const now = new Date().toISOString();
-
-    const fields: string[] = [];
-    const args: (string | number)[] = [];
-
-    if (body.title !== undefined) { fields.push('title = ?'); args.push(body.title); }
-    if (body.description !== undefined) { fields.push('description = ?'); args.push(body.description); }
-    if (body.imagePath !== undefined) { fields.push('imagePath = ?'); args.push(body.imagePath); }
-    if (body.linkHref !== undefined) { fields.push('linkHref = ?'); args.push(body.linkHref); }
-    if (body.displayOrder !== undefined) { fields.push('displayOrder = ?'); args.push(Number(body.displayOrder)); }
-    if (body.active !== undefined) { fields.push('active = ?'); args.push(body.active ? 1 : 0); }
-
-    fields.push('updatedAt = ?');
-    args.push(now);
-    args.push(id);
-
-    await db.execute({
-      sql: `UPDATE AudienceCategory SET ${fields.join(', ')} WHERE id = ?`,
-      args,
+    const result = await db.execute({
+      sql: 'SELECT * FROM AudienceCategory ORDER BY displayOrder ASC',
+      args: [],
     });
-
-    const updated = await db.execute({
-      sql: 'SELECT * FROM AudienceCategory WHERE id = ?',
-      args: [id],
-    });
-
-    if (updated.rows.length === 0) {
-      return NextResponse.json({ error: 'Audience category not found' }, { status: 404 });
+    if (result.rows.length === 0) {
+      // Return static fallback so admin has something to work with
+      const staticCats = getStaticCategories();
+      return NextResponse.json(staticCats.map((cat: any, i: number) => ({
+        ...cat,
+        id: `static-${i}`,
+        active: true,
+        displayOrder: i,
+      })));
     }
-
-    const row = updated.rows[0];
-    return NextResponse.json({
+    const categories = result.rows.map((row) => ({
       ...row,
       active: row.active === 1,
       displayOrder: Number(row.displayOrder),
-    });
+    }));
+    return NextResponse.json(categories);
   } catch (error) {
-    console.error('Error updating audience category:', error);
-    return NextResponse.json({ error: 'Failed to update audience category', detail: error instanceof Error ? error.message : String(error) }, { status: 500 });
+    console.error('Error fetching audience categories:', error);
+    const staticCats = getStaticCategories();
+    return NextResponse.json(staticCats.map((cat: any, i: number) => ({
+      ...cat,
+      id: `static-${i}`,
+      active: true,
+      displayOrder: i,
+    })));
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+/**
+ * POST /api/admin/audience-categories
+ * Create a new audience category.
+ */
+export async function POST(request: NextRequest) {
   const db = getDb();
   if (!db) {
-    return NextResponse.json({ error: 'Database not configured. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars.', hint: 'Vercel Dashboard → Settings → Environment Variables' }, { status: 503 });
+    return NextResponse.json({
+      error: 'Database not configured. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars.',
+      hint: 'Vercel Dashboard → Settings → Environment Variables'
+    }, { status: 503 });
   }
+
   try {
-    const { id } = await params;
+    const body = await request.json();
+    const now = new Date().toISOString();
+    const newId = crypto.randomUUID();
+
     await db.execute({
-      sql: 'DELETE FROM AudienceCategory WHERE id = ?',
-      args: [id],
+      sql: `INSERT INTO AudienceCategory (id, title, description, imagePath, linkHref, displayOrder, active, createdAt, updatedAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        newId,
+        body.title ?? '',
+        body.description ?? '',
+        body.imagePath ?? '',
+        body.linkHref ?? '',
+        body.displayOrder ?? 0,
+        body.active !== false ? 1 : 0,
+        now,
+        now,
+      ],
     });
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting audience category:', error);
-    return NextResponse.json({ error: 'Failed to delete audience category', detail: error instanceof Error ? error.message : String(error) }, { status: 500 });
+
+    return NextResponse.json({
+      id: newId,
+      title: body.title ?? '',
+      description: body.description ?? '',
+      imagePath: body.imagePath ?? '',
+      linkHref: body.linkHref ?? '',
+      displayOrder: body.displayOrder ?? 0,
+      active: body.active !== false,
+      createdAt: now,
+      updatedAt: now,
+    }, { status: 201 });
+  } catch (error: any) {
+    console.error('Error creating audience category:', error);
+    return NextResponse.json({
+      error: 'Failed to create audience category',
+      detail: error?.message || String(error),
+    }, { status: 500 });
   }
 }

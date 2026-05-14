@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb, isTursoAvailable } from '@/lib/db';
 import { getStaticHero } from '@/lib/static-data';
+import { ensureMigrations } from '@/lib/auto-migrate';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -8,8 +9,14 @@ export async function GET(request: NextRequest) {
 
   const db = getDb();
   if (!db) {
-    return NextResponse.json(getStaticHero());
+    // Return static data with a static- prefix ID so admin knows it's fallback
+    const staticData = getStaticHero();
+    return NextResponse.json({ ...staticData, id: `static-${page}`, page });
   }
+
+  // Ensure migrations have run
+  await ensureMigrations();
+
   try {
     const result = await db.execute({
       sql: 'SELECT * FROM Hero WHERE active = 1 AND page = ? LIMIT 1',
@@ -22,7 +29,9 @@ export async function GET(request: NextRequest) {
         args: [page],
       });
       if (anyHero.rows.length === 0) {
-        return NextResponse.json(null);
+        // No hero at all for this page — return static fallback
+        const staticData = getStaticHero();
+        return NextResponse.json({ ...staticData, id: `static-${page}`, page });
       }
       const hero = {
         ...anyHero.rows[0],
@@ -37,7 +46,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(hero);
   } catch (error) {
     console.error('Error fetching hero:', error);
-    return NextResponse.json({ error: 'Failed to fetch hero' }, { status: 500 });
+    const staticData = getStaticHero();
+    return NextResponse.json({ ...staticData, id: `static-${page}`, page });
   }
 }
 
@@ -49,6 +59,10 @@ export async function PUT(request: NextRequest) {
       hint: 'Go to Vercel Dashboard → Settings → Environment Variables'
     }, { status: 503 });
   }
+
+  // Ensure migrations have run before writing
+  await ensureMigrations();
+
   try {
     const body = await request.json();
     const { id, ...data } = body;

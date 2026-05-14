@@ -31,13 +31,16 @@ export default function HeroSection() {
   });
 
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  // Always start with fallback — never blank
   const [hero, setHero] = useState<HeroData>(fallbackHero);
-  const [imageSrc, setImageSrc] = useState<string>(fallbackHero.imagePath); // Start with fallback immediately
+  const [imageSrc, setImageSrc] = useState<string>(fallbackHero.imagePath);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     async function fetchHero() {
       try {
-        const res = await fetch('/api/hero', { cache: 'no-store' });
+        const res = await fetch('/api/hero');
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.imagePath) {
@@ -52,6 +55,8 @@ export default function HeroSection() {
         }
       } catch {
         // Keep fallback data — already set as initial state
+      } finally {
+        setLoaded(true);
       }
     }
     fetchHero();
@@ -75,7 +80,7 @@ export default function HeroSection() {
           priority
           className="w-full h-auto block"
           sizes="100vw"
-          unoptimized={(imageSrc || '').startsWith('/api/')}
+          unoptimized={(imageSrc || '').startsWith('/api/') || (imageSrc || '').includes('vercel-storage.com')}
           onError={() => {
             setImageSrc('/images/hero-cinematic.png');
           }}

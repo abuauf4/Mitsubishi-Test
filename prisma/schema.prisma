@@ -31,6 +31,7 @@ model Hero {
   imagePath String   @default("/images/hero-default.jpg")
   ctaText   String   @default("Hubungi Kami")
   ctaLink   String   @default("#contact")
+  page      String   @default("home")
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

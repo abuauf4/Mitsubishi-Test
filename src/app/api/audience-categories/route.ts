@@ -1,14 +1,21 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { getStaticCategories } from '@/lib/static-data';
+import { ensureMigrations } from '@/lib/auto-migrate';
 
 export async function GET() {
-  const headers = { 'Cache-Control': 'no-store, no-cache, must-revalidate' };
+  const headers = {
+    'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+  };
 
   const db = getDb();
   if (!db) {
     return NextResponse.json(getStaticCategories(), { headers });
   }
+
+  // Ensure schema is up to date
+  await ensureMigrations();
+
   try {
     const result = await db.execute({
       sql: 'SELECT * FROM AudienceCategory WHERE active = 1 ORDER BY displayOrder ASC',
