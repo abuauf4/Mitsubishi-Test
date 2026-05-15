@@ -73,8 +73,10 @@ export async function fetchVehicleBySlug(slug: string): Promise<VehicleData | nu
         name: (c.name as string) || '',
         hex: (c.hex as string) || '#000000',
         image: proxyBlobUrl(c.imagePath as string),
+        variantId: (c.variantId as string) || null,
       })),
       variants: variantsRes.rows.map(v => ({
+        id: (v.id as string) || undefined,
         name: (v.name as string) || '',
         price: (v.price as string) || '',
         priceNum: Number(v.priceNum) || 0,

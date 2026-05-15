@@ -39,6 +39,14 @@ export default function VehicleDetailPage({ vehicle }: Props) {
   const [detailIndex, setDetailIndex] = useState(0);
   const [detailSubTab, setDetailSubTab] = useState<DetailSubTab>('eksterior');
 
+  // Compute visible colors based on selected variant:
+  // Show global colors (no variantId) + variant-specific colors (variantId matches selected variant's id)
+  const selectedVariantId = vehicle.variants[selectedVariant]?.id;
+  const visibleColors = vehicle.colors.filter(c => !c.variantId || c.variantId === selectedVariantId);
+
+  // When variant changes, reset color selection if out of bounds
+  const effectiveSelectedColor = selectedColor >= visibleColors.length ? 0 : selectedColor;
+
   // Swipe state
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -51,7 +59,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
 
   // Determine which image to show:
   // Priority: 1) Color-specific image → 2) Variant-specific image → 3) Vehicle default image
-  const currentColorImage = vehicle.colors[selectedColor]?.image;
+  const currentColorImage = visibleColors[effectiveSelectedColor]?.image;
   const currentVariantImage = vehicle.variants[selectedVariant]?.image;
   const displayImage = currentColorImage || currentVariantImage || vehicle.image;
   const hasColorImage = !!currentColorImage;
@@ -78,7 +86,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     if (touchStartX.current === null || touchStartY.current === null) return;
-    if (vehicle.colors.length <= 1) return;
+    if (visibleColors.length <= 1) return;
 
     const deltaX = e.changedTouches[0].clientX - touchStartX.current;
     const deltaY = e.changedTouches[0].clientY - touchStartY.current;
@@ -87,16 +95,16 @@ export default function VehicleDetailPage({ vehicle }: Props) {
     if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
       if (deltaX > 0) {
         // Swipe right → previous color
-        setSelectedColor((prev) => (prev - 1 + vehicle.colors.length) % vehicle.colors.length);
+        setSelectedColor((prev) => (prev - 1 + visibleColors.length) % visibleColors.length);
       } else {
         // Swipe left → next color
-        setSelectedColor((prev) => (prev + 1) % vehicle.colors.length);
+        setSelectedColor((prev) => (prev + 1) % visibleColors.length);
       }
     }
 
     touchStartX.current = null;
     touchStartY.current = null;
-  }, [vehicle.colors.length]);
+  }, [visibleColors.length]);
 
   // Mouse drag handler for desktop
   const mouseStartX = useRef<number | null>(null);
@@ -109,22 +117,22 @@ export default function VehicleDetailPage({ vehicle }: Props) {
 
   const handleMouseUp = useCallback((e: React.MouseEvent) => {
     if (mouseStartX.current === null || mouseStartY.current === null) return;
-    if (vehicle.colors.length <= 1) return;
+    if (visibleColors.length <= 1) return;
 
     const deltaX = e.clientX - mouseStartX.current;
     const deltaY = e.clientY - mouseStartY.current;
 
     if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
       if (deltaX > 0) {
-        setSelectedColor((prev) => (prev - 1 + vehicle.colors.length) % vehicle.colors.length);
+        setSelectedColor((prev) => (prev - 1 + visibleColors.length) % visibleColors.length);
       } else {
-        setSelectedColor((prev) => (prev + 1) % vehicle.colors.length);
+        setSelectedColor((prev) => (prev + 1) % visibleColors.length);
       }
     }
 
     mouseStartX.current = null;
     mouseStartY.current = null;
-  }, [vehicle.colors.length]);
+  }, [visibleColors.length]);
 
   return (
     <>
@@ -165,7 +173,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
               {/* Main Image Container — swipeable */}
               <div
                 ref={imageContainerRef}
-                className={`relative aspect-[16/10] rounded-2xl overflow-hidden border ${isCommercial ? 'vehicle-image-bg-yellow border-white/10' : 'vehicle-image-bg border-gray-800'} ${vehicle.colors.length > 1 ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
+                className={`relative aspect-[16/10] rounded-2xl overflow-hidden border ${isCommercial ? 'vehicle-image-bg-yellow border-white/10' : 'vehicle-image-bg border-gray-800'} ${visibleColors.length > 1 ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 onMouseDown={handleMouseDown}
@@ -173,15 +181,15 @@ export default function VehicleDetailPage({ vehicle }: Props) {
               >
                 {/* Stacked images for seamless crossfade — NO flash, NO pause */}
                 {/* All color images are preloaded and stacked. Only the selected one is visible. */}
-                {vehicle.colors.map((color, i) => {
+                {visibleColors.map((color, i) => {
                   const colorImage = color.image;
                   const variantImage = vehicle.variants[selectedVariant]?.image;
                   const imgSrc = colorImage || variantImage || vehicle.image;
                   return (
                     <div
-                      key={color.name}
+                      key={color.name + (color.variantId || '')}
                       className="absolute inset-0 transition-opacity duration-300 ease-in-out"
-                      style={{ opacity: selectedColor === i ? 1 : 0 }}
+                      style={{ opacity: effectiveSelectedColor === i ? 1 : 0 }}
                     >
                       <Image
                         src={imgSrc}
@@ -198,7 +206,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 })}
 
                 {/* Swipe hint — only show when multiple colors */}
-                {vehicle.colors.length > 1 && (
+                {visibleColors.length > 1 && (
                   <div className="absolute top-4 right-4 z-[3] sm:hidden">
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-black/40 backdrop-blur-sm rounded text-[9px] text-white/70 font-medium">
                       ← Geser ganti warna →
@@ -234,9 +242,9 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-lg text-[11px] font-semibold text-mitsu-dark border border-gray-100 shadow-sm">
                     <span
                       className="w-3 h-3 rounded-full border border-gray-200 shadow-inner"
-                      style={{ backgroundColor: vehicle.colors[selectedColor]?.hex }}
+                      style={{ backgroundColor: visibleColors[effectiveSelectedColor]?.hex }}
                     />
-                    {vehicle.colors[selectedColor]?.name}
+                    {visibleColors[effectiveSelectedColor]?.name}
                   </span>
                 </div>
               </div>
@@ -245,12 +253,12 @@ export default function VehicleDetailPage({ vehicle }: Props) {
               <div className="mt-4 flex items-center gap-3">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Warna:</span>
                 <div className="flex items-center gap-2">
-                  {vehicle.colors.map((color, i) => (
+                  {visibleColors.map((color, i) => (
                     <button
-                      key={color.name}
+                      key={color.name + (color.variantId || '')}
                       onClick={() => setSelectedColor(i)}
                       className={`relative w-8 h-8 rounded-full transition-all duration-300 cursor-pointer ${
-                        selectedColor === i
+                        effectiveSelectedColor === i
                           ? 'scale-110 ring-2 ring-offset-2 ' + (isCommercial ? 'ring-mitsu-fuso-yellow' : 'ring-mitsu-red')
                           : 'hover:scale-105 ring-1 ring-gray-200'
                       }`}
@@ -258,7 +266,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                       title={`${color.name}${color.image ? ' (has image)' : ''}`}
                       aria-label={`Pilih warna ${color.name}`}
                     >
-                      {selectedColor === i && (
+                      {effectiveSelectedColor === i && (
                         <motion.div
                           layoutId="color-check"
                           className="absolute inset-0 flex items-center justify-center"
@@ -273,7 +281,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   ))}
                 </div>
                 {/* Desktop swipe hint */}
-                {vehicle.colors.length > 1 && (
+                {visibleColors.length > 1 && (
                   <span className="hidden sm:inline text-[10px] text-gray-300 ml-auto">← Drag gambar ganti warna →</span>
                 )}
               </div>
@@ -367,7 +375,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   {vehicle.variants.map((variant, i) => (
                     <button
                       key={variant.name}
-                      onClick={() => setSelectedVariant(i)}
+                      onClick={() => { setSelectedVariant(i); setSelectedColor(0); }}
                       className={`w-full text-left p-3.5 rounded-xl border transition-all duration-300 cursor-pointer ${
                         selectedVariant === i
                           ? isCommercial

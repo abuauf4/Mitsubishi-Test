@@ -51,6 +51,7 @@ interface VehicleColorData {
   id: string;
   name: string;
   hex: string;
+  variantId: string | null;
   imagePath: string | null;
   displayOrder: number;
 }
@@ -96,7 +97,8 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
 
   // Sub-entity forms
   const [variantForm, setVariantForm] = useState({ name: '', price: '', priceNum: 0, transmission: '', drivetrain: '', highlights: '[]', imagePath: '', displayOrder: 0 });
-  const [colorForm, setColorForm] = useState({ name: '', hex: '#000000', imagePath: '', displayOrder: 0 });
+  const [colorForm, setColorForm] = useState({ name: '', hex: '#000000', variantId: '' as string | null, imagePath: '', displayOrder: 0 });
+  const [colorFilterVariant, setColorFilterVariant] = useState<string>('all');
   const [specForm, setSpecForm] = useState({ category: '', items: '[]', displayOrder: 0 });
   const [featureForm, setFeatureForm] = useState({ icon: 'Zap', title: '', description: '', displayOrder: 0 });
 
@@ -461,6 +463,22 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
             </CardContent></Card>
           ) : (
             <div className="space-y-4">
+              {/* Info Banner */}
+              <Card className="border-blue-200 bg-blue-50/50">
+                <CardContent className="p-4 flex items-start gap-3">
+                  <Palette className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-blue-700">
+                    <p className="font-semibold">Warna per Varian</p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Warna bisa di-assign ke varian tertentu atau bersifat global (muncul di semua varian).
+                      Warna tanpa varian = <strong>global</strong> (muncul di semua varian).
+                      Warna dengan varian = <strong>spesifik varian</strong> (hanya muncul di varian itu).
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Add Color Form */}
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
@@ -468,7 +486,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div><Label>Name</Label><Input value={colorForm.name} onChange={(e) => setColorForm({ ...colorForm, name: e.target.value })} className="mt-1" placeholder="contoh: White Pearl" /></div>
                     <div>
                       <Label>Hex Color</Label>
@@ -477,59 +495,174 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                         <Input value={colorForm.hex} onChange={(e) => setColorForm({ ...colorForm, hex: e.target.value })} className="flex-1" />
                       </div>
                     </div>
+                    <div>
+                      <Label>Assign ke Varian</Label>
+                      <Select
+                        value={colorForm.variantId || '__global__'}
+                        onValueChange={(v) => setColorForm({ ...colorForm, variantId: v === '__global__' ? null : v })}
+                      >
+                        <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="__global__">🌐 Global (Semua Varian)</SelectItem>
+                          {vehicle.variants.map((v) => (
+                            <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        {colorForm.variantId ? 'Warna hanya muncul di varian ini' : 'Warna muncul di semua varian'}
+                      </p>
+                    </div>
                     <div><Label>Display Order</Label><Input type="number" value={colorForm.displayOrder} onChange={(e) => setColorForm({ ...colorForm, displayOrder: parseInt(e.target.value) || 0 })} className="mt-1" /></div>
                   </div>
-                  {/* IMAGE UPLOAD - PENTING! Upload gambar spesifik per warna */}
+                  {/* IMAGE UPLOAD */}
                   <div className="mt-6 p-4 border-2 border-dashed border-blue-300 bg-blue-50/50 rounded-xl">
                     <p className="text-sm font-bold text-blue-700 mb-2">📷 Upload Gambar Warna Ini</p>
                     <p className="text-xs text-muted-foreground mb-3">Upload foto mobil dalam warna ini. Kalau ada gambar, foto asli yang muncul di website. Kalau tidak, pakai tint overlay.</p>
                     <ImageUpload value={colorForm.imagePath} onChange={(path) => setColorForm({ ...colorForm, imagePath: path })} label="Gambar Mobil (Warna Ini)" />
                   </div>
-                  <Button onClick={() => { addSubEntity('colors', colorForm); setColorForm({ name: '', hex: '#000000', imagePath: '', displayOrder: 0 }); }} className="mt-4 bg-mitsu-red hover:bg-red-700 text-white">
+                  <Button onClick={() => { addSubEntity('colors', colorForm); setColorForm({ name: '', hex: '#000000', variantId: null, imagePath: '', displayOrder: 0 }); }} className="mt-4 bg-mitsu-red hover:bg-red-700 text-white">
                     <Plus className="w-4 h-4 mr-2" /> Add Color
                   </Button>
                 </CardContent>
               </Card>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {vehicle.colors.map((c) => (
-                  <Card key={c.id} className="relative group">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        {c.imagePath ? (
-                          <div className="w-12 h-12 rounded-lg border overflow-hidden bg-muted/30 flex-shrink-0">
-                            <img src={c.imagePath} alt={c.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                          </div>
-                        ) : (
-                          <div className="w-12 h-12 rounded-lg border flex-shrink-0" style={{ backgroundColor: c.hex }} />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
-                          <p className="text-xs text-muted-foreground">{c.hex}</p>
-                          {c.imagePath && <p className="text-[10px] text-green-600 mt-0.5">✓ has image</p>}
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="flex-shrink-0 text-destructive h-8 w-8"
-                          onClick={() => { setDeleteSubId(c.id); setDeleteSubType('colors'); }}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      {/* Upload gambar untuk warna yang sudah ada */}
-                      <div className="p-3 border border-dashed border-blue-300 bg-blue-50/50 rounded-lg">
-                        <p className="text-xs font-semibold text-blue-700 mb-2">📷 Gambar Warna Ini</p>
-                        <ImageUpload
-                          value={c.imagePath || ''}
-                          onChange={(path) => updateSubEntityImage('colors', c.id, path)}
-                          label="Upload/Ubah Gambar Warna"
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+              {/* Filter by variant */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="text-sm font-medium text-muted-foreground">Filter warna:</span>
+                <div className="flex gap-1 flex-wrap">
+                  <Button
+                    size="sm"
+                    variant={colorFilterVariant === 'all' ? 'default' : 'outline'}
+                    onClick={() => setColorFilterVariant('all')}
+                    className={colorFilterVariant === 'all' ? 'bg-mitsu-red hover:bg-red-700 text-white' : ''}
+                  >
+                    Semua ({vehicle.colors.length})
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={colorFilterVariant === 'global' ? 'default' : 'outline'}
+                    onClick={() => setColorFilterVariant('global')}
+                    className={colorFilterVariant === 'global' ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}
+                  >
+                    🌐 Global ({vehicle.colors.filter(c => !c.variantId).length})
+                  </Button>
+                  {vehicle.variants.map((v) => {
+                    const count = vehicle.colors.filter(c => c.variantId === v.id).length;
+                    return (
+                      <Button
+                        key={v.id}
+                        size="sm"
+                        variant={colorFilterVariant === v.id ? 'default' : 'outline'}
+                        onClick={() => setColorFilterVariant(v.id)}
+                        className={colorFilterVariant === v.id ? 'bg-mitsu-dark hover:bg-gray-800 text-white' : ''}
+                      >
+                        {v.name} ({count})
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
+
+              {/* Colors List */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {vehicle.colors
+                  .filter((c) => {
+                    if (colorFilterVariant === 'all') return true;
+                    if (colorFilterVariant === 'global') return !c.variantId;
+                    return c.variantId === colorFilterVariant;
+                  })
+                  .map((c) => {
+                    const assignedVariant = c.variantId ? vehicle.variants.find(v => v.id === c.variantId) : null;
+                    return (
+                      <Card key={c.id} className={`relative group ${c.variantId ? 'border-mitsu-dark/20' : 'border-blue-200'}`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-3 mb-3">
+                            {c.imagePath ? (
+                              <div className="w-12 h-12 rounded-lg border overflow-hidden bg-muted/30 flex-shrink-0">
+                                <img src={c.imagePath} alt={c.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                              </div>
+                            ) : (
+                              <div className="w-12 h-12 rounded-lg border flex-shrink-0" style={{ backgroundColor: c.hex }} />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
+                              <p className="text-xs text-muted-foreground">{c.hex}</p>
+                              {/* Variant badge */}
+                              {assignedVariant ? (
+                                <Badge variant="secondary" className="mt-1 text-[9px] bg-mitsu-dark/10 text-mitsu-dark">
+                                  📎 {assignedVariant.name}
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary" className="mt-1 text-[9px] bg-blue-100 text-blue-700">
+                                  🌐 Global
+                                </Badge>
+                              )}
+                              {c.imagePath && <p className="text-[10px] text-green-600 mt-0.5">✓ has image</p>}
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="flex-shrink-0 text-destructive h-8 w-8"
+                              onClick={() => { setDeleteSubId(c.id); setDeleteSubType('colors'); }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          {/* Variant assignment - quick change */}
+                          <div className="mb-3">
+                            <Label className="text-[10px]">Assign ke Varian:</Label>
+                            <Select
+                              value={c.variantId || '__global__'}
+                              onValueChange={(val) => {
+                                const newVariantId = val === '__global__' ? null : val;
+                                fetch(`/api/admin/vehicles/${vehicle.id}/colors`, {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ id: c.id, variantId: newVariantId }),
+                                }).then(() => {
+                                  toast.success('Variant assignment updated');
+                                  fetchVehicle();
+                                }).catch(() => toast.error('Failed to update variant assignment'));
+                              }}
+                            >
+                              <SelectTrigger className="mt-1 h-8 text-xs"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="__global__">🌐 Global (Semua Varian)</SelectItem>
+                                {vehicle.variants.map((v) => (
+                                  <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          {/* Upload gambar untuk warna yang sudah ada */}
+                          <div className="p-3 border border-dashed border-blue-300 bg-blue-50/50 rounded-lg">
+                            <p className="text-xs font-semibold text-blue-700 mb-2">📷 Gambar Warna Ini</p>
+                            <ImageUpload
+                              value={c.imagePath || ''}
+                              onChange={(path) => updateSubEntityImage('colors', c.id, path)}
+                              label="Upload/Ubah Gambar Warna"
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+              </div>
+
+              {vehicle.colors.filter((c) => {
+                if (colorFilterVariant === 'all') return true;
+                if (colorFilterVariant === 'global') return !c.variantId;
+                return c.variantId === colorFilterVariant;
+              }).length === 0 && (
+                <Card>
+                  <CardContent className="p-8 text-center text-muted-foreground">
+                    <Palette className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                    <p className="font-medium">Belum ada warna di kategori ini</p>
+                    <p className="text-sm mt-1">Tambahkan warna baru di form di atas</p>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           )}
         </TabsContent>

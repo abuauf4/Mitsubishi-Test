@@ -10,10 +10,26 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json(vehicle?.colors || []);
   }
   try {
-    const result = await db.execute({
-      sql: 'SELECT * FROM VehicleColor WHERE vehicleId = ? ORDER BY displayOrder ASC',
-      args: [id],
-    });
+    // Support optional ?variantId= filter to get colors for a specific variant
+    // If variantId is provided, return: variant-specific colors + global colors (variantId IS NULL)
+    // If not provided, return ALL colors for the vehicle
+    const { searchParams } = new URL(request.url);
+    const variantId = searchParams.get('variantId');
+
+    let sql: string;
+    let args: (string | null)[];
+
+    if (variantId) {
+      // Return variant-specific colors + global colors
+      sql = `SELECT * FROM VehicleColor WHERE vehicleId = ? AND (variantId = ? OR variantId IS NULL) ORDER BY displayOrder ASC`;
+      args = [id, variantId];
+    } else {
+      // Return all colors for the vehicle
+      sql = 'SELECT * FROM VehicleColor WHERE vehicleId = ? ORDER BY displayOrder ASC';
+      args = [id];
+    }
+
+    const result = await db.execute({ sql, args });
     const colors = result.rows.map(row => ({
       ...row,
       displayOrder: Number(row.displayOrder),
@@ -38,12 +54,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const body = await request.json();
     const colorId = crypto.randomUUID();
 
+    // variantId is optional: if provided, color is specific to that variant
+    // if null/undefined, color is global (available for all variants)
+    const variantId = body.variantId || null;
+
     await db.execute({
-      sql: `INSERT INTO VehicleColor (id, vehicleId, name, hex, imagePath, displayOrder)
-            VALUES (?, ?, ?, ?, ?, ?)`,
+      sql: `INSERT INTO VehicleColor (id, vehicleId, variantId, name, hex, imagePath, displayOrder)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
       args: [
         colorId,
         id,
+        variantId,
         body.name ?? '',
         body.hex ?? '#000000',
         body.imagePath ?? null,
@@ -54,6 +75,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({
       id: colorId,
       vehicleId: id,
+      variantId,
       name: body.name ?? '',
       hex: body.hex ?? '#000000',
       imagePath: body.imagePath ?? null,
@@ -83,6 +105,7 @@ export async function PUT(request: NextRequest) {
 
     if (data.name !== undefined) { fields.push('name = ?'); args.push(data.name); }
     if (data.hex !== undefined) { fields.push('hex = ?'); args.push(data.hex); }
+    if (data.variantId !== undefined) { fields.push('variantId = ?'); args.push(data.variantId || null); }
     if (data.imagePath !== undefined) { fields.push('imagePath = ?'); args.push(data.imagePath); }
     if (data.displayOrder !== undefined) { fields.push('displayOrder = ?'); args.push(Number(data.displayOrder)); }
 

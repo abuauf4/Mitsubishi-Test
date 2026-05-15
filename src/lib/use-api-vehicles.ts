@@ -37,8 +37,10 @@ export function mapApiVehicleToVehicleData(apiVehicle: any): VehicleData {
       name: c.name || '',
       hex: c.hex || '#000000',
       image: proxyBlobUrl(c.imagePath) || undefined,
+      variantId: c.variantId || null,
     })),
     variants: (apiVehicle.variants || []).map((v: any) => ({
+      id: v.id || undefined,
       name: v.name || '',
       price: v.price || '',
       priceNum: Number(v.priceNum) || 0,

@@ -41,6 +41,7 @@ export function getStaticVehicles() {
     colors: v.colors.map((c, j) => ({
       id: `static-${v.slug}-color-${j}`,
       vehicleId: `static-${v.slug}`,
+      variantId: c.variantId || null,
       name: c.name,
       hex: c.hex,
       imagePath: c.image || null,

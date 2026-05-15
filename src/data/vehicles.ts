@@ -6,9 +6,11 @@ export interface VehicleColor {
   name: string;
   hex: string;
   image?: string;
+  variantId?: string | null; // null = global (all variants), non-null = specific variant
 }
 
 export interface VehicleVariant {
+  id?: string; // DB variant ID for color matching
   name: string;
   price: string;
   priceNum: number;

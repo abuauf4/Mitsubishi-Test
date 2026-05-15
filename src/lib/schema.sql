@@ -115,14 +115,17 @@ CREATE TABLE IF NOT EXISTS VehicleVariant (
 );
 
 -- Vehicle Colors
+-- variantId is nullable: NULL = global color (all variants), non-null = variant-specific color
 CREATE TABLE IF NOT EXISTS VehicleColor (
   id TEXT PRIMARY KEY,
   vehicleId TEXT NOT NULL,
+  variantId TEXT,
   name TEXT NOT NULL,
   hex TEXT NOT NULL DEFAULT '#000000',
   imagePath TEXT,
   displayOrder INTEGER NOT NULL DEFAULT 0,
-  FOREIGN KEY (vehicleId) REFERENCES Vehicle(id) ON DELETE CASCADE
+  FOREIGN KEY (vehicleId) REFERENCES Vehicle(id) ON DELETE CASCADE,
+  FOREIGN KEY (variantId) REFERENCES VehicleVariant(id) ON DELETE CASCADE
 );
 
 -- Vehicle Specs

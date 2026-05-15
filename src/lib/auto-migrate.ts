@@ -14,6 +14,7 @@ const MIGRATIONS = [
   'ALTER TABLE VehicleVariant ADD COLUMN imagePath TEXT',
   'ALTER TABLE VehicleVariant ADD COLUMN description TEXT',
   "ALTER TABLE Hero ADD COLUMN page TEXT NOT NULL DEFAULT 'home'",
+  'ALTER TABLE VehicleColor ADD COLUMN variantId TEXT',
 ];
 
 const CREATE_TABLES = [
