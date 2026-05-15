@@ -78,7 +78,7 @@ export default function DealerLocator() {
           </span>
           <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark">
             Temukan Dealer{' '}
-            <span className="bg-gradient-to-r from-mitsu-red to-red-500 bg-clip-text text-transparent">Terdekat</span>
+            <span className="text-mitsu-red">Terdekat</span>
           </h2>
           <p className="mt-4 text-mitsu-text/60 text-base sm:text-lg max-w-2xl mx-auto">
             Lebih dari 150 dealer resmi tersebar di seluruh Indonesia. Cari dealer terdekat dengan Anda.
@@ -92,7 +92,7 @@ export default function DealerLocator() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
-            className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 min-h-[380px] sm:min-h-[480px] border border-gray-200/50"
+            className="relative rounded-3xl overflow-hidden bg-gray-50 min-h-[380px] sm:min-h-[480px] border border-gray-200/50"
           >
             {/* Stylized Map */}
             <div className="absolute inset-0 flex items-center justify-center">

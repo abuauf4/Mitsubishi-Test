@@ -42,7 +42,7 @@ export default function CommercialPageClient({ commercial, initialHeroData }: Pr
 
     async function fetchHero() {
       try {
-        const res = await fetch('/api/hero?page=commercial');
+        const res = await fetch('/api/hero?page=commercial', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.imagePath) {
@@ -74,23 +74,6 @@ export default function CommercialPageClient({ commercial, initialHeroData }: Pr
 
       {/* ==================== FUSO Commercial ==================== */}
       <section className="relative py-24 sm:py-28 lg:py-32 bg-white overflow-hidden">
-        {/* Luxury pattern */}
-        <div className="absolute inset-0 luxury-pattern-light" />
-
-        {/* Decorative diamond pattern corners */}
-        <div className="absolute top-0 left-0 pointer-events-none">
-          <div className="w-24 h-24 border-l border-t border-gray-200" />
-          <div className="absolute top-6 left-6 w-1 h-1 bg-mitsu-fuso-yellow/30 rotate-45" />
-          <div className="absolute top-12 left-12 w-1 h-1 bg-mitsu-fuso-yellow/20 rotate-45" />
-        </div>
-        <div className="absolute bottom-0 right-0 pointer-events-none">
-          <div className="w-24 h-24 border-r border-b border-gray-200" />
-          <div className="absolute bottom-6 right-6 w-1 h-1 bg-mitsu-fuso-yellow/30 rotate-45" />
-          <div className="absolute bottom-12 right-12 w-1 h-1 bg-mitsu-fuso-yellow/20 rotate-45" />
-        </div>
-
-        {/* Subtle radial glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-mitsu-fuso-yellow/[0.02] rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
@@ -115,7 +98,7 @@ export default function CommercialPageClient({ commercial, initialHeroData }: Pr
 
             {/* Ornamental divider */}
             <div className="flex items-center gap-3 mt-5">
-              <div className="w-10 h-px bg-gradient-to-r from-mitsu-fuso-yellow/40 to-transparent" />
+              <div className="w-10 h-px bg-mitsu-fuso-yellow/40" />
               <div className="w-1.5 h-1.5 bg-mitsu-fuso-yellow/40 rotate-45" />
             </div>
           </motion.div>
@@ -129,13 +112,13 @@ export default function CommercialPageClient({ commercial, initialHeroData }: Pr
             className="mb-10 flex flex-wrap gap-3"
           >
             {[
-              { label: '5 Model', icon: Truck },
+              { label: '6 Model', icon: Truck },
               { label: 'Mulai Rp 468 Jt', icon: Sparkles },
               { label: '3.4 - 44 Ton', icon: Truck },
             ].map((stat) => {
               const IconComponent = stat.icon;
               return (
-                <span key={stat.label} className="inline-flex items-center gap-2 px-4 py-2 badge-yellow-light text-[10px] font-bold rounded-xl tracking-wider uppercase">
+                <span key={stat.label} className="inline-flex items-center gap-2 px-4 py-2 bg-mitsu-fuso-yellow/5 border border-mitsu-fuso-yellow/10 text-mitsu-fuso-yellow-dark text-[10px] font-bold rounded-xl tracking-wider uppercase">
                   <IconComponent className="w-3.5 h-3.5" />
                   {stat.label}
                 </span>
@@ -171,13 +154,7 @@ export default function CommercialPageClient({ commercial, initialHeroData }: Pr
 
       {/* CTA */}
       <section className="relative py-20 sm:py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-mitsu-fuso-yellow/10 via-mitsu-fuso-yellow/15 to-mitsu-fuso-yellow/10" />
-        {/* Luxury pattern */}
-        <div className="absolute inset-0 luxury-pattern-light" />
-
-        {/* Decorative corners */}
-        <div className="absolute top-0 left-0 w-16 h-16 border-l border-t border-mitsu-fuso-yellow/20 pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-16 h-16 border-r border-b border-mitsu-fuso-yellow/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-mitsu-fuso-yellow/5" />
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div

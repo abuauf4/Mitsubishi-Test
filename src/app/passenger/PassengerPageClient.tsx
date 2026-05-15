@@ -41,7 +41,7 @@ export default function PassengerPageClient({ vehicles, initialHeroData }: Props
 
     async function fetchHero() {
       try {
-        const res = await fetch('/api/hero?page=passenger');
+        const res = await fetch('/api/hero?page=passenger', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.imagePath) {
@@ -71,23 +71,6 @@ export default function PassengerPageClient({ vehicles, initialHeroData }: Props
 
       {/* Vehicle Grid */}
       <section className="relative py-24 sm:py-28 lg:py-32 bg-white overflow-hidden">
-        {/* Luxury pattern background */}
-        <div className="absolute inset-0 luxury-pattern-light" />
-
-        {/* Decorative diamond pattern corners */}
-        <div className="absolute top-0 left-0 pointer-events-none">
-          <div className="w-24 h-24 border-l border-t border-gray-200" />
-          <div className="absolute top-6 left-6 w-1 h-1 bg-mitsu-red/30 rotate-45" />
-          <div className="absolute top-12 left-12 w-1 h-1 bg-mitsu-red/20 rotate-45" />
-        </div>
-        <div className="absolute bottom-0 right-0 pointer-events-none">
-          <div className="w-24 h-24 border-r border-b border-gray-200" />
-          <div className="absolute bottom-6 right-6 w-1 h-1 bg-mitsu-red/30 rotate-45" />
-          <div className="absolute bottom-12 right-12 w-1 h-1 bg-mitsu-red/20 rotate-45" />
-        </div>
-
-        {/* Subtle radial glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-mitsu-red/[0.02] rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
@@ -112,7 +95,7 @@ export default function PassengerPageClient({ vehicles, initialHeroData }: Props
 
             {/* Ornamental divider */}
             <div className="flex items-center gap-3 mt-5">
-              <div className="w-10 h-px bg-gradient-to-r from-mitsu-red/40 to-transparent" />
+              <div className="w-10 h-px bg-mitsu-red/40" />
               <div className="w-1.5 h-1.5 bg-mitsu-red/40 rotate-45" />
             </div>
           </motion.div>
@@ -132,7 +115,7 @@ export default function PassengerPageClient({ vehicles, initialHeroData }: Props
             ].map((stat) => {
               const IconComponent = stat.icon;
               return (
-                <span key={stat.label} className="inline-flex items-center gap-2 px-4 py-2 badge-red-light text-[10px] font-bold rounded-xl tracking-wider uppercase">
+                <span key={stat.label} className="inline-flex items-center gap-2 px-4 py-2 bg-mitsu-red/5 border border-mitsu-red/10 text-mitsu-red text-[10px] font-bold rounded-xl tracking-wider uppercase">
                   <IconComponent className="w-3.5 h-3.5" />
                   {stat.label}
                 </span>
@@ -161,13 +144,7 @@ export default function PassengerPageClient({ vehicles, initialHeroData }: Props
       </section>
 
       {/* CTA */}
-      <section className="relative py-20 sm:py-24 bg-mitsu-light overflow-hidden">
-        {/* Luxury pattern */}
-        <div className="absolute inset-0 luxury-pattern-light" />
-
-        {/* Decorative corners */}
-        <div className="absolute top-0 left-0 w-16 h-16 border-l border-t border-gray-200 pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-16 h-16 border-r border-b border-gray-200 pointer-events-none" />
+      <section className="relative py-20 sm:py-24 bg-gray-50 overflow-hidden">
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -187,7 +164,7 @@ export default function PassengerPageClient({ vehicles, initialHeroData }: Props
               href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20tertarik%20dengan%20kendaraan%20passenger%20Mitsubishi"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-base tracking-wide glow-green hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-base tracking-wide hover:scale-105 active:scale-95"
             >
               <MessageCircle className="w-5 h-5" />
               Hubungi Sales Consultant

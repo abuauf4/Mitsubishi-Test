@@ -97,9 +97,8 @@ export default function PageHero({
         </AnimatePresence>
       </motion.div>
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/20 sm:from-black/60 sm:via-black/15 sm:to-black/10" />
-      <div className="absolute inset-0 noise-overlay" />
+      {/* Flat overlay */}
+      <div className="absolute inset-0 bg-black/40" />
 
       {/* Particle Effects - hidden on mobile */}
       <div className="hidden sm:block">
@@ -110,7 +109,7 @@ export default function PageHero({
       <div className="absolute inset-0 pointer-events-none hidden sm:block" style={{ zIndex: 2 }}>
         <div className={`absolute top-8 left-8 w-16 h-16 border-l border-t ${theme === 'yellow' ? 'border-mitsu-fuso-yellow/12' : 'border-mitsu-red/12'}`} />
         <div className={`absolute bottom-8 right-8 w-16 h-16 border-r border-b ${theme === 'yellow' ? 'border-mitsu-fuso-yellow/12' : 'border-mitsu-red/12'}`} />
-        <div className={`absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent ${theme === 'yellow' ? 'via-mitsu-fuso-yellow/8' : 'via-mitsu-red/8'} to-transparent`} />
+        <div className={`absolute top-1/3 left-0 w-full h-px ${theme === 'yellow' ? 'bg-mitsu-fuso-yellow/10' : 'bg-mitsu-red/10'}`} />
       </div>
 
       {/* Content */}
@@ -140,7 +139,7 @@ export default function PageHero({
 
           {/* Ornamental divider */}
           <div className="flex items-center gap-3 my-3 sm:my-4">
-            <div className={`w-10 h-px bg-gradient-to-r ${theme === 'yellow' ? 'from-mitsu-fuso-yellow/40' : 'from-mitsu-red/40'} to-transparent`} />
+            <div className={`w-10 h-px ${theme === 'yellow' ? 'bg-mitsu-fuso-yellow/40' : 'bg-mitsu-red/40'}`} />
             <div className={`w-1.5 h-1.5 ${theme === 'yellow' ? 'bg-mitsu-fuso-yellow/40' : 'bg-mitsu-red/40'} rotate-45`} />
           </div>
 
@@ -156,11 +155,11 @@ export default function PageHero({
         </motion.div>
       </motion.div>
 
-      {/* Bottom Gradient Fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white/50 to-transparent z-[3]" />
+      {/* Bottom Fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-12 bg-white/30 z-[3]" />
       
       {/* Bottom accent line */}
-      <div className={`absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${theme === 'yellow' ? 'via-mitsu-fuso-yellow/15' : 'via-mitsu-red/15'} to-transparent z-[4]`} />
+      <div className={`absolute bottom-0 left-0 right-0 h-px ${theme === 'yellow' ? 'bg-mitsu-fuso-yellow/20' : 'bg-mitsu-red/20'} z-[4]`} />
     </section>
   );
 }

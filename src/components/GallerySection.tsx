@@ -27,7 +27,7 @@ export default function GallerySection() {
   useEffect(() => {
     async function fetchGallery() {
       try {
-        const res = await fetch('/api/gallery');
+        const res = await fetch('/api/gallery', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data)) setItems(data);
@@ -67,9 +67,9 @@ export default function GallerySection() {
           className="mb-10 sm:mb-14"
         >
           <span className="inline-flex items-center gap-3 text-mitsu-red text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase">
-            <span className="w-10 h-px bg-gradient-to-r from-transparent to-mitsu-red/50" />
+            <span className="w-10 h-px bg-mitsu-red/50" />
             Gallery
-            <span className="w-10 h-px bg-gradient-to-l from-transparent to-mitsu-red/50" />
+            <span className="w-10 h-px bg-mitsu-red/50" />
           </span>
           <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
             Momen <span className="text-red-shimmer italic">Spesial</span> Kami
@@ -80,7 +80,7 @@ export default function GallerySection() {
 
           {/* Ornamental divider */}
           <div className="flex items-center gap-3 mt-5">
-            <div className="w-10 h-px bg-gradient-to-r from-mitsu-red/40 to-transparent" />
+            <div className="w-10 h-px bg-mitsu-red/40" />
             <div className="w-1.5 h-1.5 bg-mitsu-red/40 rotate-45" />
           </div>
         </motion.div>
@@ -163,7 +163,7 @@ export default function GallerySection() {
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                         {item.type === 'delivery' ? (
                           <Truck className="w-12 h-12 text-gray-300" />
                         ) : (
@@ -173,7 +173,7 @@ export default function GallerySection() {
                     )}
 
                     {/* Overlay gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                     {/* Delivery badge */}
                     {item.type === 'delivery' && (

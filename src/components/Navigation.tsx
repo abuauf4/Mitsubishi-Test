@@ -46,7 +46,7 @@ export default function Navigation() {
         <nav className="bg-mitsu-dark shadow-lg">
           {/* Red accent line at bottom */}
           <div className="absolute bottom-0 left-0 right-0 h-px">
-            <div className="h-full bg-gradient-to-r from-transparent via-mitsu-red/20 to-transparent" />
+            <div className="h-full bg-mitsu-red/20" />
           </div>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,11 +90,11 @@ export default function Navigation() {
                       {isActive && (
                         <motion.div
                           layoutId="nav-active"
-                          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-gradient-to-r from-mitsu-red to-red-400 rounded-full"
+                          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-mitsu-red rounded-full"
                           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                         />
                       )}
-                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-gradient-to-r from-transparent via-mitsu-red/50 to-transparent group-hover:w-3/4 transition-all duration-400" />
+                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-mitsu-red/50 group-hover:w-3/4 transition-all duration-400" />
                     </Link>
                   );
                 })}

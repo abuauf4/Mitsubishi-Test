@@ -73,7 +73,7 @@ export default function CreditSimulation({
       >
         <div className={`relative ${cardClass} rounded-3xl p-6 sm:p-8 overflow-hidden ${shineClass}`}>
           {/* Top accent */}
-          <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${isYellow ? 'from-mitsu-fuso-yellow via-yellow-400 to-mitsu-fuso-yellow' : 'from-mitsu-red via-red-400 to-mitsu-red'}`} />
+          <div className={`absolute top-0 left-0 right-0 h-[2px] ${isYellow ? 'bg-mitsu-fuso-yellow' : 'bg-mitsu-red'}`} />
 
           <div className="flex items-center gap-3 mb-8">
             <div className={`p-3 ${accentLight} rounded-2xl ${accentBorder}`}>
@@ -156,7 +156,7 @@ export default function CreditSimulation({
               <div className={`absolute top-0 right-0 w-40 h-40 ${isYellow ? 'bg-mitsu-fuso-yellow/5' : 'bg-mitsu-red/5'} rounded-full blur-3xl`} />
               <div className={`absolute bottom-0 left-0 w-28 h-28 ${isYellow ? 'bg-mitsu-fuso-yellow/3' : 'bg-mitsu-red/3'} rounded-full blur-2xl`} />
 
-              <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${isYellow ? 'from-mitsu-fuso-yellow via-yellow-400 to-mitsu-fuso-yellow' : 'from-mitsu-red via-red-400 to-mitsu-red'} rounded-t-2xl`} />
+              <div className={`absolute top-0 left-0 right-0 h-[2px] ${isYellow ? 'bg-mitsu-fuso-yellow' : 'bg-mitsu-red'} rounded-t-2xl`} />
 
               <div className="relative z-10">
                 <p className="text-gray-400 text-sm mb-2">Estimasi Angsuran Bulanan</p>
@@ -183,7 +183,7 @@ export default function CreditSimulation({
                   href={`https://wa.me/6281234567890?text=${encodeURIComponent(`Halo Andi, saya ingin konsultasi kredit${vehicleName ? ` ${vehicleName}` : ''} Rp ${creditPrice} Juta, DP ${creditDP}%, tenor ${creditTenor} bulan`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-6 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-sm w-full glow-green active:scale-[0.98]"
+                  className="mt-6 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-sm w-full active:scale-[0.98]"
                 >
                   <MessageCircle className="w-4 h-4" />
                   Chat Saya untuk Penawaran

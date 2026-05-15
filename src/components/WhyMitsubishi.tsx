@@ -38,7 +38,7 @@ const values = [
     description:
       'Setiap kendaraan Mitsubishi melewati standar kualitas global yang ketat. Dari proses produksi hingga pengiriman, kualitas selalu menjadi prioritas utama.',
     stat: { value: 60, suffix: '+', label: 'Tahun Berpengalaman' },
-    accentColor: 'from-mitsu-red to-red-700',
+    accentColor: 'bg-mitsu-red',
     iconBg: 'bg-mitsu-red/8',
     iconColor: 'text-mitsu-red',
     borderColor: 'hover:border-mitsu-red/25',
@@ -49,7 +49,7 @@ const values = [
     description:
       'Mitsubishi terus berinovasi dengan teknologi MIVEC, Super Select 4WD, dan sistem keselamatan aktif untuk pengalaman berkendara yang lebih baik.',
     stat: { value: 150, suffix: '+', label: 'Dealer Nasional' },
-    accentColor: 'from-mitsu-red to-red-700',
+    accentColor: 'bg-mitsu-red',
     iconBg: 'bg-mitsu-red/8',
     iconColor: 'text-mitsu-red',
     borderColor: 'hover:border-mitsu-red/25',
@@ -60,7 +60,7 @@ const values = [
     description:
       'Jaringan bengkel resmi dan spare part original tersebar di seluruh Indonesia. Layanan berkualitas untuk menjaga performa kendaraan Anda.',
     stat: { value: 500, suffix: '+', label: 'Mekanik Bersertifikat' },
-    accentColor: 'from-emerald-500 to-emerald-700',
+    accentColor: 'bg-emerald-600',
     iconBg: 'bg-emerald-500/8',
     iconColor: 'text-emerald-600',
     borderColor: 'hover:border-emerald-500/25',
@@ -71,7 +71,7 @@ const values = [
     description:
       'Sebagai bagian dari Mitsubishi Motors Corporation, kami mendukung dengan jaringan global dan standar internasional yang terpercaya.',
     stat: { value: 160, suffix: '+', label: 'Negara' },
-    accentColor: 'from-amber-500 to-amber-700',
+    accentColor: 'bg-amber-600',
     iconBg: 'bg-amber-500/8',
     iconColor: 'text-amber-600',
     borderColor: 'hover:border-amber-500/25',
@@ -92,9 +92,9 @@ export default function WhyMitsubishi() {
         quality={60}
       />
       {/* Dark luxury background with red accent pattern */}
-      <div className="absolute inset-0 vehicle-image-bg" />
+
       {/* Subtle gradient overlay for readability - slightly transparent to let bg image show */}
-      <div className="absolute inset-0 bg-gradient-to-b from-mitsu-obsidian/92 via-mitsu-obsidian/80 to-mitsu-obsidian/92" />
+      <div className="absolute inset-0 bg-mitsu-obsidian/90" />
 
       {/* Decorative corner */}
       <div className="absolute top-0 left-0 w-32 h-32 border-l border-t border-white/10 pointer-events-none" />
@@ -110,9 +110,9 @@ export default function WhyMitsubishi() {
           className="text-center mb-16 sm:mb-20"
         >
           <span className="inline-flex items-center gap-3 text-mitsu-red text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase">
-            <span className="w-10 h-px bg-gradient-to-r from-transparent to-mitsu-red/50" />
+            <span className="w-10 h-px bg-mitsu-red/50" />
             Mengapa Mitsubishi
-            <span className="w-10 h-px bg-gradient-to-l from-transparent to-mitsu-red/50" />
+            <span className="w-10 h-px bg-mitsu-red/50" />
           </span>
           <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-serif">
             Keunggulan{' '}
@@ -124,9 +124,9 @@ export default function WhyMitsubishi() {
           
           {/* Ornamental divider */}
           <div className="flex items-center justify-center gap-3 mt-6">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent to-white/20" />
+            <div className="w-12 h-px bg-white/20" />
             <div className="w-1.5 h-1.5 bg-mitsu-red/50 rotate-45" />
-            <div className="w-12 h-px bg-gradient-to-l from-transparent to-white/20" />
+            <div className="w-12 h-px bg-white/20" />
           </div>
         </motion.div>
 
@@ -145,7 +145,7 @@ export default function WhyMitsubishi() {
               >
                 <div className={`relative p-6 sm:p-7 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:border-mitsu-red/30 hover:bg-white/8 hover:-translate-y-1 transition-all duration-500 card-shine-red`}>
                   {/* Top accent line */}
-                  <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${value.accentColor} opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-t-2xl`} />
+                  <div className={`absolute top-0 left-0 right-0 h-[2px] ${value.accentColor} opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-t-2xl`} />
                   
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-5">

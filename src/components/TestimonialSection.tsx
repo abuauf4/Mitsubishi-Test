@@ -53,7 +53,7 @@ export default function TestimonialSection() {
     <section id="testimonial" className="relative py-20 sm:py-24 lg:py-28 bg-white overflow-hidden">
       {/* Luxury diagonal pattern */}
       <div className="absolute inset-0 luxury-pattern-diagonal" />
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gray-200" />
 
       {/* Decorative corners */}
       <div className="absolute top-0 left-0 w-16 h-16 border-l border-t border-mitsu-red/10 pointer-events-none" />
@@ -69,9 +69,9 @@ export default function TestimonialSection() {
           className="text-center mb-12 sm:mb-16"
         >
           <span className="inline-flex items-center gap-3 text-mitsu-red text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase">
-            <span className="w-10 h-px bg-gradient-to-r from-transparent to-mitsu-red/50" />
+            <span className="w-10 h-px bg-mitsu-red/50" />
             Testimoni Pelanggan
-            <span className="w-10 h-px bg-gradient-to-l from-transparent to-mitsu-red/50" />
+            <span className="w-10 h-px bg-mitsu-red/50" />
           </span>
           <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
             Dipercaya Ratusan{' '}

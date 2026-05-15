@@ -59,15 +59,15 @@ export default function TestDriveCTA() {
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-white/98 via-white/92 to-white/80" />
+      <div className="absolute inset-0 bg-white/93" />
 
       {/* Luxury crosshatch pattern */}
       <div className="absolute inset-0 luxury-pattern-crosshatch" />
 
       {/* Decorative */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gray-200" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gray-200" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,7 +118,7 @@ export default function TestDriveCTA() {
               href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20ingin%20test%20drive%20Mitsubishi"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-3 px-7 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-sm tracking-wide glow-green hover:scale-105 active:scale-95"
+              className="mt-8 inline-flex items-center gap-3 px-7 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-sm tracking-wide hover:scale-105 active:scale-95"
             >
               <MessageCircle className="w-5 h-5" />
               Chat via WhatsApp
@@ -134,7 +134,7 @@ export default function TestDriveCTA() {
           >
             <div className="relative card-light-red rounded-3xl p-6 sm:p-8 shadow-2xl card-shine-red">
               {/* Red top accent */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-mitsu-red via-red-400 to-mitsu-red rounded-t-3xl" />
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-red rounded-t-3xl" />
 
               <h3 className="text-xl font-bold text-mitsu-dark mb-1 font-serif">Jadwalkan Test Drive</h3>
               <p className="text-gray-400 text-sm mb-6">Isi formulir dan sales consultant kami akan menghubungi Anda.</p>

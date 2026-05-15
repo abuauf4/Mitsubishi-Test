@@ -137,7 +137,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
       <section className="relative bg-white overflow-hidden">
         {/* Luxury pattern */}
         <div className="absolute inset-0 luxury-pattern-light" />
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gray-200" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
@@ -210,7 +210,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 )}
                 {/* Price badge */}
                 <div className="absolute top-4 left-4 z-[2]">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r ${isCommercial ? 'from-mitsu-fuso-yellow to-mitsu-fuso-yellow-dark text-mitsu-dark' : 'from-mitsu-red to-red-700 text-white'} text-xs font-bold rounded-lg shadow-lg`}>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 ${isCommercial ? 'bg-mitsu-fuso-yellow text-mitsu-dark' : 'bg-mitsu-red text-white'} text-xs font-bold rounded-lg shadow-lg`}>
                     {displayPrice}
                   </span>
                 </div>
@@ -382,7 +382,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   href={waLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all duration-300 text-sm tracking-wide glow-green hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-300 text-sm tracking-wide hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
                 >
                   <MessageCircle className="w-4 h-4" />
                   WhatsApp
@@ -680,9 +680,9 @@ export default function VehicleDetailPage({ vehicle }: Props) {
 
       {/* Bottom CTA */}
       <section className="relative py-16 sm:py-20 overflow-hidden">
-        <div className={`absolute inset-0 ${isCommercial ? 'bg-gradient-to-r from-mitsu-fuso-yellow/5 via-mitsu-fuso-yellow/10 to-mitsu-fuso-yellow/5' : 'bg-mitsu-light'}`} />
+        <div className={`absolute inset-0 ${isCommercial ? 'bg-mitsu-fuso-yellow/5' : 'bg-mitsu-light'}`} />
         <div className="absolute inset-0 luxury-pattern-light" />
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gray-200" />
 
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -705,7 +705,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 href={waLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all text-sm tracking-wide glow-green hover:scale-105 active:scale-95 min-h-[44px]"
+                className="flex items-center gap-2.5 px-8 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all text-sm tracking-wide hover:scale-105 active:scale-95 min-h-[44px]"
               >
                 <MessageCircle className="w-5 h-5" />
                 Hubungi via WhatsApp

@@ -28,7 +28,7 @@ export default function FloatingWhatsApp() {
             href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20ingin%20bertanya%20tentang%20kendaraan%20Mitsubishi"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl text-xs tracking-wide"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-green-600 text-white font-bold rounded-xl text-xs tracking-wide"
           >
             <MessageCircle className="w-4 h-4" />
             Chat WhatsApp
@@ -72,7 +72,7 @@ export default function FloatingWhatsApp() {
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 2.5, duration: 0.6, type: 'spring', stiffness: 200 }}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25 whatsapp-pulse transition-all duration-400 hover:scale-110 active:scale-95 group"
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-green-600 hover:bg-green-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25 whatsapp-pulse transition-all duration-400 hover:scale-110 active:scale-95 group"
           aria-label="Hubungi Andi via WhatsApp"
         >
           <MessageCircle className="w-6 h-6 text-white" />

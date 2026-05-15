@@ -60,7 +60,7 @@ export default function HeroSection({ initialData }: HeroSectionProps) {
 
     async function fetchHero() {
       try {
-        const res = await fetch('/api/hero?page=home');
+        const res = await fetch('/api/hero?page=home', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.imagePath) {
@@ -110,7 +110,7 @@ export default function HeroSection({ initialData }: HeroSectionProps) {
         />
 
         {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/15 pointer-events-none" />
       </div>
 
       {/* Selengkapnya Button — transparent with white outline */}
@@ -141,7 +141,7 @@ export default function HeroSection({ initialData }: HeroSectionProps) {
       </motion.div>
 
       {/* Bottom red line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-mitsu-red/20 to-transparent z-[4]" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-mitsu-red/20 z-[4]" />
     </section>
   );
 }

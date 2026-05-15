@@ -117,8 +117,8 @@ function ModernGatewayCard({
         />
 
         {/* Dark gradient for readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/20" />
 
         {/* Animated border glow on hover */}
         <div className={`absolute inset-0 rounded-2xl sm:rounded-none lg:first:rounded-l-2xl lg:last:rounded-r-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
@@ -223,7 +223,7 @@ function ModernGatewayCard({
         </div>
 
         {/* Bottom shine effect */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-white/10" />
       </motion.div>
     </Link>
   );
@@ -261,7 +261,7 @@ const HARDCODED_CARDS = [
     titleAccent: '#FFD600',
     description: 'FUSO Commercial dari Canter hingga Heavy Duty untuk UMKM hingga enterprise.',
     stats: [
-      { label: 'Model', value: '5' },
+      { label: 'Model', value: '6' },
       { label: 'Mulai', value: 'Rp 468Jt' },
       { label: 'Payload', value: '3.4-44 Ton' },
     ],
@@ -302,7 +302,7 @@ export default function AudienceGateway() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch('/api/audience-categories');
+        const res = await fetch('/api/audience-categories', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -355,7 +355,7 @@ export default function AudienceGateway() {
                 { label: 'Kategori', value: 'MPV, SUV & EV' },
               ]
             : [
-                { label: 'Model', value: '5' },
+                { label: 'Model', value: '6' },
                 { label: 'Mulai', value: 'Rp 468Jt' },
                 { label: 'Payload', value: '3.4-44 Ton' },
               ],
@@ -368,7 +368,7 @@ export default function AudienceGateway() {
 
   return (
     <section id="audience-gateway" className="relative w-full bg-white">
-      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+      <div className="h-px bg-gray-200" />
 
       {/* Section label */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-4">
@@ -380,9 +380,9 @@ export default function AudienceGateway() {
           className="text-center"
         >
           <span className="inline-flex items-center gap-3 text-mitsu-red text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase">
-            <span className="w-10 h-px bg-gradient-to-r from-transparent to-mitsu-red/50" />
+            <span className="w-10 h-px bg-mitsu-red/50" />
             Pilih Kategori
-            <span className="w-10 h-px bg-gradient-to-l from-transparent to-mitsu-red/50" />
+            <span className="w-10 h-px bg-mitsu-red/50" />
           </span>
           <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-mitsu-dark font-serif">
             Temukan Kendaraan <span className="text-red-shimmer italic">Anda</span>
@@ -399,7 +399,7 @@ export default function AudienceGateway() {
         </div>
       </div>
 
-      <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+      <div className="h-px bg-gray-200" />
     </section>
   );
 }

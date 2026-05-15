@@ -60,7 +60,7 @@ export const passengerVehicles: VehicleData[] = [
   {
     slug: 'xpander',
     name: 'New Xpander',
-    tagline: 'MPV Keluarga 7-Seater Raja Segmen',
+    tagline: 'Take Control, Stay Ahead',
     category: 'passenger',
     basePrice: 'Mulai Rp 271 Juta',
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778709761819-passenger_new-xpander_main_hvh87j5kea2g6c7zt01855a3sxsgzp0d2w89jz3p-optimized.webp',
@@ -98,7 +98,7 @@ export const passengerVehicles: VehicleData[] = [
   {
     slug: 'xpander-cross',
     name: 'Xpander Cross',
-    tagline: 'Step Up Your Adventure — MPV Adventure Tangguh',
+    tagline: 'Step Up Your Adventure Level',
     category: 'passenger',
     basePrice: 'Mulai Rp 345 Juta',
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778709818799-passenger_new-xpander-cross_main_3haf1ahqup2jxahic1lny1ya9um0jz1xcfdx4zb4-optimized.webp',
@@ -131,7 +131,7 @@ export const passengerVehicles: VehicleData[] = [
   {
     slug: 'pajero-sport',
     name: 'Pajero Sport',
-    tagline: 'SUV Ladder Frame Tangguh Segala Medan',
+    tagline: 'Jelajahi Petualangan Tanpa Batas',
     category: 'passenger',
     basePrice: 'Mulai Rp 586 Juta',
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708599624-passenger_new-pajero-sport_main_jqfrr7i2mxmkrdrognu59bbjqwummi133orl4xew-optimized.webp',
@@ -168,7 +168,7 @@ export const passengerVehicles: VehicleData[] = [
   {
     slug: 'destinator',
     name: 'Destinator',
-    tagline: 'Premium Family SUV — Model Global Terbaru dari Indonesia',
+    tagline: 'Uncover Your Next Destination',
     category: 'passenger',
     basePrice: 'Mulai Rp 397 Juta',
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708556639-passenger_destinator_main_26my-dst-idn-p1-mc10-front-right-w81.jpg',
@@ -204,7 +204,7 @@ export const passengerVehicles: VehicleData[] = [
   {
     slug: 'xforce',
     name: 'Xforce',
-    tagline: 'SUV Stylish untuk Gaya Hidup Urban',
+    tagline: 'Keamanan Dalam Setiap Aksi',
     category: 'passenger',
     basePrice: 'Mulai Rp 390 Juta',
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778709855129-passenger_xforce_main_qsqbufibgo8j8qbulzogzb9lhv7cx2rseg0lh2qu-optimized.webp',
@@ -219,7 +219,8 @@ export const passengerVehicles: VehicleData[] = [
     variants: [
       { name: 'Exceed CVT', price: 'Rp 390.000.000', priceNum: 390, transmission: 'CVT', highlights: ['1.5L MIVEC', '5 Penumpang', '8" Touchscreen', 'Keyless Entry'] },
       { name: 'Ultimate CVT', price: 'Rp 423.500.000', priceNum: 423, transmission: 'CVT', highlights: ['1.5L MIVEC', '5 Penumpang', '12.3" Touchscreen', 'Yamaha Audio', 'BSW+RCTA'] },
-      { name: 'Ultimate DS CVT', price: 'Rp 432.000.000', priceNum: 432, transmission: 'CVT', highlights: ['1.5L MIVEC', '5 Penumpang', 'Diamond Sense ADAS', 'FCM', 'ACC'] },
+      { name: 'Ultimate DS CVT', price: 'Rp 432.000.000', priceNum: 432, transmission: 'CVT', highlights: ['1.5L MIVEC', '5 Penumpang', 'Diamond Sense', 'FCM', 'ACC'] },
+      { name: '55th Anniversary Edition', price: 'Rp 434.000.000', priceNum: 434, transmission: 'CVT', highlights: ['1.5L MIVEC', '5 Penumpang', 'Special Edition', 'Diamond Sense'] },
     ],
     specs: [
       { category: 'Mesin', items: [{ label: 'Tipe Mesin', value: '4A91 1.5L DOHC MIVEC 16-Valve' }, { label: 'Kapasitas', value: '1.499 cc' }, { label: 'Tenaga Maks', value: '104 PS / 6.000 rpm' }, { label: 'Torsi Maks', value: '141 Nm / 4.000 rpm' }, { label: 'Bahan Bakar', value: 'Bensin' }] },
@@ -238,7 +239,7 @@ export const passengerVehicles: VehicleData[] = [
   {
     slug: 'l100-ev',
     name: 'L100 EV',
-    tagline: 'EV Pertama Mitsubishi Buatan Indonesia — Logistik Masa Depan',
+    tagline: 'Solusi Efisiensi Bisnis Anda',
     category: 'passenger',
     basePrice: 'Mulai Rp 323 Juta',
     image: '/images/l300-van.png',
@@ -294,7 +295,7 @@ export const passengerVehicles: VehicleData[] = [
   {
     slug: 'triton',
     name: 'Triton',
-    tagline: 'Engineered Beyond Tough — Double Cabin Andalan',
+    tagline: 'Engineered Beyond Tough',
     category: 'passenger',
     basePrice: 'Mulai Rp 325 Juta',
     image: '/images/l200.png',
@@ -333,10 +334,36 @@ export const passengerVehicles: VehicleData[] = [
 
 export const niagaRinganVehicles: VehicleData[] = [];
 
-// ===================== FUSO COMMERCIAL VEHICLES (5 models) =====================
-// Source: ktbfuso.co.id — Canter, Fighter X, Heavy Duty
+// ===================== FUSO COMMERCIAL VEHICLES (6 models) =====================
+// Source: ktbfuso.co.id — eCanter, Canter, Fighter X, Heavy Duty
 
 export const commercialVehicles: VehicleData[] = [
+  {
+    slug: 'ecanter',
+    name: 'FUSO eCanter',
+    tagline: 'Solusi Bisnis Dengan Transportasi Ramah Lingkungan',
+    category: 'commercial',
+    basePrice: 'Hubungi Dealer',
+    image: '/images/l300.png',
+    payload: '3.0 Ton',
+    colors: [
+      { name: 'Putih', hex: '#F5F5F0' },
+    ],
+    variants: [
+      { name: 'eCanter Standard', price: 'Hubungi Dealer', priceNum: 0, transmission: 'Single-Speed Reduction', highlights: ['Electric Motor', 'Zero Emission', 'Light Duty', 'GVW 7.500 Kg'] },
+    ],
+    specs: [
+      { category: 'Motor Listrik', items: [{ label: 'Tipe Motor', value: 'Electric Motor (Single-Speed Reduction)' }, { label: 'Tenaga Maks', value: '150 kW (204 PS)' }, { label: 'Torsi Maks', value: '380 Nm (instan)' }, { label: 'Baterai', value: 'Lithium-ion' }, { label: 'Jangkauan', value: '100 km (est.)' }] },
+      { category: 'Dimensi', items: [{ label: 'GVW', value: '7.500 Kg' }, { label: 'Kategori', value: 'Light Duty Truck' }, { label: 'Emisi', value: '0 g/km (Zero Emission)' }, { label: 'Charging', value: 'DC Fast Charging' }, { label: 'Garansi', value: '5 tahun' }] },
+    ],
+    features: [
+      { icon: 'Zap', title: 'Zero Emission', description: 'Truk listrik tanpa emisi — solusi ramah lingkungan untuk distribusi perkotaan' },
+      { icon: 'Gauge', title: 'Electric Motor 150 kW', description: 'Motor listrik bertenaga dengan torsi instan 380 Nm untuk akselerasi responsif' },
+      { icon: 'DollarSign', title: 'Biaya Operasional Rendah', description: 'Tanpa bahan bakar diesel, biaya operasional jauh lebih rendah dari truk konvensional' },
+      { icon: 'Shield', title: 'Telematics Ready', description: 'Terintegrasi dengan MyFUSO Telematics untuk monitoring armada real-time' },
+    ],
+    specsShort: ['Electric Motor', 'Zero Emission', 'Light Duty'],
+  },
   {
     slug: 'canter-fe-71',
     name: 'Canter FE 71',
@@ -425,7 +452,7 @@ export const commercialVehicles: VehicleData[] = [
   {
     slug: 'fighter-x-fm65',
     name: 'FUSO Fighter X',
-    tagline: 'Medium Duty Truck Armada Profesional',
+    tagline: 'Andalan Bisnis Sejati',
     category: 'commercial',
     basePrice: 'Mulai Rp 970 Juta',
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708418762-commercial_fighter-x-fm65-th_main_th-home-img.webp',
@@ -454,7 +481,7 @@ export const commercialVehicles: VehicleData[] = [
   {
     slug: 'fz-heavy-duty',
     name: 'FUSO Heavy Duty',
-    tagline: 'Heavy Duty Truck untuk Operasi Besar — Tractor Head',
+    tagline: 'Truk Terbaik di Indonesia',
     category: 'commercial',
     basePrice: 'Mulai Rp 1.350 Juta',
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708486155-commercial_fz-heavy-duty_main_FZ.jpg',

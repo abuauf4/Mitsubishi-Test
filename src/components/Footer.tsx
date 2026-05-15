@@ -58,7 +58,7 @@ export default function Footer() {
   return (
     <footer className="relative bg-mitsu-obsidian overflow-hidden">
       {/* Top Gold Divider */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-mitsu-red/25 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-mitsu-red/25" />
 
       {/* Background Pattern */}
       <div className="absolute inset-0 luxury-pattern-red" />
@@ -179,9 +179,9 @@ export default function Footer() {
 
         {/* Ornamental divider */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent to-white/5" />
+          <div className="flex-1 h-px bg-white/5" />
           <div className="w-1 h-1 bg-mitsu-red/30 rotate-45" />
-          <div className="flex-1 h-px bg-gradient-to-l from-transparent to-white/5" />
+          <div className="flex-1 h-px bg-white/5" />
         </div>
 
         {/* Bottom Bar */}

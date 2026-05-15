@@ -280,7 +280,7 @@ export default function SmartFeatures() {
                 </div>
 
                 {/* Result */}
-                <div className="bg-gradient-to-br from-mitsu-dark to-gray-800 rounded-2xl p-6 sm:p-8 text-white flex flex-col justify-center">
+                <div className="bg-mitsu-dark rounded-2xl p-6 sm:p-8 text-white flex flex-col justify-center">
                   <p className="text-white/60 text-sm mb-2">Estimasi Angsuran Bulanan</p>
                   <p className="text-3xl sm:text-4xl font-bold mb-1">
                     Rp {monthlyPayment.toLocaleString('id-ID')}
@@ -356,7 +356,7 @@ export default function SmartFeatures() {
                   </ul>
                 </div>
 
-                <div className="bg-gradient-to-br from-mitsu-dark to-gray-800 rounded-2xl p-6 sm:p-8 text-white flex flex-col justify-center">
+                <div className="bg-mitsu-dark rounded-2xl p-6 sm:p-8 text-white flex flex-col justify-center">
                   <Building2 className="w-10 h-10 text-mitsu-red mb-4" />
                   <h4 className="text-xl font-bold mb-2">Butuh Solusi Fleet?</h4>
                   <p className="text-white/60 text-sm mb-6">

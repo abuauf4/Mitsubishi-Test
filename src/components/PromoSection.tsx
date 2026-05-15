@@ -12,8 +12,8 @@ const promos = [
     badge: 'Terbatas',
     badgeIcon: Flame,
     vehicle: 'Xpander',
-    color: 'from-mitsu-red to-red-800',
-    accentColor: 'from-mitsu-red to-red-700',
+    color: 'bg-mitsu-red',
+    accentColor: 'bg-mitsu-red',
   },
   {
     id: 2,
@@ -22,8 +22,8 @@ const promos = [
     badge: 'Spesial',
     badgeIcon: Sparkles,
     vehicle: 'Pajero Sport',
-    color: 'from-mitsu-red to-red-800',
-    accentColor: 'from-mitsu-red to-red-400',
+    color: 'bg-mitsu-red',
+    accentColor: 'bg-mitsu-red',
   },
   {
     id: 3,
@@ -32,8 +32,8 @@ const promos = [
     badge: 'Hot Deal',
     badgeIcon: Zap,
     vehicle: 'L300',
-    color: 'from-mitsu-red to-red-800',
-    accentColor: 'from-mitsu-red to-red-700',
+    color: 'bg-mitsu-red',
+    accentColor: 'bg-mitsu-red',
   },
 ];
 
@@ -85,15 +85,15 @@ export default function PromoSection() {
   return (
     <section id="promo" className="relative py-24 sm:py-28 lg:py-32 bg-mitsu-light overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-white/95 to-white" />
+      <div className="absolute inset-0 bg-white" />
 
       {/* Luxury red dot pattern */}
       <div className="absolute inset-0 luxury-pattern-red-dots" />
 
       {/* Decorative Lines */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gray-200" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gray-200" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,9 +118,9 @@ export default function PromoSection() {
 
           {/* Ornamental divider */}
           <div className="flex items-center justify-center gap-3 mt-6">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent to-gray-200" />
+            <div className="w-12 h-px bg-gray-200" />
             <div className="w-1.5 h-1.5 bg-mitsu-red/50 rotate-45" />
-            <div className="w-12 h-px bg-gradient-to-l from-transparent to-gray-200" />
+            <div className="w-12 h-px bg-gray-200" />
           </div>
         </motion.div>
 
@@ -155,7 +155,7 @@ export default function PromoSection() {
                 <div className="relative rounded-2xl overflow-hidden border border-gray-100 hover:border-mitsu-red/20 hover:shadow-lg hover:shadow-mitsu-red/5 transition-all duration-500">
                   <div className="bg-white rounded-2xl">
                     {/* Top Gradient Bar */}
-                    <div className={`h-[2px] bg-gradient-to-r ${promo.accentColor}`} />
+                    <div className={`h-[2px] ${promo.accentColor}`} />
 
                     <div className="p-6 sm:p-8">
                       {/* Badge + Vehicle */}

@@ -15,13 +15,10 @@ const fleetBenefits = [
 export default function FleetSolution() {
   return (
     <section className="relative py-24 sm:py-28 lg:py-32 bg-mitsu-light overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 luxury-pattern-light" />
-
       {/* Decorative */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gray-200" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gray-200" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,9 +31,9 @@ export default function FleetSolution() {
           className="text-center mb-14 sm:mb-18"
         >
           <span className="inline-flex items-center gap-3 text-mitsu-fuso-yellow-dark text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase">
-            <span className="w-10 h-px bg-gradient-to-r from-transparent to-mitsu-fuso-yellow/50" />
+            <span className="w-10 h-px bg-mitsu-fuso-yellow/50" />
             Fleet Solution
-            <span className="w-10 h-px bg-gradient-to-l from-transparent to-mitsu-fuso-yellow/50" />
+            <span className="w-10 h-px bg-mitsu-fuso-yellow/50" />
           </span>
           <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
             Solusi Armada untuk{' '}
@@ -48,9 +45,9 @@ export default function FleetSolution() {
 
           {/* Ornamental divider */}
           <div className="flex items-center justify-center gap-3 mt-6">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent to-gray-200" />
+            <div className="w-12 h-px bg-gray-200" />
             <div className="w-1.5 h-1.5 bg-mitsu-fuso-yellow/50 rotate-45" />
-            <div className="w-12 h-px bg-gradient-to-l from-transparent to-gray-200" />
+            <div className="w-12 h-px bg-gray-200" />
           </div>
         </motion.div>
 
@@ -97,9 +94,8 @@ export default function FleetSolution() {
                 </div>
 
                 <div className="relative bg-mitsu-fuso-yellow/8 border border-mitsu-fuso-yellow/10 rounded-2xl p-6 sm:p-8 flex flex-col justify-center overflow-hidden">
-                  {/* Decorative */}
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-mitsu-fuso-yellow/5 rounded-full blur-3xl" />
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-mitsu-fuso-yellow via-mitsu-fuso-yellow-light to-mitsu-fuso-yellow rounded-t-2xl" />
+                  {/* Top accent bar */}
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-fuso-yellow rounded-t-2xl" />
 
                   <div className="relative z-10">
                     <Building2 className="w-12 h-12 text-mitsu-fuso-yellow-dark mb-4" />
@@ -111,7 +107,7 @@ export default function FleetSolution() {
                       href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20ingin%20konsultasi%20kebutuhan%20fleet%20untuk%20bisnis%20saya"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-sm w-full glow-green active:scale-[0.98]"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-sm w-full active:scale-[0.98]"
                     >
                       <MessageCircle className="w-4 h-4" />
                       Konsultasi Gratis
