@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  Camera,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -23,6 +24,7 @@ const navItems = [
   { href: '/admin/site-config', label: 'Site Config', icon: Settings },
   { href: '/admin/hero', label: 'Hero', icon: Image },
   { href: '/admin/categories', label: 'Categories', icon: LayoutGrid },
+  { href: '/admin/gallery', label: 'Gallery', icon: Camera },
   { href: '/admin/testimonials', label: 'Testimonials', icon: MessageSquareQuote },
   { href: '/admin/sales', label: 'Sales', icon: HeadphonesIcon },
   { href: '/admin/dealers', label: 'Dealers', icon: MapPin },

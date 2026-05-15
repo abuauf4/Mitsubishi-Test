@@ -6,15 +6,22 @@ import { MessageCircle, Car, Sparkles } from 'lucide-react';
 import PageHero from '@/components/shared/PageHero';
 import VehicleCard from '@/components/shared/VehicleCard';
 import { VehicleData } from '@/data/vehicles';
+import type { HeroData } from '@/lib/fetch-hero';
 
 interface Props {
   vehicles: VehicleData[];
+  initialHeroData?: HeroData;
 }
 
-export default function PassengerPageClient({ vehicles }: Props) {
-  const [heroImage, setHeroImage] = useState('/images/xpander.png');
-  const [heroTitle, setHeroTitle] = useState('Passenger Cars Mitsubishi');
-  const [heroSubtitle, setHeroSubtitle] = useState('Dari MPV keluarga hingga SUV premium. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.');
+export default function PassengerPageClient({ vehicles, initialHeroData }: Props) {
+  // Start with server-provided data if available, otherwise defaults
+  const defaultImage = '/images/xpander.png';
+  const defaultTitle = 'Passenger Cars Mitsubishi';
+  const defaultSubtitle = 'Dari MPV keluarga hingga SUV premium. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.';
+
+  const [heroImage, setHeroImage] = useState(initialHeroData?.imagePath || defaultImage);
+  const [heroTitle, setHeroTitle] = useState(initialHeroData?.title || defaultTitle);
+  const [heroSubtitle, setHeroSubtitle] = useState(initialHeroData?.subtitle || defaultSubtitle);
 
   // Helper: proxy blob URLs through /api/image
   const prepareImageUrl = (url: string) => {
@@ -29,6 +36,9 @@ export default function PassengerPageClient({ vehicles }: Props) {
   };
 
   useEffect(() => {
+    // If we already have server data, skip the fetch (unless it's static fallback)
+    if (initialHeroData && !initialHeroData.id?.startsWith('static-')) return;
+
     async function fetchHero() {
       try {
         const res = await fetch('/api/hero?page=passenger');
@@ -44,7 +54,7 @@ export default function PassengerPageClient({ vehicles }: Props) {
       }
     }
     fetchHero();
-  }, []);
+  }, [initialHeroData]);
 
   return (
     <>

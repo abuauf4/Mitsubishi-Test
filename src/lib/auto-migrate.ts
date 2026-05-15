@@ -16,6 +16,23 @@ const MIGRATIONS = [
   "ALTER TABLE Hero ADD COLUMN page TEXT NOT NULL DEFAULT 'home'",
 ];
 
+const CREATE_TABLES = [
+  `CREATE TABLE IF NOT EXISTS GalleryItem (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL DEFAULT 'delivery',
+    title TEXT NOT NULL DEFAULT '',
+    description TEXT DEFAULT '',
+    imagePath TEXT DEFAULT '',
+    customerName TEXT DEFAULT '',
+    vehicleName TEXT DEFAULT '',
+    articleContent TEXT DEFAULT '',
+    displayOrder INTEGER NOT NULL DEFAULT 0,
+    active INTEGER NOT NULL DEFAULT 1,
+    createdAt TEXT NOT NULL,
+    updatedAt TEXT NOT NULL
+  )`,
+];
+
 /**
  * Run all pending migrations once per server lifecycle.
  * Subsequent calls are no-ops (the promise is cached).
@@ -33,6 +50,18 @@ async function runMigrations(): Promise<void> {
   const db = getDb();
   if (!db) return;
 
+  // Create new tables first
+  for (const sql of CREATE_TABLES) {
+    try {
+      await db.execute({ sql, args: [] });
+    } catch (error: any) {
+      const msg = (error?.message || '').toLowerCase();
+      if (msg.includes('already exists')) continue;
+      console.warn('Create table warning:', sql.substring(0, 60), error?.message);
+    }
+  }
+
+  // Then run column-level migrations
   for (const sql of MIGRATIONS) {
     try {
       await db.execute({ sql, args: [] });

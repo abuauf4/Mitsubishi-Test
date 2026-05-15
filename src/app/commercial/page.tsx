@@ -1,5 +1,6 @@
 import { fetchVehiclesByCategory } from '@/lib/fetch-vehicle';
 import { commercialVehicles } from '@/data/vehicles';
+import { fetchHeroData } from '@/lib/fetch-hero';
 import CommercialPageClient from './CommercialPageClient';
 
 export const dynamic = 'force-dynamic';
@@ -11,5 +12,7 @@ export default async function CommercialPage() {
     commercial = commercialVehicles;
   }
 
-  return <CommercialPageClient commercial={commercial} />;
+  const heroData = await fetchHeroData('commercial');
+
+  return <CommercialPageClient commercial={commercial} initialHeroData={heroData} />;
 }

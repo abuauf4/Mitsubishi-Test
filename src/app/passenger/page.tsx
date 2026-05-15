@@ -1,5 +1,6 @@
 import { fetchVehiclesByCategory } from '@/lib/fetch-vehicle';
 import { passengerVehicles } from '@/data/vehicles';
+import { fetchHeroData } from '@/lib/fetch-hero';
 import PassengerPageClient from './PassengerPageClient';
 
 export const dynamic = 'force-dynamic';
@@ -11,5 +12,7 @@ export default async function PassengerPage() {
   if (vehicles.length === 0) {
     vehicles = passengerVehicles;
   }
-  return <PassengerPageClient vehicles={vehicles} />;
+  const heroData = await fetchHeroData('passenger');
+
+  return <PassengerPageClient vehicles={vehicles} initialHeroData={heroData} />;
 }

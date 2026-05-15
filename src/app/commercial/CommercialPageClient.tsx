@@ -7,15 +7,22 @@ import PageHero from '@/components/shared/PageHero';
 import VehicleCard from '@/components/shared/VehicleCard';
 import FleetSolution from '@/components/FleetSolution';
 import { VehicleData } from '@/data/vehicles';
+import type { HeroData } from '@/lib/fetch-hero';
 
 interface Props {
   commercial: VehicleData[];
+  initialHeroData?: HeroData;
 }
 
-export default function CommercialPageClient({ commercial }: Props) {
-  const [heroImage, setHeroImage] = useState('/images/l300.png');
-  const [heroTitle, setHeroTitle] = useState('Commercial Vehicles Mitsubishi');
-  const [heroSubtitle, setHeroSubtitle] = useState('Dari niaga ringan hingga heavy duty. Solusi armada terpercaya untuk bisnis Anda.');
+export default function CommercialPageClient({ commercial, initialHeroData }: Props) {
+  // Start with server-provided data if available, otherwise defaults
+  const defaultImage = '/images/l300.png';
+  const defaultTitle = 'Commercial Vehicles Mitsubishi';
+  const defaultSubtitle = 'Dari niaga ringan hingga heavy duty. Solusi armada terpercaya untuk bisnis Anda.';
+
+  const [heroImage, setHeroImage] = useState(initialHeroData?.imagePath || defaultImage);
+  const [heroTitle, setHeroTitle] = useState(initialHeroData?.title || defaultTitle);
+  const [heroSubtitle, setHeroSubtitle] = useState(initialHeroData?.subtitle || defaultSubtitle);
 
   // Helper: proxy blob URLs through /api/image
   const prepareImageUrl = (url: string) => {
@@ -30,6 +37,9 @@ export default function CommercialPageClient({ commercial }: Props) {
   };
 
   useEffect(() => {
+    // If we already have server data, skip the fetch (unless it's static fallback)
+    if (initialHeroData && !initialHeroData.id?.startsWith('static-')) return;
+
     async function fetchHero() {
       try {
         const res = await fetch('/api/hero?page=commercial');
@@ -45,7 +55,7 @@ export default function CommercialPageClient({ commercial }: Props) {
       }
     }
     fetchHero();
-  }, []);
+  }, [initialHeroData]);
 
   return (
     <>

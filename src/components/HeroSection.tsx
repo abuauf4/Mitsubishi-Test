@@ -6,24 +6,24 @@ import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRef } from 'react';
+import type { HeroData } from '@/lib/fetch-hero';
 
-interface HeroData {
-  title: string;
-  subtitle: string;
-  imagePath: string;
-  ctaText: string;
-  ctaLink: string;
+interface HeroSectionProps {
+  initialData?: HeroData;
 }
 
 const fallbackHero: HeroData = {
+  id: 'static-hero-home',
   title: 'Drive Your Ambition',
   subtitle: 'Temukan kendaraan Mitsubishi terbaik untuk hidup dan bisnis Anda',
   imagePath: '/images/hero-cinematic.png',
   ctaText: 'Selengkapnya',
   ctaLink: '#audience-gateway',
+  page: 'home',
+  active: true,
 };
 
-export default function HeroSection() {
+export default function HeroSection({ initialData }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -31,10 +31,6 @@ export default function HeroSection() {
   });
 
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
-  // Always start with fallback — never blank
-  const [hero, setHero] = useState<HeroData>(fallbackHero);
-  const [imageSrc, setImageSrc] = useState<string>(fallbackHero.imagePath);
 
   // Helper: proxy blob URLs through /api/image
   const prepareImageUrl = (url: string) => {
@@ -49,7 +45,19 @@ export default function HeroSection() {
     return url;
   };
 
+  // Start with server-provided data if available, otherwise fallback
+  const startData = initialData || fallbackHero;
+  const startImage = initialData
+    ? prepareImageUrl(initialData.imagePath)
+    : fallbackHero.imagePath;
+
+  const [hero, setHero] = useState<HeroData>(startData);
+  const [imageSrc, setImageSrc] = useState<string>(startImage);
+
   useEffect(() => {
+    // If we already have server data, skip the fetch (unless it's static fallback)
+    if (initialData && !initialData.id?.startsWith('static-')) return;
+
     async function fetchHero() {
       try {
         const res = await fetch('/api/hero?page=home');
@@ -58,11 +66,14 @@ export default function HeroSection() {
         if (data && data.imagePath) {
           const preparedUrl = prepareImageUrl(data.imagePath);
           setHero({
+            id: data.id || fallbackHero.id,
             title: data.title || fallbackHero.title,
             subtitle: data.subtitle || fallbackHero.subtitle,
             imagePath: preparedUrl,
             ctaText: data.ctaText || fallbackHero.ctaText,
             ctaLink: data.ctaLink || fallbackHero.ctaLink,
+            page: data.page || fallbackHero.page,
+            active: data.active ?? fallbackHero.active,
           });
           setImageSrc(preparedUrl);
         }
@@ -71,7 +82,7 @@ export default function HeroSection() {
       }
     }
     fetchHero();
-  }, []);
+  }, [initialData]);
 
   const ctaLink = hero.ctaLink || '#audience-gateway';
 
