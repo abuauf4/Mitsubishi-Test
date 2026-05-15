@@ -1,6 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getDb } from '@/lib/db';
 import { getStaticVehicles } from '@/lib/static-data';
+
+/**
+ * Purge Next.js cache for the vehicle's public pages after any mutation.
+ */
+async function revalidateVehiclePages(vehicleId: string) {
+  try {
+    const db = getDb();
+    if (!db) return;
+    const result = await db.execute({
+      sql: 'SELECT slug, category FROM Vehicle WHERE id = ?',
+      args: [vehicleId],
+    });
+    if (result.rows.length === 0) return;
+    const slug = result.rows[0].slug as string;
+    const category = result.rows[0].category as string;
+
+    if (category === 'commercial' || category === 'niaga-ringan') {
+      revalidatePath(`/commercial/${slug}`);
+    } else {
+      revalidatePath(`/passenger/${slug}`);
+    }
+    revalidatePath('/passenger');
+    revalidatePath('/commercial');
+    revalidatePath('/');
+  } catch (e) {
+    console.warn('⚠️ Failed to revalidate vehicle pages:', e);
+  }
+}
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -51,6 +80,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       ]
     });
 
+    await revalidateVehiclePages(id);
+
     return NextResponse.json({
       id: specId,
       vehicleId: id,
@@ -64,16 +95,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   if (!db) {
     return NextResponse.json({ error: 'Database not configured. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars.', hint: 'Vercel Dashboard → Settings → Environment Variables' }, { status: 503 });
   }
   try {
+    const { id } = await params;
     const body = await request.json();
-    const { id, ...data } = body;
-    if (!id) return NextResponse.json({ error: 'Spec id required' }, { status: 400 });
-    if (typeof id === 'string' && id.startsWith('static-')) {
+    const { id: specId, ...data } = body;
+    if (!specId) return NextResponse.json({ error: 'Spec id required' }, { status: 400 });
+    if (typeof specId === 'string' && specId.startsWith('static-')) {
       return NextResponse.json({ error: 'Cannot update static-prefixed record. Please create a new record instead.', hint: 'Use POST to create a new database record.' }, { status: 400 });
     }
 
@@ -88,7 +120,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
     }
 
-    args.push(id);
+    args.push(specId);
     await db.execute({
       sql: `UPDATE VehicleSpec SET ${fields.join(', ')} WHERE id = ?`,
       args,
@@ -96,12 +128,14 @@ export async function PUT(request: NextRequest) {
 
     const updated = await db.execute({
       sql: 'SELECT * FROM VehicleSpec WHERE id = ?',
-      args: [id],
+      args: [specId],
     });
 
     if (updated.rows.length === 0) {
       return NextResponse.json({ error: 'Spec not found' }, { status: 404 });
     }
+
+    await revalidateVehiclePages(id);
 
     const row = updated.rows[0];
     return NextResponse.json({
@@ -115,19 +149,23 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   if (!db) {
     return NextResponse.json({ error: 'Database not configured. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars.', hint: 'Vercel Dashboard → Settings → Environment Variables' }, { status: 503 });
   }
   try {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    if (!id) return NextResponse.json({ error: 'Spec id required' }, { status: 400 });
+    const specId = searchParams.get('id');
+    if (!specId) return NextResponse.json({ error: 'Spec id required' }, { status: 400 });
     await db.execute({
       sql: 'DELETE FROM VehicleSpec WHERE id = ?',
-      args: [id],
+      args: [specId],
     });
+
+    await revalidateVehiclePages(id);
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting spec:', error);

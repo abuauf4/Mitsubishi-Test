@@ -1,6 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getDb } from '@/lib/db';
 import { getStaticVehicles } from '@/lib/static-data';
+
+/**
+ * Purge Next.js cache for the vehicle's public pages after any mutation.
+ * This ensures admin changes are immediately visible on the frontend.
+ */
+async function revalidateVehiclePages(vehicleId: string) {
+  try {
+    const db = getDb();
+    if (!db) return;
+    const result = await db.execute({
+      sql: 'SELECT slug, category FROM Vehicle WHERE id = ?',
+      args: [vehicleId],
+    });
+    if (result.rows.length === 0) return;
+    const slug = result.rows[0].slug as string;
+    const category = result.rows[0].category as string;
+
+    if (category === 'commercial' || category === 'niaga-ringan') {
+      revalidatePath(`/commercial/${slug}`);
+    } else {
+      revalidatePath(`/passenger/${slug}`);
+    }
+    revalidatePath('/passenger');
+    revalidatePath('/commercial');
+    revalidatePath('/');
+  } catch (e) {
+    console.warn('⚠️ Failed to revalidate vehicle pages:', e);
+  }
+}
+
+/**
+ * Find the vehicleId for a variant by its ID (needed for DELETE which only has variantId).
+ */
+async function findVehicleIdByVariantId(variantId: string): Promise<string | null> {
+  try {
+    const db = getDb();
+    if (!db) return null;
+    const result = await db.execute({
+      sql: 'SELECT vehicleId FROM VehicleVariant WHERE id = ?',
+      args: [variantId],
+    });
+    return result.rows.length > 0 ? (result.rows[0].vehicleId as string) : null;
+  } catch {
+    return null;
+  }
+}
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -58,6 +105,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       ]
     });
 
+    // Purge cache so frontend shows the new variant immediately
+    await revalidateVehiclePages(id);
+
     return NextResponse.json({
       id: variantId,
       vehicleId: id,
@@ -77,16 +127,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   if (!db) {
     return NextResponse.json({ error: 'Database not configured. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars.', hint: 'Vercel Dashboard → Settings → Environment Variables' }, { status: 503 });
   }
   try {
+    const { id } = await params;
     const body = await request.json();
-    const { id, ...data } = body;
-    if (!id) return NextResponse.json({ error: 'Variant id required' }, { status: 400 });
-    if (typeof id === 'string' && id.startsWith('static-')) {
+    const { id: variantId, ...data } = body;
+    if (!variantId) return NextResponse.json({ error: 'Variant id required' }, { status: 400 });
+    if (typeof variantId === 'string' && variantId.startsWith('static-')) {
       return NextResponse.json({ error: 'Cannot update static-prefixed record. Please create a new record instead.', hint: 'Use POST to create a new database record.' }, { status: 400 });
     }
 
@@ -107,7 +158,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
     }
 
-    args.push(id);
+    args.push(variantId);
     await db.execute({
       sql: `UPDATE VehicleVariant SET ${fields.join(', ')} WHERE id = ?`,
       args,
@@ -115,12 +166,15 @@ export async function PUT(request: NextRequest) {
 
     const updated = await db.execute({
       sql: 'SELECT * FROM VehicleVariant WHERE id = ?',
-      args: [id],
+      args: [variantId],
     });
 
     if (updated.rows.length === 0) {
       return NextResponse.json({ error: 'Variant not found' }, { status: 404 });
     }
+
+    // Purge cache so frontend shows the updated variant immediately
+    await revalidateVehiclePages(id);
 
     const row = updated.rows[0];
     return NextResponse.json({
@@ -135,19 +189,30 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   if (!db) {
     return NextResponse.json({ error: 'Database not configured. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars.', hint: 'Vercel Dashboard → Settings → Environment Variables' }, { status: 503 });
   }
   try {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    if (!id) return NextResponse.json({ error: 'Variant id required' }, { status: 400 });
+    const variantId = searchParams.get('id');
+    if (!variantId) return NextResponse.json({ error: 'Variant id required' }, { status: 400 });
+
+    // Find the vehicleId for cache purging before deleting
+    const vehicleId = await findVehicleIdByVariantId(variantId);
+
     await db.execute({
       sql: 'DELETE FROM VehicleVariant WHERE id = ?',
-      args: [id],
+      args: [variantId],
     });
+
+    // Purge cache so frontend shows the deletion immediately
+    if (vehicleId) {
+      await revalidateVehiclePages(vehicleId);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting variant:', error);

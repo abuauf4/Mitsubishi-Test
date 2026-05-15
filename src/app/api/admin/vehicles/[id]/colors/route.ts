@@ -1,6 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getDb } from '@/lib/db';
 import { getStaticVehicles } from '@/lib/static-data';
+
+/**
+ * Purge Next.js cache for the vehicle's public pages after any mutation.
+ * This ensures admin changes are immediately visible on the frontend.
+ */
+async function revalidateVehiclePages(vehicleId: string) {
+  try {
+    const db = getDb();
+    if (!db) return;
+    const result = await db.execute({
+      sql: 'SELECT slug, category FROM Vehicle WHERE id = ?',
+      args: [vehicleId],
+    });
+    if (result.rows.length === 0) return;
+    const slug = result.rows[0].slug as string;
+    const category = result.rows[0].category as string;
+
+    // Revalidate the vehicle detail page
+    if (category === 'commercial' || category === 'niaga-ringan') {
+      revalidatePath(`/commercial/${slug}`);
+    } else {
+      revalidatePath(`/passenger/${slug}`);
+    }
+    // Revalidate listing pages and home
+    revalidatePath('/passenger');
+    revalidatePath('/commercial');
+    revalidatePath('/');
+  } catch (e) {
+    console.warn('⚠️ Failed to revalidate vehicle pages:', e);
+  }
+}
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -72,6 +104,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       ]
     });
 
+    // Purge cache so frontend shows the new color immediately
+    await revalidateVehiclePages(id);
+
     return NextResponse.json({
       id: colorId,
       vehicleId: id,
@@ -87,16 +122,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   if (!db) {
     return NextResponse.json({ error: 'Database not configured. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars.', hint: 'Vercel Dashboard → Settings → Environment Variables' }, { status: 503 });
   }
   try {
+    const { id } = await params;
     const body = await request.json();
-    const { id, ...data } = body;
-    if (!id) return NextResponse.json({ error: 'Color id required' }, { status: 400 });
-    if (typeof id === 'string' && id.startsWith('static-')) {
+    const { id: colorId, ...data } = body;
+    if (!colorId) return NextResponse.json({ error: 'Color id required' }, { status: 400 });
+    if (typeof colorId === 'string' && colorId.startsWith('static-')) {
       return NextResponse.json({ error: 'Cannot update static-prefixed record. Please create a new record instead.', hint: 'Use POST to create a new database record.' }, { status: 400 });
     }
 
@@ -113,7 +149,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
     }
 
-    args.push(id);
+    args.push(colorId);
     await db.execute({
       sql: `UPDATE VehicleColor SET ${fields.join(', ')} WHERE id = ?`,
       args,
@@ -121,12 +157,15 @@ export async function PUT(request: NextRequest) {
 
     const updated = await db.execute({
       sql: 'SELECT * FROM VehicleColor WHERE id = ?',
-      args: [id],
+      args: [colorId],
     });
 
     if (updated.rows.length === 0) {
       return NextResponse.json({ error: 'Color not found' }, { status: 404 });
     }
+
+    // Purge cache so frontend shows the updated color immediately
+    await revalidateVehiclePages(id);
 
     const row = updated.rows[0];
     return NextResponse.json({
@@ -139,19 +178,24 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   if (!db) {
     return NextResponse.json({ error: 'Database not configured. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN env vars.', hint: 'Vercel Dashboard → Settings → Environment Variables' }, { status: 503 });
   }
   try {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    if (!id) return NextResponse.json({ error: 'Color id required' }, { status: 400 });
+    const colorId = searchParams.get('id');
+    if (!colorId) return NextResponse.json({ error: 'Color id required' }, { status: 400 });
     await db.execute({
       sql: 'DELETE FROM VehicleColor WHERE id = ?',
-      args: [id],
+      args: [colorId],
     });
+
+    // Purge cache so frontend shows the deletion immediately
+    await revalidateVehiclePages(id);
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting color:', error);
