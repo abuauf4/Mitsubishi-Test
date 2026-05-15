@@ -133,13 +133,16 @@ export function useApiVehicle(
 
   const fetchVehicle = useCallback(async () => {
     try {
-      // Add timestamp cache buster to force fresh data from the server
-      const res = await fetch(`/api/vehicles/${slug}?_t=${Date.now()}`);
+      // There's no single-vehicle API route, so fetch all vehicles and find by slug
+      const res = await fetch(`/api/vehicles?_t=${Date.now()}`);
       if (!res.ok) throw new Error('API failed');
       const data = await res.json();
 
-      if (data) {
-        setVehicle(mapApiVehicleToVehicleData(data));
+      if (Array.isArray(data)) {
+        const found = data.find((v: any) => v.slug === slug);
+        if (found) {
+          setVehicle(mapApiVehicleToVehicleData(found));
+        }
       }
     } catch (error) {
       console.log('API fetch failed, using static fallback:', error);

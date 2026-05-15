@@ -39,9 +39,9 @@ export default function HeroSection() {
   // Helper: proxy blob URLs and add cache-busting to prevent stale images
   const prepareImageUrl = (url: string) => {
     if (!url) return url;
-    // Proxy Vercel Blob URLs through /api/image
+    // Proxy Vercel Blob URLs through /api/image with aggressive cache-busting
     if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}`;
+      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}&_cb=${Math.random()}`;
     }
     // Add cache-busting for API proxy URLs
     if (url.startsWith('/api/')) {

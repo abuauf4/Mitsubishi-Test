@@ -240,7 +240,7 @@ const HARDCODED_CARDS = [
     titleAccent: '#FF6B6B',
     description: 'MPV keluarga, SUV tangguh, hingga kendaraan listrik. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.',
     stats: [
-      { label: 'Model', value: '7' },
+      { label: 'Model', value: '8' },
       { label: 'Mulai', value: 'Rp 240Jt' },
       { label: 'Kategori', value: 'MPV, SUV & EV' },
     ],
@@ -257,10 +257,10 @@ const HARDCODED_CARDS = [
     titleLine1: 'Bisnis yang',
     titleLine2: 'Lebih Kuat',
     titleAccent: '#FFD600',
-    description: 'Niaga ringan hingga heavy duty. Triton dan FUSO Commercial untuk UMKM hingga enterprise.',
+    description: 'FUSO Commercial dari Canter hingga Heavy Duty untuk UMKM hingga enterprise.',
     stats: [
-      { label: 'Model', value: '6' },
-      { label: 'Mulai', value: 'Rp 325Jt' },
+      { label: 'Model', value: '5' },
+      { label: 'Mulai', value: 'Rp 468Jt' },
       { label: 'Payload', value: '3.4-44 Ton' },
     ],
     accentColor: '#FFD600',
@@ -303,8 +303,13 @@ export default function AudienceGateway() {
         const res = await fetch(`/api/audience-categories?_t=${Date.now()}`);
         if (!res.ok) return;
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0 && !data[0]?.id?.startsWith('static-')) {
-          setDbCategories(data);
+        if (Array.isArray(data) && data.length > 0) {
+          // Use DB categories — they have real images uploaded via admin
+          // Only skip if ALL categories are static fallbacks with no custom images
+          const hasRealImages = data.some((cat: DBCategory) => cat.imagePath && !cat.imagePath.startsWith('/images/'));
+          if (hasRealImages || !data[0]?.id?.startsWith('static')) {
+            setDbCategories(data);
+          }
         }
       } catch {
         // Silently fall back to hardcoded cards
@@ -317,7 +322,7 @@ export default function AudienceGateway() {
   const proxyImage = (url: string) => {
     if (!url) return '';
     if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-      return `/api/image?url=${encodeURIComponent(url)}`;
+      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}`;
     }
     return url;
   };
@@ -327,25 +332,27 @@ export default function AudienceGateway() {
     ? dbCategories.map((cat, index) => {
         const theme = getCategoryTheme(cat.linkHref);
         const isRed = cat.linkHref.includes('passenger');
+        const fallbackImg = isRed ? '/images/xpander.png' : '/images/l300.png';
+        const proxiedImage = cat.imagePath ? proxyImage(cat.imagePath) : fallbackImg;
         return {
-          href: cat.linkHref,
-          image: proxyImage(cat.imagePath) || (isRed ? '/images/xpander.png' : '/images/l300.png'),
-          imageAlt: cat.title,
-          badge: cat.title,
+          href: cat.linkHref || (isRed ? '/passenger' : '/commercial'),
+          image: proxiedImage || fallbackImg,
+          imageAlt: cat.title || (isRed ? 'Passenger Cars' : 'Commercial Vehicles'),
+          badge: cat.title || (isRed ? 'Passenger Cars' : 'Commercial Vehicles'),
           badgeBg: theme.badgeBg,
-          titleLine1: cat.title,
+          titleLine1: cat.title?.includes('Passenger') ? 'Untuk Hidup' : cat.title?.includes('Commercial') ? 'Bisnis yang' : cat.title || 'Pilihan',
           titleLine2: isRed ? 'yang Lebih Baik' : 'Lebih Kuat',
           titleAccent: theme.titleAccent,
-          description: cat.description,
+          description: cat.description || (isRed ? 'MPV keluarga, SUV tangguh, hingga kendaraan listrik.' : 'Niaga ringan hingga heavy duty untuk bisnis Anda.'),
           stats: isRed
             ? [
-                { label: 'Model', value: '7' },
+                { label: 'Model', value: '8' },
                 { label: 'Mulai', value: 'Rp 240Jt' },
                 { label: 'Kategori', value: 'MPV, SUV & EV' },
               ]
             : [
-                { label: 'Model', value: '6' },
-                { label: 'Mulai', value: 'Rp 325Jt' },
+                { label: 'Model', value: '5' },
+                { label: 'Mulai', value: 'Rp 468Jt' },
                 { label: 'Payload', value: '3.4-44 Ton' },
               ],
           accentColor: theme.accentColor,

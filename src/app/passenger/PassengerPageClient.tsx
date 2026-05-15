@@ -20,7 +20,7 @@ export default function PassengerPageClient({ vehicles }: Props) {
   const prepareImageUrl = (url: string) => {
     if (!url) return url;
     if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}`;
+      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}&_cb=${Math.random()}`;
     }
     if (url.startsWith('/api/')) {
       const sep = url.includes('?') ? '&' : '?';
@@ -117,9 +117,9 @@ export default function PassengerPageClient({ vehicles }: Props) {
             className="mb-10 flex flex-wrap gap-3"
           >
             {[
-              { label: '7 Model', icon: Car },
+              { label: '8 Model', icon: Car },
               { label: 'Mulai Rp 240 Jt', icon: Sparkles },
-              { label: 'MPV, SUV & EV', icon: Car },
+              { label: 'MPV, SUV, EV & Pickup', icon: Car },
             ].map((stat) => {
               const IconComponent = stat.icon;
               return (

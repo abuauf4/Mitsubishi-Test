@@ -79,13 +79,15 @@ const values = [
 
 export default function WhyMitsubishi() {
   return (
-    <section id="why-mitsubishi" className="relative py-24 sm:py-28 lg:py-32 overflow-hidden" style={{ background: 'linear-gradient(135deg, #FAF7F7 0%, #F5F0F0 50%, #FAF7F7 100%)' }}>
-      {/* Luxury diamond pattern background */}
-      <div className="absolute inset-0 luxury-pattern-diamond" />
+    <section id="why-mitsubishi" className="relative py-24 sm:py-28 lg:py-32 overflow-hidden bg-mitsu-obsidian">
+      {/* Dark luxury background with red accent pattern */}
+      <div className="absolute inset-0 vehicle-image-bg" />
+      {/* Subtle gradient overlay for readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-mitsu-obsidian/95 via-mitsu-obsidian/85 to-mitsu-obsidian/95" />
 
       {/* Decorative corner */}
-      <div className="absolute top-0 left-0 w-32 h-32 border-l border-t border-gray-200 pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-32 h-32 border-r border-b border-gray-200 pointer-events-none" />
+      <div className="absolute top-0 left-0 w-32 h-32 border-l border-t border-white/10 pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-32 h-32 border-r border-b border-white/10 pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -101,19 +103,19 @@ export default function WhyMitsubishi() {
             Mengapa Mitsubishi
             <span className="w-10 h-px bg-gradient-to-l from-transparent to-mitsu-red/50" />
           </span>
-          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
+          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-serif">
             Keunggulan{' '}
             <span className="text-red-shimmer italic">Mitsubishi</span>
           </h2>
-          <p className="mt-5 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-5 text-white/50 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             Lebih dari 60 tahun pengalaman di industri otomotif global. Mitsubishi terus berkomitmen menghadirkan kendaraan berkualitas untuk Indonesia.
           </p>
           
           {/* Ornamental divider */}
           <div className="flex items-center justify-center gap-3 mt-6">
-            <div className="w-12 h-px bg-gradient-to-r from-transparent to-gray-200" />
+            <div className="w-12 h-px bg-gradient-to-r from-transparent to-white/20" />
             <div className="w-1.5 h-1.5 bg-mitsu-red/50 rotate-45" />
-            <div className="w-12 h-px bg-gradient-to-l from-transparent to-gray-200" />
+            <div className="w-12 h-px bg-gradient-to-l from-transparent to-white/20" />
           </div>
         </motion.div>
 
@@ -130,24 +132,24 @@ export default function WhyMitsubishi() {
                 viewport={{ once: true, margin: '-50px' }}
                 className="group"
               >
-                <div className={`relative p-6 sm:p-7 rounded-2xl card-light-red hover-red-border-light hover:-translate-y-1 transition-all duration-500 card-shine-red`}>
+                <div className={`relative p-6 sm:p-7 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:border-mitsu-red/30 hover:bg-white/8 hover:-translate-y-1 transition-all duration-500 card-shine-red`}>
                   {/* Top accent line */}
                   <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${value.accentColor} opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-t-2xl`} />
                   
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-5">
-                      <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl ${value.iconBg} group-hover:scale-110 transition-transform duration-400 border border-gray-100`}>
+                      <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl ${value.iconBg} group-hover:scale-110 transition-transform duration-400 border border-white/10`}>
                         <IconComponent className={`w-7 h-7 ${value.iconColor}`} />
                       </div>
                       <div className="text-right">
                         <p className={`text-2xl font-bold ${value.iconColor} font-serif`}>
                           <AnimatedCounter target={value.stat.value} suffix={value.stat.suffix} />
                         </p>
-                        <p className="text-[9px] text-gray-400 uppercase tracking-wider font-medium">{value.stat.label}</p>
+                        <p className="text-[9px] text-white/40 uppercase tracking-wider font-medium">{value.stat.label}</p>
                       </div>
                     </div>
-                    <h3 className="text-lg sm:text-xl font-bold text-mitsu-dark mb-3 font-serif">{value.title}</h3>
-                    <p className="text-gray-500 text-sm leading-relaxed">{value.description}</p>
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-3 font-serif">{value.title}</h3>
+                    <p className="text-white/50 text-sm leading-relaxed">{value.description}</p>
                   </div>
                 </div>
               </motion.div>

@@ -21,7 +21,7 @@ export default function CommercialPageClient({ commercial }: Props) {
   const prepareImageUrl = (url: string) => {
     if (!url) return url;
     if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}`;
+      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}&_cb=${Math.random()}`;
     }
     if (url.startsWith('/api/')) {
       const sep = url.includes('?') ? '&' : '?';

@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
     const res = await fetch(url, {
       headers,
       cache: 'no-store',
-      next: { revalidate: 86400 },
     });
 
     if (!res.ok) {
@@ -44,7 +43,7 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, s-maxage=86400, max-age=86400',
+        'Cache-Control': 'public, s-maxage=60, max-age=60, stale-while-revalidate=300',
         'Access-Control-Allow-Origin': '*',
       },
     });
