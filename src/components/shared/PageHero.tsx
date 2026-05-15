@@ -13,6 +13,7 @@ interface PageHeroProps {
   breadcrumbs: { label: string; href: string }[];
   accentColor?: string;
   theme?: 'red' | 'yellow';
+  fallbackImage?: string;
 }
 
 export default function PageHero({
@@ -22,6 +23,7 @@ export default function PageHero({
   breadcrumbs,
   accentColor = 'text-mitsu-red',
   theme = 'red',
+  fallbackImage = '/images/xpander.png',
 }: PageHeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
@@ -37,9 +39,11 @@ export default function PageHero({
   // Preload next image before showing it — prevents blank/black flash
   const [displayedImage, setDisplayedImage] = useState(backgroundImage);
   const [nextImageLoaded, setNextImageLoaded] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (backgroundImage === displayedImage) return;
+    setImageError(false);
     // Preload the new image first
     setNextImageLoaded(false);
     const img = new window.Image();
@@ -48,13 +52,17 @@ export default function PageHero({
       setDisplayedImage(backgroundImage);
     };
     img.onerror = () => {
-      // Even if it fails, switch to avoid being stuck
+      // Image failed to load — use fallback instead of broken image
       setNextImageLoaded(true);
-      setDisplayedImage(backgroundImage);
+      if (backgroundImage !== fallbackImage) {
+        setDisplayedImage(fallbackImage);
+      } else {
+        setDisplayedImage(backgroundImage);
+      }
     };
     // For /api/ proxy URLs, use them directly; for others, set src
     img.src = backgroundImage;
-  }, [backgroundImage, displayedImage]);
+  }, [backgroundImage, displayedImage, fallbackImage]);
 
   return (
     <section ref={sectionRef} className="relative w-full min-h-[40vh] sm:min-h-[50vh] lg:min-h-[55vh] overflow-hidden bg-mitsu-obsidian">
@@ -78,10 +86,11 @@ export default function PageHero({
               sizes="100vw"
               priority
               unoptimized={displayedImage.startsWith('/api/') || displayedImage.includes('vercel-storage.com')}
-              onError={(e) => {
-                // Prevent blank by keeping the image element but reducing opacity
-                const target = e.target as HTMLImageElement;
-                target.style.opacity = '0.3';
+              onError={() => {
+                // Replace broken image with fallback
+                if (displayedImage !== fallbackImage) {
+                  setDisplayedImage(fallbackImage);
+                }
               }}
             />
           </motion.div>

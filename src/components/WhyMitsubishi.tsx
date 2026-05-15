@@ -79,7 +79,7 @@ const values = [
 
 export default function WhyMitsubishi() {
   return (
-    <section id="why-mitsubishi" className="relative py-24 sm:py-28 lg:py-32 bg-mitsu-light overflow-hidden">
+    <section id="why-mitsubishi" className="relative py-24 sm:py-28 lg:py-32 overflow-hidden" style={{ background: 'linear-gradient(135deg, #FAF7F7 0%, #F5F0F0 50%, #FAF7F7 100%)' }}>
       {/* Luxury diamond pattern background */}
       <div className="absolute inset-0 luxury-pattern-diamond" />
 

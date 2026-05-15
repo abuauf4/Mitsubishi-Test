@@ -36,6 +36,22 @@ export default function HeroSection() {
   const [hero, setHero] = useState<HeroData>(fallbackHero);
   const [imageSrc, setImageSrc] = useState<string>(fallbackHero.imagePath);
 
+  // Helper: proxy blob URLs and add cache-busting to prevent stale images
+  const prepareImageUrl = (url: string) => {
+    if (!url) return url;
+    // Proxy Vercel Blob URLs through /api/image
+    if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
+      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}`;
+    }
+    // Add cache-busting for API proxy URLs
+    if (url.startsWith('/api/')) {
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}_t=${Date.now()}`;
+    }
+    // Local images don't need cache-busting
+    return url;
+  };
+
   useEffect(() => {
     async function fetchHero() {
       try {
@@ -44,14 +60,15 @@ export default function HeroSection() {
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.imagePath) {
+          const preparedUrl = prepareImageUrl(data.imagePath);
           setHero({
             title: data.title || fallbackHero.title,
             subtitle: data.subtitle || fallbackHero.subtitle,
-            imagePath: data.imagePath,
+            imagePath: preparedUrl,
             ctaText: data.ctaText || fallbackHero.ctaText,
             ctaLink: data.ctaLink || fallbackHero.ctaLink,
           });
-          setImageSrc(data.imagePath);
+          setImageSrc(preparedUrl);
         }
       } catch {
         // Keep fallback data — already set as initial state

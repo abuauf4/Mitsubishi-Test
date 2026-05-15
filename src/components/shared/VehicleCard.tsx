@@ -84,7 +84,13 @@ export default function VehicleCard({
                 fill
                 className="object-cover relative z-[1] transition-transform duration-700 group-hover:scale-110"
                 sizes="(max-width: 768px) 100vw, 50vw"
-                unoptimized={image.startsWith('/api/')}
+                unoptimized={image.startsWith('/api/') || image.includes('vercel-storage.com')}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (!target.src.includes('/images/')) {
+                    target.src = '/images/xpander.png';
+                  }
+                }}
               />
 
               {/* Price Badge */}

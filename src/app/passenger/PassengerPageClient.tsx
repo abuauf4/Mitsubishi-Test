@@ -16,6 +16,19 @@ export default function PassengerPageClient({ vehicles }: Props) {
   const [heroTitle, setHeroTitle] = useState('Passenger Cars Mitsubishi');
   const [heroSubtitle, setHeroSubtitle] = useState('Dari MPV keluarga hingga SUV premium. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.');
 
+  // Helper: proxy blob URLs and add cache-busting
+  const prepareImageUrl = (url: string) => {
+    if (!url) return url;
+    if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
+      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}`;
+    }
+    if (url.startsWith('/api/')) {
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}_t=${Date.now()}`;
+    }
+    return url;
+  };
+
   useEffect(() => {
     async function fetchHero() {
       try {
@@ -23,7 +36,7 @@ export default function PassengerPageClient({ vehicles }: Props) {
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.imagePath) {
-          setHeroImage(data.imagePath);
+          setHeroImage(prepareImageUrl(data.imagePath));
           if (data.title) setHeroTitle(data.title);
           if (data.subtitle) setHeroSubtitle(data.subtitle);
         }

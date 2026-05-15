@@ -7,10 +7,11 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const page = searchParams.get('page') || 'home';
 
-  // Use no-store so browsers and CDNs always get fresh hero data
-  // Hero changes should be visible immediately — no stale cache
+  // No caching — hero changes must be visible immediately after admin updates
   const headers = {
-    'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=10',
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
   };
 
   const db = getDb();

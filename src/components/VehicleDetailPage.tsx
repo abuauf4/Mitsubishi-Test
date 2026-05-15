@@ -665,6 +665,19 @@ export default function VehicleDetailPage({ vehicle }: Props) {
         </div>
       </div>
 
+      {/* Credit Simulation — Always visible, not hidden in tab */}
+      <section id="credit-calculator" className="relative py-12 sm:py-16 overflow-hidden border-t border-gray-100">
+        <div className="absolute inset-0 bg-mitsu-light" />
+        <div className="absolute inset-0 luxury-pattern-light" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <CreditSimulation
+            defaultPrice={displayPriceNum}
+            vehicleName={vehicle.name}
+            accentTheme={isCommercial ? 'yellow' : 'red'}
+          />
+        </div>
+      </section>
+
       {/* Bottom CTA */}
       <section className="relative py-16 sm:py-20 overflow-hidden">
         <div className={`absolute inset-0 ${isCommercial ? 'bg-gradient-to-r from-mitsu-fuso-yellow/5 via-mitsu-fuso-yellow/10 to-mitsu-fuso-yellow/5' : 'bg-mitsu-light'}`} />

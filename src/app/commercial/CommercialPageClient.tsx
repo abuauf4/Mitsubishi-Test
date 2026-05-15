@@ -17,6 +17,19 @@ export default function CommercialPageClient({ commercial }: Props) {
   const [heroTitle, setHeroTitle] = useState('Commercial Vehicles Mitsubishi');
   const [heroSubtitle, setHeroSubtitle] = useState('Dari niaga ringan hingga heavy duty. Solusi armada terpercaya untuk bisnis Anda.');
 
+  // Helper: proxy blob URLs and add cache-busting
+  const prepareImageUrl = (url: string) => {
+    if (!url) return url;
+    if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
+      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}`;
+    }
+    if (url.startsWith('/api/')) {
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}_t=${Date.now()}`;
+    }
+    return url;
+  };
+
   useEffect(() => {
     async function fetchHero() {
       try {
@@ -24,7 +37,7 @@ export default function CommercialPageClient({ commercial }: Props) {
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.imagePath) {
-          setHeroImage(data.imagePath);
+          setHeroImage(prepareImageUrl(data.imagePath));
           if (data.title) setHeroTitle(data.title);
           if (data.subtitle) setHeroSubtitle(data.subtitle);
         }
@@ -47,6 +60,7 @@ export default function CommercialPageClient({ commercial }: Props) {
         ]}
         accentColor="text-mitsu-fuso-yellow"
         theme="yellow"
+        fallbackImage="/images/l300.png"
       />
 
       {/* ==================== FUSO Commercial ==================== */}

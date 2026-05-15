@@ -104,9 +104,13 @@ function ModernGatewayCard({
           sizes="(max-width: 768px) 100vw, 50vw"
           unoptimized={image.startsWith('/api/') || image.includes('vercel-storage.com')}
           onError={(e) => {
-            // Fallback to a local image if the URL fails
+            // Replace broken image with fallback — never leave it blank
             const target = e.target as HTMLImageElement;
-            target.style.opacity = '0.3';
+            if (!target.src.includes('/images/')) {
+              target.src = '/images/xpander.png';
+            } else {
+              target.style.opacity = '0.3';
+            }
           }}
         />
 
@@ -309,6 +313,15 @@ export default function AudienceGateway() {
     fetchCategories();
   }, []);
 
+  // Helper: proxy blob URLs through /api/image so they load reliably
+  const proxyImage = (url: string) => {
+    if (!url) return '';
+    if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
+      return `/api/image?url=${encodeURIComponent(url)}`;
+    }
+    return url;
+  };
+
   // Build cards from DB data or use hardcoded fallback
   const cards = dbCategories && dbCategories.length > 0
     ? dbCategories.map((cat, index) => {
@@ -316,7 +329,7 @@ export default function AudienceGateway() {
         const isRed = cat.linkHref.includes('passenger');
         return {
           href: cat.linkHref,
-          image: cat.imagePath || (isRed ? '/images/xpander.png' : '/images/l300.png'),
+          image: proxyImage(cat.imagePath) || (isRed ? '/images/xpander.png' : '/images/l300.png'),
           imageAlt: cat.title,
           badge: cat.title,
           badgeBg: theme.badgeBg,

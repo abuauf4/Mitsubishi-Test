@@ -7,9 +7,21 @@ import { VehicleData } from '@/data/vehicles';
  * Maps an API vehicle response (from Turso DB) to the VehicleData interface
  * used by VehicleDetailPage and VehicleCard components.
  */
+/**
+ * Helper: proxy blob URLs through /api/image so they load reliably
+ */
+function proxyImageUrl(url: string): string {
+  if (!url) return url;
+  // Proxy Vercel Blob URLs through /api/image
+  if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
+    return `/api/image?url=${encodeURIComponent(url)}`;
+  }
+  return url;
+}
+
 export function mapApiVehicleToVehicleData(apiVehicle: any): VehicleData {
-  // Get the image path from the DB
-  let image = apiVehicle.imagePath || '/images/canter.png';
+  // Get the image path from the DB and proxy blob URLs
+  let image = proxyImageUrl(apiVehicle.imagePath) || '/images/canter.png';
 
   // If the image is a proxy URL, add a cache-busting parameter using updatedAt
   // This ensures the browser fetches a fresh image when the vehicle is updated
@@ -34,7 +46,7 @@ export function mapApiVehicleToVehicleData(apiVehicle: any): VehicleData {
     colors: (apiVehicle.colors || []).map((c: any) => ({
       name: c.name || '',
       hex: c.hex || '#000000',
-      image: c.imagePath || undefined,
+      image: proxyImageUrl(c.imagePath) || undefined,
     })),
     variants: (apiVehicle.variants || []).map((v: any) => ({
       name: v.name || '',
@@ -42,7 +54,7 @@ export function mapApiVehicleToVehicleData(apiVehicle: any): VehicleData {
       priceNum: Number(v.priceNum) || 0,
       transmission: v.transmission || '',
       drivetrain: v.drivetrain || undefined,
-      image: v.imagePath || undefined,
+      image: proxyImageUrl(v.imagePath) || undefined,
       highlights: Array.isArray(v.highlights)
         ? v.highlights
         : typeof v.highlights === 'string'
