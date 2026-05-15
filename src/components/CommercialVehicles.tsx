@@ -16,18 +16,8 @@ interface VehicleCard {
   basePrice?: string;
 }
 
-const fallbackNiagaRingan: VehicleCard[] = [
-  {
-    name: 'Triton',
-    tagline: 'Engineered Beyond Tough — Double Cabin Andalan',
-    payload: 'Double Cab',
-    image: '/images/l200.png',
-    specs: ['2.4L MIVEC Turbo Diesel', '181 PS', 'Super Select 4WD'],
-    icon: Truck,
-    slug: 'triton',
-    category: 'niaga-ringan',
-  },
-];
+// Niaga Ringan is now empty — Triton moved to Passenger
+const fallbackNiagaRingan: VehicleCard[] = [];
 
 const fallbackFuso: VehicleCard[] = [
   {
@@ -173,6 +163,8 @@ export default function CommercialVehicles() {
         </motion.div>
 
         {/* ==================== Section 1: Kendaraan Niaga Ringan ==================== */}
+        {/* Only show this section if there are niaga-ringan vehicles */}
+        {niagaRinganCards.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -248,6 +240,7 @@ export default function CommercialVehicles() {
             })}
           </div>
         </motion.div>
+        )} {/* end niaga-ringan conditional */}
 
         {/* ==================== Section 2: FUSO Commercial ==================== */}
         <motion.div

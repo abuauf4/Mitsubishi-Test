@@ -165,15 +165,16 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
               >
-                {/* Stacked images for seamless crossfade — NO flash */}
-                <AnimatePresence mode="popLayout">
+                {/* Stacked images for seamless crossfade — NO flash, NO pause */}
+                {/* No AnimatePresence mode = simultaneous crossfade: new fades in while old fades out */}
+                <AnimatePresence>
                   <motion.div
                     key={selectedColor}
                     className="absolute inset-0"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.35, ease: 'easeInOut' }}
+                    transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
                   >
                     <Image
                       src={displayImage}

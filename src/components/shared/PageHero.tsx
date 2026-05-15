@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Image from 'next/image';
 import Breadcrumb from './Breadcrumb';
 import ParticleField from '../ParticleField';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 interface PageHeroProps {
   title: string;
@@ -34,31 +34,54 @@ export default function PageHero({
 
   const highlightWords = ['Mitsubishi', 'Komersial', 'Passenger'];
 
+  // Preload next image before showing it — prevents blank/black flash
+  const [displayedImage, setDisplayedImage] = useState(backgroundImage);
+  const [nextImageLoaded, setNextImageLoaded] = useState(true);
+
+  useEffect(() => {
+    if (backgroundImage === displayedImage) return;
+    // Preload the new image first
+    setNextImageLoaded(false);
+    const img = new window.Image();
+    img.onload = () => {
+      setNextImageLoaded(true);
+      setDisplayedImage(backgroundImage);
+    };
+    img.onerror = () => {
+      // Even if it fails, switch to avoid being stuck
+      setNextImageLoaded(true);
+      setDisplayedImage(backgroundImage);
+    };
+    // For /api/ proxy URLs, use them directly; for others, set src
+    img.src = backgroundImage;
+  }, [backgroundImage, displayedImage]);
+
   return (
     <section ref={sectionRef} className="relative w-full min-h-[40vh] sm:min-h-[50vh] lg:min-h-[55vh] overflow-hidden bg-mitsu-obsidian">
-      {/* Background Image with Parallax — uses AnimatePresence for seamless crossfade */}
+      {/* Background Image with Parallax — seamless crossfade, NO blank flash */}
       <motion.div className="absolute inset-0 will-change-transform" style={{ y: bgY }}>
-        <AnimatePresence mode="popLayout">
+        {/* No AnimatePresence mode = simultaneous crossfade, old stays until new is fully visible */}
+        <AnimatePresence>
           <motion.div
-            key={backgroundImage}
+            key={displayedImage}
             className="absolute inset-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
           >
             <Image
-              src={backgroundImage}
+              src={displayedImage}
               alt={title}
               fill
               className="object-cover object-center"
               sizes="100vw"
               priority
-              unoptimized={backgroundImage.startsWith('/api/') || backgroundImage.includes('vercel-storage.com')}
+              unoptimized={displayedImage.startsWith('/api/') || displayedImage.includes('vercel-storage.com')}
               onError={(e) => {
-                // Prevent blank by keeping the image element but suppressing error
+                // Prevent blank by keeping the image element but reducing opacity
                 const target = e.target as HTMLImageElement;
-                target.style.opacity = '0.5';
+                target.style.opacity = '0.3';
               }}
             />
           </motion.div>

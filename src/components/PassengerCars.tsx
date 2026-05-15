@@ -79,6 +79,15 @@ const fallbackVehicles: VehicleCard[] = [
     slug: 'l300',
     category: 'passenger',
   },
+  {
+    name: 'Triton',
+    tagline: 'Engineered Beyond Tough — Double Cabin Andalan',
+    price: 'Mulai Rp 325 Juta',
+    image: '/images/l200.png',
+    specs: ['2.4L MIVEC Turbo Diesel', '181 PS', 'Super Select 4WD'],
+    slug: 'triton',
+    category: 'passenger',
+  },
 ];
 
 export default function PassengerCars() {
