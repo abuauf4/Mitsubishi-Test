@@ -1,20 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { getStaticVehicles } from '@/lib/static-data';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 // Force dynamic rendering — prevent Next.js from caching this route
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
-
-/** Proxy raw blob URLs through /api/image so clients can load them */
-function proxyBlobUrl(url: string | null | undefined): string | undefined {
-  if (!url) return undefined;
-  if (url.startsWith('/api/image?')) return url;
-  if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-    return `/api/image?url=${encodeURIComponent(url)}`;
-  }
-  return url;
-}
 
 export async function GET(request: NextRequest) {
   const db = getDb();

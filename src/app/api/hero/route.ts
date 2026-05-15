@@ -2,16 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { getStaticHero } from '@/lib/static-data';
 import { ensureMigrations } from '@/lib/auto-migrate';
-
-/** Proxy raw blob URLs through /api/image so clients can load them */
-function proxyBlobUrl(url: string | null | undefined): string | undefined {
-  if (!url) return undefined;
-  if (url.startsWith('/api/image?')) return url;
-  if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-    return `/api/image?url=${encodeURIComponent(url)}`;
-  }
-  return url;
-}
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

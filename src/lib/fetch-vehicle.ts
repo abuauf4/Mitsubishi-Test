@@ -7,23 +7,8 @@
  */
 
 import { getDb } from '@/lib/db';
+import { proxyBlobUrl } from '@/lib/image-utils';
 import { VehicleData, VehicleGallery, passengerVehicles, niagaRinganVehicles, commercialVehicles } from '@/data/vehicles';
-
-/**
- * Proxy raw Vercel Blob URLs through /api/image so they work on the client.
- * If the URL is already proxied (/api/image?...) or is a local path, return as-is.
- */
-function proxyBlobUrl(url: string | null | undefined): string | undefined {
-  if (!url) return undefined;
-  // Already proxied — don't double-proxy
-  if (url.startsWith('/api/image?')) return url;
-  // Raw blob URL — proxy it
-  if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-    return `/api/image?url=${encodeURIComponent(url)}`;
-  }
-  // Local path or other URL — return as-is
-  return url;
-}
 import {
   getPassengerVehicle,
   getNiagaRinganVehicle,

@@ -2,26 +2,16 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { VehicleData } from '@/data/vehicles';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 /**
  * Maps an API vehicle response (from Turso DB) to the VehicleData interface
  * used by VehicleDetailPage and VehicleCard components.
  */
-/**
- * Helper: proxy blob URLs through /api/image so they load reliably
- */
-function proxyImageUrl(url: string): string {
-  if (!url) return url;
-  // Proxy Vercel Blob URLs through /api/image
-  if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-    return `/api/image?url=${encodeURIComponent(url)}`;
-  }
-  return url;
-}
 
 export function mapApiVehicleToVehicleData(apiVehicle: any): VehicleData {
   // Get the image path from the DB and proxy blob URLs
-  let image = proxyImageUrl(apiVehicle.imagePath) || '/images/canter.png';
+  let image = proxyBlobUrl(apiVehicle.imagePath) || '/images/canter.png';
 
   // If the image is a proxy URL, add a cache-busting parameter using updatedAt
   // This ensures the browser fetches a fresh image when the vehicle is updated
@@ -46,7 +36,7 @@ export function mapApiVehicleToVehicleData(apiVehicle: any): VehicleData {
     colors: (apiVehicle.colors || []).map((c: any) => ({
       name: c.name || '',
       hex: c.hex || '#000000',
-      image: proxyImageUrl(c.imagePath) || undefined,
+      image: proxyBlobUrl(c.imagePath) || undefined,
     })),
     variants: (apiVehicle.variants || []).map((v: any) => ({
       name: v.name || '',
@@ -54,7 +44,7 @@ export function mapApiVehicleToVehicleData(apiVehicle: any): VehicleData {
       priceNum: Number(v.priceNum) || 0,
       transmission: v.transmission || '',
       drivetrain: v.drivetrain || undefined,
-      image: proxyImageUrl(v.imagePath) || undefined,
+      image: proxyBlobUrl(v.imagePath) || undefined,
       highlights: Array.isArray(v.highlights)
         ? v.highlights
         : typeof v.highlights === 'string'

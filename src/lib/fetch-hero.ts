@@ -1,6 +1,7 @@
 import { getDb } from '@/lib/db';
 import { getStaticHero } from '@/lib/static-data';
 import { ensureMigrations } from '@/lib/auto-migrate';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 export interface HeroData {
   id: string;
@@ -11,15 +12,6 @@ export interface HeroData {
   ctaLink: string;
   page: string;
   active: boolean;
-}
-
-function proxyBlobUrl(url: string | null | undefined): string | undefined {
-  if (!url) return undefined;
-  if (url.startsWith('/api/image?')) return url;
-  if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-    return `/api/image?url=${encodeURIComponent(url)}`;
-  }
-  return url;
 }
 
 export async function fetchHeroData(page: string = 'home'): Promise<HeroData> {
