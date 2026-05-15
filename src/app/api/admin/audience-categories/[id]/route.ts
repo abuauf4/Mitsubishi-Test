@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getDb } from '@/lib/db';
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -50,6 +51,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Audience category not found' }, { status: 404 });
     }
 
+    // Purge caches so category changes appear immediately
+    try {
+      revalidatePath('/');
+      revalidatePath('/api/audience-categories');
+    } catch (e) {
+      console.warn('revalidatePath failed (non-critical):', e);
+    }
+
     const row = updated.rows[0];
     return NextResponse.json({
       ...row,
@@ -86,6 +95,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       sql: 'DELETE FROM AudienceCategory WHERE id = ?',
       args: [id],
     });
+
+    // Purge caches so category changes appear immediately
+    try {
+      revalidatePath('/');
+      revalidatePath('/api/audience-categories');
+    } catch (e) {
+      console.warn('revalidatePath failed (non-critical):', e);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Error deleting audience category:', error);

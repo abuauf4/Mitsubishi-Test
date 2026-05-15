@@ -102,6 +102,12 @@ function ModernGatewayCard({
           fill
           className="object-cover object-center transition-transform duration-[1.2s] ease-out group-hover:scale-110"
           sizes="(max-width: 768px) 100vw, 50vw"
+          unoptimized={image.startsWith('/api/') || image.includes('vercel-storage.com')}
+          onError={(e) => {
+            // Fallback to a local image if the URL fails
+            const target = e.target as HTMLImageElement;
+            target.style.opacity = '0.3';
+          }}
         />
 
         {/* Dark gradient for readability */}
@@ -290,7 +296,7 @@ export default function AudienceGateway() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch('/api/audience-categories');
+        const res = await fetch(`/api/audience-categories?_t=${Date.now()}`);
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0 && !data[0]?.id?.startsWith('static-')) {

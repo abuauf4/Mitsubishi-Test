@@ -19,10 +19,10 @@ export default function PassengerPageClient({ vehicles }: Props) {
   useEffect(() => {
     async function fetchHero() {
       try {
-        const res = await fetch('/api/hero?page=passenger');
+        const res = await fetch(`/api/hero?page=passenger&_t=${Date.now()}`);
         if (!res.ok) return;
         const data = await res.json();
-        if (data && !data.error && data.imagePath) {
+        if (data && data.imagePath) {
           setHeroImage(data.imagePath);
           if (data.title) setHeroTitle(data.title);
           if (data.subtitle) setHeroSubtitle(data.subtitle);

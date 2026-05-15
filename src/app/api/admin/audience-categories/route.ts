@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getDb } from '@/lib/db';
 import { getStaticCategories } from '@/lib/static-data';
 
@@ -103,5 +104,13 @@ export async function POST(request: NextRequest) {
       error: 'Failed to create audience category',
       detail: error?.message || String(error),
     }, { status: 500 });
+  }
+
+  // Purge caches so category changes appear immediately
+  try {
+    revalidatePath('/');
+    revalidatePath('/api/audience-categories');
+  } catch (e) {
+    console.warn('revalidatePath failed (non-critical):', e);
   }
 }

@@ -35,12 +35,12 @@ export default function HeroSection() {
   // Always start with fallback — never blank
   const [hero, setHero] = useState<HeroData>(fallbackHero);
   const [imageSrc, setImageSrc] = useState<string>(fallbackHero.imagePath);
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     async function fetchHero() {
       try {
-        const res = await fetch('/api/hero');
+        // Add cache-busting timestamp to prevent stale cached hero data
+        const res = await fetch(`/api/hero?page=home&_t=${Date.now()}`);
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.imagePath) {
@@ -55,8 +55,6 @@ export default function HeroSection() {
         }
       } catch {
         // Keep fallback data — already set as initial state
-      } finally {
-        setLoaded(true);
       }
     }
     fetchHero();

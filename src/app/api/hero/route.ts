@@ -7,14 +7,16 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const page = searchParams.get('page') || 'home';
 
-  // Use stale-while-revalidate pattern: serve from cache, revalidate in background
+  // Use no-store so browsers and CDNs always get fresh hero data
+  // Hero changes should be visible immediately — no stale cache
   const headers = {
-    'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+    'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=10',
   };
 
   const db = getDb();
   if (!db) {
-    return NextResponse.json(getStaticHero(), { headers });
+    const staticData = getStaticHero(page);
+    return NextResponse.json(staticData, { headers });
   }
 
   // Ensure migrations have run (adds 'page' column if missing)
@@ -26,7 +28,9 @@ export async function GET(request: NextRequest) {
       args: [page],
     });
     if (result.rows.length === 0) {
-      return NextResponse.json(null, { headers });
+      // No active hero for this page — return page-specific static fallback (NOT null!)
+      const staticData = getStaticHero(page);
+      return NextResponse.json(staticData, { headers });
     }
     const hero = {
       ...result.rows[0],
@@ -35,7 +39,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(hero, { headers });
   } catch (error) {
     console.error('Error fetching hero:', error);
-    // Fall back to static data on error
-    return NextResponse.json(getStaticHero(), { headers });
+    // Fall back to static data on error (NOT null!)
+    const staticData = getStaticHero(page);
+    return NextResponse.json(staticData, { headers });
   }
 }

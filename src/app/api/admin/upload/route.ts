@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-/**
- * POST /api/admin/upload
- * Upload an image to Vercel Blob storage.
- * Returns the blob URL path that can be stored in the database.
- */
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -14,61 +9,54 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Validate file type
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File too large. Max 10MB.' }, { status: 400 });
+    }
+
+    // Check file type
     if (!file.type.startsWith('image/')) {
       return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 });
     }
 
-    // Validate file size (max 4MB)
-    if (file.size > 4 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large. Maximum size is 4MB.', hint: 'Compress your image first.' }, { status: 400 });
-    }
-
-    // Try Vercel Blob upload
-    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-    if (!blobToken) {
-      return NextResponse.json({
-        error: 'Blob storage not configured',
-        hint: 'Set BLOB_READ_WRITE_TOKEN in Vercel environment variables, or use the URL mode to paste an external image URL.',
-      }, { status: 503 });
-    }
-
-    try {
-      const { put } = await import('@vercel/blob');
-      const filename = `vehicles/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-
-      // Try public access first, fall back to private if store is configured as private
-      let blob: any;
+    // Try uploading to Vercel Blob
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (token) {
       try {
-        blob = await put(filename, file, {
+        const { put } = await import('@vercel/blob');
+        const blob = await put(`mitsubishi/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`, file, {
           access: 'public',
-          token: blobToken,
+          token,
+          addRandomSuffix: true,
         });
-      } catch (pubError: any) {
-        // If public access fails (private store), try with explicit private access
-        if (pubError?.message?.includes('private') || pubError?.message?.includes('Cannot use public access')) {
-          blob = await put(filename, file, {
-            access: 'private',
-            token: blobToken,
-          });
-        } else {
-          throw pubError;
-        }
-      }
 
-      // For private blobs, use the proxy path so images work via our /api/image endpoint.
-      // The proxy adds Authorization header to access private blobs.
-      const path = `/api/image?url=${encodeURIComponent(blob.url)}`;
-      return NextResponse.json({ path, url: blob.url });
-    } catch (blobError: any) {
-      console.error('Blob upload failed:', blobError);
-      return NextResponse.json({
-        error: 'Failed to upload to blob storage',
-        hint: `${blobError?.message || 'Unknown error'}. Try using URL mode to paste an image URL directly.`,
-      }, { status: 500 });
+        // Return the proxy path so images go through our /api/image proxy
+        const proxyPath = `/api/image?url=${encodeURIComponent(blob.url)}`;
+
+        return NextResponse.json({
+          path: proxyPath,
+          url: blob.url,
+          downloadUrl: blob.downloadUrl,
+        });
+      } catch (blobError: any) {
+        console.error('Blob upload failed:', blobError?.message);
+        return NextResponse.json({
+          error: 'Failed to upload to blob storage',
+          hint: blobError?.message || 'Check BLOB_READ_WRITE_TOKEN environment variable',
+        }, { status: 500 });
+      }
     }
+
+    // No blob token configured — return error
+    return NextResponse.json({
+      error: 'Image storage not configured',
+      hint: 'Set BLOB_READ_WRITE_TOKEN in Vercel environment variables to enable image uploads. Or use URL mode to paste an existing image URL.',
+    }, { status: 503 });
   } catch (error: any) {
     console.error('Upload error:', error);
-    return NextResponse.json({ error: 'Upload failed', detail: error?.message }, { status: 500 });
+    return NextResponse.json({
+      error: 'Upload failed',
+      detail: error?.message || String(error),
+    }, { status: 500 });
   }
 }

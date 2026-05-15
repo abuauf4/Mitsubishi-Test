@@ -92,15 +92,36 @@ export function getStaticVehiclesList() {
   }));
 }
 
-/** Get static hero data */
-export function getStaticHero() {
+/** Get static hero data — page-specific defaults */
+export function getStaticHero(page: string = 'home') {
+  const heroes: Record<string, { title: string; subtitle: string; imagePath: string; ctaText: string; ctaLink: string }> = {
+    passenger: {
+      title: 'Passenger Cars Mitsubishi',
+      subtitle: 'Dari MPV keluarga hingga SUV premium. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.',
+      imagePath: '/images/xpander.png',
+      ctaText: 'Lihat Lineup',
+      ctaLink: '#vehicles',
+    },
+    commercial: {
+      title: 'Commercial Vehicles Mitsubishi',
+      subtitle: 'Dari niaga ringan hingga heavy duty. Solusi armada terpercaya untuk bisnis Anda.',
+      imagePath: '/images/l300.png',
+      ctaText: 'Lihat Armada',
+      ctaLink: '#vehicles',
+    },
+    home: {
+      title: 'Drive Your Ambition',
+      subtitle: 'Temukan kendaraan Mitsubishi terbaik untuk hidup dan bisnis Anda',
+      imagePath: '/images/hero-cinematic.png',
+      ctaText: 'Selengkapnya',
+      ctaLink: '#audience-gateway',
+    },
+  };
+  const hero = heroes[page] || heroes.home;
   return {
-    id: 'static-hero',
-    title: 'Drive Your Ambition',
-    subtitle: 'Temukan kendaraan Mitsubishi terbaik untuk hidup dan bisnis Anda',
-    imagePath: '/images/hero-cinematic.png',
-    ctaText: 'Selengkapnya',
-    ctaLink: '#audience-gateway',
+    id: `static-hero-${page}`,
+    ...hero,
+    page,
     active: true,
   };
 }

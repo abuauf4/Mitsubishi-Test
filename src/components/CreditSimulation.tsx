@@ -16,13 +16,15 @@ export default function CreditSimulation({
   accentTheme = 'red',
 }: CreditSimulationProps) {
   const isYellow = accentTheme === 'yellow';
-  const [creditPrice, setCreditPrice] = useState(defaultPrice);
+  // Ensure price is at least 150 (slider minimum) so calculator always works
+  const safePrice = Math.max(defaultPrice, 150);
+  const [creditPrice, setCreditPrice] = useState(safePrice);
   const [creditDP, setCreditDP] = useState(30);
   const [creditTenor, setCreditTenor] = useState(48);
 
   // Update price when defaultPrice changes (e.g., switching variants)
   useEffect(() => {
-    setCreditPrice(defaultPrice);
+    setCreditPrice(Math.max(defaultPrice, 150));
   }, [defaultPrice]);
 
   const calculateMonthlyPayment = () => {
@@ -94,15 +96,15 @@ export default function CreditSimulation({
                 <input
                   type="range"
                   min="150"
-                  max="1500"
+                  max="2000"
                   value={creditPrice}
                   onChange={(e) => setCreditPrice(parseInt(e.target.value))}
                   className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                  style={{ background: getSliderBackground(creditPrice, 150, 1500) }}
+                  style={{ background: getSliderBackground(creditPrice, 150, 2000) }}
                 />
                 <div className="flex justify-between text-[10px] text-gray-300 mt-2 uppercase tracking-wider">
                   <span>Rp 150 Jt</span>
-                  <span>Rp 1.5 M</span>
+                  <span>Rp 2 M</span>
                 </div>
               </div>
 

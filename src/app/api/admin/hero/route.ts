@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getDb, isTursoAvailable } from '@/lib/db';
 import { getStaticHero } from '@/lib/static-data';
 import { ensureMigrations } from '@/lib/auto-migrate';
@@ -10,8 +11,8 @@ export async function GET(request: NextRequest) {
   const db = getDb();
   if (!db) {
     // Return static data with a static- prefix ID so admin knows it's fallback
-    const staticData = getStaticHero();
-    return NextResponse.json({ ...staticData, id: `static-${page}`, page });
+    const staticData = getStaticHero(page);
+    return NextResponse.json(staticData);
   }
 
   // Ensure migrations have run
@@ -30,8 +31,8 @@ export async function GET(request: NextRequest) {
       });
       if (anyHero.rows.length === 0) {
         // No hero at all for this page — return static fallback
-        const staticData = getStaticHero();
-        return NextResponse.json({ ...staticData, id: `static-${page}`, page });
+        const staticData = getStaticHero(page);
+        return NextResponse.json(staticData);
       }
       const hero = {
         ...anyHero.rows[0],
@@ -46,8 +47,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(hero);
   } catch (error) {
     console.error('Error fetching hero:', error);
-    const staticData = getStaticHero();
-    return NextResponse.json({ ...staticData, id: `static-${page}`, page });
+    const staticData = getStaticHero(page);
+    return NextResponse.json(staticData);
   }
 }
 
@@ -100,6 +101,18 @@ export async function PUT(request: NextRequest) {
         return NextResponse.json({ error: 'Hero not found after update' }, { status: 404 });
       }
 
+      // Purge all hero caches so the public API serves fresh data immediately
+      try {
+        revalidatePath('/');
+        revalidatePath('/passenger');
+        revalidatePath('/commercial');
+        // Also revalidate the API routes so they return fresh data
+        revalidatePath('/api/hero');
+      } catch (e) {
+        // revalidatePath might not work in all environments, but that's OK
+        console.warn('revalidatePath failed (non-critical):', e);
+      }
+
       const row = updated.rows[0];
       return NextResponse.json({
         ...row,
@@ -124,6 +137,16 @@ export async function PUT(request: NextRequest) {
           now,
         ]
       });
+
+      // Purge all hero caches so the public API serves fresh data immediately
+      try {
+        revalidatePath('/');
+        revalidatePath('/passenger');
+        revalidatePath('/commercial');
+        revalidatePath('/api/hero');
+      } catch (e) {
+        console.warn('revalidatePath failed (non-critical):', e);
+      }
 
       return NextResponse.json({
         id: newId,
