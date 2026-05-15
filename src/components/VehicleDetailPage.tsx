@@ -6,7 +6,7 @@ import {
   MessageCircle, ChevronRight, ChevronDown, ArrowLeft,
   Shield, Eye, Zap, Wind, Key, Users, Mountain, Gauge,
   Cog, Sun, Music, Truck, Wrench, DollarSign, Package,
-  Check, Star, Info, Car
+  Check, Star, Info, Car, ChevronLeft, Tag, Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -23,7 +23,7 @@ interface Props {
   vehicle: VehicleData;
 }
 
-type TabId = 'overview' | 'specs' | 'credit' | 'compare';
+type TabId = 'overview' | 'detail' | 'specs' | 'credit' | 'compare';
 
 export default function VehicleDetailPage({ vehicle }: Props) {
   const isCommercial = vehicle.category === 'commercial';
@@ -34,6 +34,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [expandedSpec, setExpandedSpec] = useState<number>(0);
+  const [detailIndex, setDetailIndex] = useState(0);
 
   // Swipe state
   const touchStartX = useRef<number | null>(null);
@@ -59,6 +60,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
 
   const tabs: { id: TabId; label: string }[] = [
     { id: 'overview', label: 'Ikhtisar' },
+    ...(vehicle.detailItems && vehicle.detailItems.length > 0 ? [{ id: 'detail' as TabId, label: 'Detail Produk' }] : []),
     { id: 'specs', label: 'Spesifikasi' },
     { id: 'credit', label: 'Simulasi Kredit' },
     ...(vehicle.variants.length > 1 ? [{ id: 'compare' as TabId, label: 'Bandingkan' }] : []),
@@ -302,6 +304,58 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 ))}
               </div>
 
+              {/* Highlight Badges — fitur utama dari website resmi */}
+              {vehicle.highlightBadges && vehicle.highlightBadges.length > 0 && (
+                <div className="mt-5 grid grid-cols-2 gap-2.5">
+                  {vehicle.highlightBadges.map((badge, i) => {
+                    const IconComponent = iconMap[badge.icon] || Star;
+                    return (
+                      <motion.div
+                        key={badge.label}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
+                        className={`group p-3 rounded-xl border transition-all duration-300 cursor-default ${
+                          isCommercial
+                            ? 'border-mitsu-fuso-yellow/15 bg-mitsu-fuso-yellow/3 hover:border-mitsu-fuso-yellow/30 hover:bg-mitsu-fuso-yellow/5'
+                            : 'border-mitsu-red/10 bg-mitsu-red/3 hover:border-mitsu-red/20 hover:bg-mitsu-red/5'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            isCommercial ? 'bg-mitsu-fuso-yellow/10' : 'bg-mitsu-red/8'
+                          }`}>
+                            <IconComponent className={`w-4 h-4 ${isCommercial ? 'text-mitsu-fuso-yellow-dark' : 'text-mitsu-red'}`} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-bold text-mitsu-dark leading-tight">{badge.label}</p>
+                            <p className="text-[9px] text-gray-400 mt-0.5 leading-snug line-clamp-2">{badge.description}</p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Promo Badge */}
+              {vehicle.promoText && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.4 }}
+                  className="mt-4 p-3 rounded-xl border border-green-200 bg-green-50/80"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <Tag className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[10px] font-bold text-green-700 uppercase tracking-wider">Promo Bulan Ini</p>
+                      <p className="text-[11px] text-green-600 mt-0.5 leading-relaxed">{vehicle.promoText}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {/* Variant Selector */}
               <div className="mt-6">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Pilih Varian</p>
@@ -487,6 +541,157 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">{item.label}</p>
                         <p className="text-sm font-bold text-mitsu-dark mt-0.5">{item.value}</p>
                       </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'detail' && vehicle.detailItems && (
+              <motion.div
+                key="detail"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="flex items-center gap-3 mb-8">
+                  <div className={`w-1 h-6 rounded-full ${isCommercial ? 'bg-mitsu-fuso-yellow' : 'bg-mitsu-red'}`} />
+                  <h2 className="text-xl sm:text-2xl font-bold text-mitsu-dark font-serif">Kenali {vehicle.name} Lebih Dekat</h2>
+                </div>
+
+                {/* Detail Carousel */}
+                <div className="relative">
+                  {/* Navigation Arrows */}
+                  {vehicle.detailItems.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setDetailIndex(prev => prev === 0 ? vehicle.detailItems!.length - 1 : prev - 1)}
+                        className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-20 w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                          isCommercial
+                            ? 'bg-mitsu-fuso-yellow/10 hover:bg-mitsu-fuso-yellow/20 text-mitsu-fuso-yellow-dark'
+                            : 'bg-mitsu-red/10 hover:bg-mitsu-red/15 text-mitsu-red'
+                        } shadow-lg backdrop-blur-sm border border-white/50`}
+                        aria-label="Sebelumnya"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => setDetailIndex(prev => (prev + 1) % vehicle.detailItems!.length)}
+                        className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-20 w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                          isCommercial
+                            ? 'bg-mitsu-fuso-yellow/10 hover:bg-mitsu-fuso-yellow/20 text-mitsu-fuso-yellow-dark'
+                            : 'bg-mitsu-red/10 hover:bg-mitsu-red/15 text-mitsu-red'
+                        } shadow-lg backdrop-blur-sm border border-white/50`}
+                        aria-label="Selanjutnya"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Current Detail Card */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={detailIndex}
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -30 }}
+                      transition={{ duration: 0.3 }}
+                      className="mx-8 sm:mx-12"
+                    >
+                      <div className={`p-6 sm:p-8 rounded-2xl border ${
+                        isCommercial
+                          ? 'border-mitsu-fuso-yellow/15 bg-gradient-to-br from-mitsu-fuso-yellow/5 to-transparent'
+                          : 'border-mitsu-red/10 bg-gradient-to-br from-mitsu-red/5 to-transparent'
+                      }`}>
+                        <div className="flex items-start gap-4">
+                          <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
+                            isCommercial ? 'bg-mitsu-fuso-yellow/10' : 'bg-mitsu-red/8'
+                          }`}>
+                            <Sparkles className={`w-6 h-6 ${isCommercial ? 'text-mitsu-fuso-yellow-dark' : 'text-mitsu-red'}`} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="text-lg sm:text-xl font-bold text-mitsu-dark font-serif">{vehicle.detailItems[detailIndex].title}</h3>
+                              {vehicle.detailItems[detailIndex].note && (
+                                <span className={`px-2 py-0.5 text-[9px] font-bold rounded-full whitespace-nowrap ${
+                                  isCommercial
+                                    ? 'bg-mitsu-fuso-yellow/10 text-mitsu-fuso-yellow-dark'
+                                    : 'bg-mitsu-red/10 text-mitsu-red'
+                                }`}>
+                                  {vehicle.detailItems[detailIndex].note}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500 leading-relaxed">{vehicle.detailItems[detailIndex].description}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Pagination Dots */}
+                  {vehicle.detailItems.length > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-6">
+                      {vehicle.detailItems.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setDetailIndex(i)}
+                          className={`transition-all duration-300 cursor-pointer ${
+                            i === detailIndex
+                              ? isCommercial
+                                ? 'w-6 h-2 rounded-full bg-mitsu-fuso-yellow'
+                                : 'w-6 h-2 rounded-full bg-mitsu-red'
+                              : 'w-2 h-2 rounded-full bg-gray-200 hover:bg-gray-300'
+                          }`}
+                          aria-label={`Detail item ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Counter */}
+                  <p className="text-center text-[10px] text-gray-300 mt-2 tracking-wider">
+                    {detailIndex + 1} / {vehicle.detailItems.length}
+                  </p>
+                </div>
+
+                {/* All Details Grid (mobile-friendly list) */}
+                <div className="mt-10">
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className={`w-1 h-6 rounded-full ${isCommercial ? 'bg-mitsu-fuso-yellow/30' : 'bg-mitsu-red/30'}`} />
+                    <h3 className="text-base font-bold text-mitsu-dark">Semua Fitur Detail</h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {vehicle.detailItems.map((item, i) => (
+                      <button
+                        key={item.title}
+                        onClick={() => setDetailIndex(i)}
+                        className={`text-left p-4 rounded-xl border transition-all duration-300 cursor-pointer ${
+                          detailIndex === i
+                            ? isCommercial
+                              ? 'border-mitsu-fuso-yellow/30 bg-mitsu-fuso-yellow/5 shadow-sm'
+                              : 'border-mitsu-red/20 bg-mitsu-red/5 shadow-sm'
+                            : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <span className={`flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold ${
+                            detailIndex === i
+                              ? isCommercial ? 'bg-mitsu-fuso-yellow text-mitsu-dark' : 'bg-mitsu-red text-white'
+                              : 'bg-mitsu-light text-gray-400'
+                          }`}>
+                            {i + 1}
+                          </span>
+                          <div className="min-w-0">
+                            <p className={`text-xs font-bold ${detailIndex === i ? 'text-mitsu-dark' : 'text-gray-600'}`}>{item.title}</p>
+                            {item.note && (
+                              <span className="text-[9px] text-gray-300 mt-0.5">{item.note}</span>
+                            )}
+                          </div>
+                        </div>
+                      </button>
                     ))}
                   </div>
                 </div>

@@ -12,6 +12,7 @@ const navLinks = [
   { label: 'Home', href: '/', isRoute: true },
   { label: 'Passenger Cars', href: '/passenger', isRoute: true },
   { label: 'Commercial Vehicles', href: '/commercial', isRoute: true },
+  { label: 'Bandingkan', href: '/compare', isRoute: true },
   { label: 'Promo', href: '/#promo', isRoute: false },
   { label: 'Sales Consultant', href: '/#sales', isRoute: false },
   { label: 'Test Drive', href: '/#test-drive', isRoute: false },

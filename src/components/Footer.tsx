@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUp, Globe, Camera, Mail } from 'lucide-react';
+import { ArrowUp, Globe, Camera, Mail, Send, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const footerLinks = {
@@ -25,6 +26,7 @@ const footerLinks = {
     links: [
       { label: 'Test Drive', href: '/#test-drive' },
       { label: 'Simulasi Kredit', href: '/passenger#credit' },
+      { label: 'Bandingkan Kendaraan', href: '/compare' },
       { label: 'Promo Terbaru', href: '/#promo' },
       { label: 'Fleet Solution', href: '/commercial#fleet' },
       { label: 'Sales Consultant', href: '/#sales' },
@@ -53,6 +55,18 @@ const footerLinks = {
 export default function Footer() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim() && email.includes('@')) {
+      setSubscribed(true);
+      setEmail('');
+      setTimeout(() => setSubscribed(false), 4000);
+    }
   };
 
   return (
@@ -182,6 +196,46 @@ export default function Footer() {
           <div className="flex-1 h-px bg-white/5" />
           <div className="w-1 h-1 bg-mitsu-red/30 rotate-45" />
           <div className="flex-1 h-px bg-white/5" />
+        </div>
+
+        {/* Newsletter Section */}
+        <div className="mb-10 p-6 rounded-2xl border border-white/5 bg-white/2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+            <div className="flex-1 min-w-0">
+              <h4 className="text-white font-bold text-sm font-serif">Dapatkan Informasi Terbaru</h4>
+              <p className="text-white/25 text-xs mt-1">Promo, model terbaru, dan penawaran eksklusif langsung di inbox Anda.</p>
+            </div>
+            <form onSubmit={handleSubscribe} className="flex items-center gap-2 w-full sm:w-auto">
+              {subscribed ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-green-500/10 border border-green-500/20 rounded-xl"
+                >
+                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <span className="text-green-400 text-xs font-semibold">Berhasil berlangganan!</span>
+                </motion.div>
+              ) : (
+                <>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Masukkan email Anda"
+                    className="flex-1 sm:w-56 px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/20 focus:outline-none focus:border-mitsu-red/40 focus:ring-1 focus:ring-mitsu-red/20 transition-all"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-mitsu-red hover:bg-mitsu-red/80 text-white text-xs font-bold rounded-xl transition-all hover:scale-105 active:scale-95 min-h-[40px]"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Kirim</span>
+                  </button>
+                </>
+              )}
+            </form>
+          </div>
         </div>
 
         {/* Bottom Bar */}

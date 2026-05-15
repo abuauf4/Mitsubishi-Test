@@ -37,6 +37,18 @@ export interface VehicleFeature {
   description: string;
 }
 
+export interface VehicleHighlightBadge {
+  icon: string;
+  label: string;
+  description: string;
+}
+
+export interface VehicleDetailItem {
+  title: string;
+  description: string;
+  note?: string;
+}
+
 export interface VehicleData {
   slug: string;
   name: string;
@@ -48,6 +60,9 @@ export interface VehicleData {
   variants: VehicleVariant[];
   specs: VehicleSpec[];
   features: VehicleFeature[];
+  highlightBadges?: VehicleHighlightBadge[];
+  detailItems?: VehicleDetailItem[];
+  promoText?: string;
   gallery?: VehicleGallery;
   payload?: string;
   specsShort: string[];
@@ -63,6 +78,7 @@ export const passengerVehicles: VehicleData[] = [
     tagline: 'Take Control, Stay Ahead',
     category: 'passenger',
     basePrice: 'Mulai Rp 271 Juta',
+    promoText: 'DP ringan mulai 10%, bunga ringan 0%, dan cashback hingga jutaan rupiah.',
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778709761819-passenger_new-xpander_main_hvh87j5kea2g6c7zt01855a3sxsgzp0d2w89jz3p-optimized.webp',
     colors: [
       { name: 'Quartz White Pearl', hex: '#F5F5F0' },
@@ -77,13 +93,30 @@ export const passengerVehicles: VehicleData[] = [
       { name: 'Exceed Tourer MT', price: 'Rp 306.500.000', priceNum: 306, transmission: '5-Speed Manual', highlights: ['1.5L MIVEC', '7 Penumpang', 'AC Dual Zone', 'Keyless Entry'] },
       { name: 'Exceed Tourer CVT', price: 'Rp 321.500.000', priceNum: 321, transmission: 'CVT', highlights: ['1.5L MIVEC', '7 Penumpang', 'AC Dual Zone', 'Cruise Control'] },
       { name: 'Ultimate MT', price: 'Rp 346.500.000', priceNum: 346, transmission: '5-Speed Manual', highlights: ['1.5L MIVEC', '7 Penumpang', 'LED Headlamp', 'Push Start'] },
-      { name: 'Ultimate CVT', price: 'Rp 361.500.000', priceNum: 361, transmission: 'CVT', highlights: ['1.5L MIVEC', '7 Penumpang', '360° Camera', 'Cruise Control'] },
+      { name: 'Ultimate CVT', price: 'Rp 345.000.000', priceNum: 345, transmission: 'CVT', highlights: ['1.5L MIVEC', '7 Penumpang', '360° Camera', 'Cruise Control'] },
     ],
     specs: [
       { category: 'Mesin', items: [{ label: 'Tipe Mesin', value: '4A91 1.5L DOHC MIVEC 16-Valve' }, { label: 'Kapasitas', value: '1.499 cc' }, { label: 'Tenaga Maks', value: '105 PS / 6.000 rpm' }, { label: 'Torsi Maks', value: '141 Nm / 4.000 rpm' }, { label: 'Bahan Bakar', value: 'Bensin' }] },
       { category: 'Dimensi', items: [{ label: 'Panjang', value: '4.595 mm' }, { label: 'Lebar', value: '1.750 mm' }, { label: 'Tinggi', value: '1.730 mm (GLS) / 1.750 mm' }, { label: 'Wheelbase', value: '2.775 mm' }, { label: 'Ground Clearance', value: '220 mm (GLS) / 225 mm' }] },
       { category: 'Keselamatan', items: [{ label: 'Airbag', value: '2 / 7 (varian)' }, { label: 'Rem ABS+EBD', value: 'Standar' }, { label: 'ASC', value: 'Standar' }, { label: 'Hill Start Assist', value: 'Standar' }, { label: 'Isofix', value: 'Standar' }] },
       { category: 'Kenyamanan', items: [{ label: 'AC', value: 'Single / Dual Zone' }, { label: 'Head Unit', value: 'Touchscreen Display Audio' }, { label: 'Kursi', value: '7 Penumpang (2-3-2)' }, { label: 'Power Outlet', value: 'Semua Baris' }] },
+    ],
+    highlightBadges: [
+      { icon: 'Shield', label: 'Sistem Keamanan', description: 'Fitur keselamatan unggulan memberikan perlindungan maksimal di setiap perjalanan.' },
+      { icon: 'Car', label: 'Tampilan Elegan', description: 'Desain eksterior modern dan dinamis untuk setiap perjalanan keluarga.' },
+      { icon: 'Users', label: 'Interior Favorit Keluarga', description: 'Kabin luas dan nyaman untuk seluruh anggota keluarga.' },
+      { icon: 'Zap', label: 'Inovasi Teknologi', description: 'Teknologi berkendara canggih untuk pengalaman yang lebih percaya diri.' },
+    ],
+    detailItems: [
+      { title: 'Desain Tampilan Depan Terbaru', description: 'Desain depan terbaru yang memberikan aksen tangguh dan sporty dengan kombinasi warna chrome dan hitam.' },
+      { title: 'Lampu Depan Bentuk T-Shape', description: 'Bentuk lampu depan T-Shape baru dengan warna smoke chrome untuk visibilitas maksimal.' },
+      { title: 'Alloy Wheel 17 Inci Desain Terbaru', description: 'Alloy wheel 17 inci terbaru dengan desain dua warna memberikan sentuhan estetika modern.', note: 'Ultimate & Exceed Tourer' },
+      { title: 'Desain Bumper Belakang Terbaru', description: 'Garis dinamis dan aksen reflektor menyatu, desain bumper belakang kini lebih kokoh.' },
+      { title: 'LED Fog Light Terbaru', description: 'Didesain untuk kondisi ekstrem, LED fog light memberikan penerangan maksimal.', note: 'Ultimate' },
+      { title: 'Lampu Belakang Bentuk T-Shape', description: 'Meningkatkan visibilitas di bagian belakang kendaraan pada saat malam hari.' },
+      { title: 'Bagasi Luas', description: 'Bagasi yang lapang, menawarkan kapasitas penyimpanan yang optimal.' },
+      { title: 'Pilihan Interior Beragam', description: 'Setiap varian dirancang dengan sentuhan berbeda yang mencerminkan karakter dan kenyamanan.' },
+      { title: 'Desain Eksterior Belakang', description: 'Desain bodi mobil bagian belakang yang lebar memberikan sentuhan tampilan kokoh dan stabil.' },
     ],
     features: [
       { icon: 'Shield', title: 'Active Stability Control', description: 'Sistem kontrol stabilitas aktif yang menjaga kendaraan tetap stabil di berbagai kondisi jalan' },
@@ -117,6 +150,21 @@ export const passengerVehicles: VehicleData[] = [
       { category: 'Mesin', items: [{ label: 'Tipe Mesin', value: '4A91 1.5L DOHC MIVEC 16-Valve' }, { label: 'Kapasitas', value: '1.499 cc' }, { label: 'Tenaga Maks', value: '105 PS / 6.000 rpm' }, { label: 'Torsi Maks', value: '141 Nm / 4.000 rpm' }, { label: 'Bahan Bakar', value: 'Bensin' }] },
       { category: 'Dimensi', items: [{ label: 'Panjang', value: '4.595 mm' }, { label: 'Lebar', value: '1.750 mm' }, { label: 'Tinggi', value: '1.750 mm' }, { label: 'Wheelbase', value: '2.775 mm' }, { label: 'Ground Clearance', value: '225 mm' }] },
       { category: 'Keselamatan', items: [{ label: 'Airbag', value: '2 / 7 (varian)' }, { label: 'Rem ABS+EBD', value: 'Standar' }, { label: 'ASC', value: 'Standar' }, { label: 'Hill Start Assist', value: 'Standar' }] },
+    ],
+    promoText: 'DP ringan mulai 10%, bunga ringan 0%, dan cashback hingga jutaan rupiah.',
+    highlightBadges: [
+      { icon: 'Mountain', label: 'Tampilan Gagah', description: 'Hadir dengan tampilan eksterior baru, berikan kesan lebih tangguh.' },
+      { icon: 'Users', label: 'Kabin Super Luas', description: 'Dilengkapi fitur canggih pada digital display pengemudi yang lebih lengkap.' },
+      { icon: 'Zap', label: 'Mesin Irit & Responsif', description: 'Mesin bertenaga dan efisien untuk perjalanan jauh maupun kota.' },
+      { icon: 'Shield', label: 'Tangguh di Berbagai Medan', description: 'Fitur keselamatan canggih untuk pengalaman berkendara aman dan nyaman.' },
+    ],
+    detailItems: [
+      { title: 'Bumper & Grille Depan Baru', description: 'Tampilan depan dengan grille tebal dan garis tegas membuat kendaraan terlihat gagah di segala medan.' },
+      { title: 'Alloy Wheel 17 Inci Desain Terbaru', description: 'Alloy wheel berukuran 17 inci dengan desain sporty dan tangguh, memberikan stabilitas dan kenyamanan.' },
+      { title: 'Desain Bumper Belakang yang Gagah', description: 'Desain bumper belakang tampil lebih tegas dan elegan, dilengkapi detail aksen yang memperkuat karakter SUV.' },
+      { title: 'Lampu Depan Berbentuk T-Shape', description: 'Lampu depan berbentuk T-shape melengkapi kesan gagah dan meningkatkan visibilitas.' },
+      { title: 'Lampu Belakang Berbentuk T-Shape', description: 'Meningkatkan visibilitas pada malam hari, memperkuat desain modern.' },
+      { title: 'LED Foglamp', description: 'LED Foglamp yang menyediakan visibilitas terbaik dalam kondisi hujan dan berkabut.' },
     ],
     features: [
       { icon: 'Mountain', title: 'Adventure Ready', description: 'Ground clearance 225mm dengan overfender dan roof rail untuk jelajah segala medan' },
@@ -155,6 +203,18 @@ export const passengerVehicles: VehicleData[] = [
       { category: 'Keselamatan', items: [{ label: 'Airbag', value: '2 / 7 (varian)' }, { label: 'Rem ABS+EBD', value: 'Standar' }, { label: 'ASTC', value: 'Standar' }, { label: 'FCM', value: 'Dakar Ultimate' }, { label: 'BSW + RCTA', value: 'Dakar Ultimate' }] },
       { category: 'Transmisi & Drivetrain', items: [{ label: 'Transmisi', value: '5MT / 5AT / 8AT' }, { label: 'Drivetrain', value: '4x2 / SS4-II' }, { label: 'Off-road Mode', value: 'Gravel/Snow/Mud/Sand' }, { label: 'Rear Diff Lock', value: 'Varian 4x4' }] },
     ],
+    promoText: 'DP ringan mulai 15%, bunga ringan 0%, dan cashback hingga jutaan rupiah.',
+    highlightBadges: [
+      { icon: 'Shield', label: 'Diamond Sense', description: 'Dengan teknologi Diamond Sense, New Pajero Sport hadir melindungi setiap langkah petualangan Anda.' },
+      { icon: 'Gauge', label: 'Mesin Tangguh & Bertenaga', description: 'Ditenagai oleh inovasi mesin yang tangguh namun ramah lingkungan.' },
+      { icon: 'Mountain', label: 'Performa Mengemudi Gagah', description: 'Dirancang untuk menghadapi tantangan terberat, performa yang kuat dan gagah.' },
+      { icon: 'Sun', label: 'Fitur Mewah Kendaraan', description: 'Menggabungkan desain elegan dengan teknologi untuk pengalaman berkendara lebih nyaman.' },
+    ],
+    detailItems: [
+      { title: 'New Front Grille & Under Garnish', description: 'Warna putih pada grille memberikan kesan elegan, menciptakan tampilan yang berkelas dan tangguh.' },
+      { title: 'Alloy Wheel Ukuran 18 Inci', description: 'Desain velg dual-tone baru membuat kendaraan Anda tampil lebih modern dan sporty.', note: 'Semua varian Dakar' },
+      { title: 'Garnish Belakang Bawah Baru', description: 'Desain modern dan dinamis meningkatkan tampilan eksterior sekaligus memberikan perlindungan tambahan.' },
+    ],
     features: [
       { icon: 'Mountain', title: 'Super Select 4WD-II', description: 'Sistem penggerak 4 roda canggih dengan 4 mode berkendara untuk segala medan' },
       { icon: 'Shield', title: '7 Airbag & Diamond Sense', description: 'Sistem keselamatan komprehensif dengan FCM, BSW, RCTA, dan UMS Prevention' },
@@ -168,7 +228,7 @@ export const passengerVehicles: VehicleData[] = [
   {
     slug: 'destinator',
     name: 'Destinator',
-    tagline: 'Uncover Your Next Destination',
+    tagline: 'Premium Family SUV — Confidence Booster for Energetic Family',
     category: 'passenger',
     basePrice: 'Mulai Rp 397 Juta',
     image: '/api/image?url=https%3A%2F%2Fucdtyehtmprstsit.private.blob.vercel-storage.com%2Fmitsubishi%2F1778708556639-passenger_destinator_main_26my-dst-idn-p1-mc10-front-right-w81.jpg',
@@ -190,6 +250,21 @@ export const passengerVehicles: VehicleData[] = [
       { category: 'Dimensi', items: [{ label: 'Panjang', value: '4.680 mm' }, { label: 'Lebar', value: '1.840 mm' }, { label: 'Tinggi', value: '1.780 mm' }, { label: 'Wheelbase', value: '2.815 mm' }, { label: 'Ground Clearance', value: '244 mm' }] },
       { category: 'Keselamatan', items: [{ label: 'Airbag', value: '2 / 4 (varian)' }, { label: 'Rem ABS+EBD', value: 'Standar' }, { label: 'ASC', value: 'Standar' }, { label: 'FCM', value: 'Ultimate ke atas' }, { label: 'BSW + RCTA', value: 'Ultimate ke atas' }] },
       { category: 'Kenyamanan', items: [{ label: 'AC', value: 'Auto Climate / Dual Zone' }, { label: 'Head Unit', value: '12.3" Touchscreen' }, { label: 'Audio', value: 'Yamaha Premium (Ultimate+)' }, { label: 'Drive Mode', value: 'Normal/Wet/Tarmac/Gravel/Mud' }] },
+    ],
+    promoText: 'Program Trade-In dan pembiayaan melalui PT. Dipo Star Finance tersedia.',
+    highlightBadges: [
+      { icon: 'Cog', label: '5 Mode Berkendara', description: '5 mode berkendara yang mendukung performa maksimal untuk berbagai kondisi jalan.' },
+      { icon: 'Shield', label: 'Diamond Sense Technology', description: 'Fitur keselamatan terbaik dari Mitsubishi Motors memberikan perlindungan maksimal.' },
+      { icon: 'Zap', label: 'Mitsubishi Connect', description: 'Selalu terhubung dengan Mitsubishi Destinator melalui genggaman smartphone.' },
+    ],
+    detailItems: [
+      { title: 'Two-Tone & Black Engine Hood Emblem', description: 'Perpaduan warna two-tone yang ikonik dengan emblem hitam eksklusif memberikan kesan elegan.', note: '55th Anniversary Edition' },
+      { title: 'Black Tailgate Pet Name Emblem', description: 'Emblem hitam eksklusif di bagian belakang membuat tampilan mobil lebih gagah.', note: '55th Anniversary Edition' },
+      { title: 'Dynamic Shield & Grille Transparan', description: 'Desain dynamic shield khas Mitsubishi Motors dipadukan dengan akrilik transparan pada grille.' },
+      { title: 'Lampu Depan Berbentuk T-Shape', description: 'Desain lampu depan berbentuk T mempertegas tampilan elegan kendaraan.' },
+      { title: 'Lampu Belakang Berbentuk T-Shape', description: 'Lampu bagian belakang memberi kesan estetika kuat pada mobil.' },
+      { title: 'Roof Rail Desain Pillar Iconic', description: 'Melambangkan kekuatan dan ketangguhan, memadukan kesan mewah khas SUV.' },
+      { title: 'Tampilan Belakang yang Gagah', description: 'Desain belakang memberikan kesan futuristik dan premium, memperkuat karakter kendaraan.' },
     ],
     features: [
       { icon: 'Zap', title: '1.5L MIVEC Turbo', description: 'Mesin 4B40 turbo bertenaga 163 PS dan torsi 250 Nm — SUV paling bertenaga di kelasnya' },
@@ -228,6 +303,26 @@ export const passengerVehicles: VehicleData[] = [
       { category: 'Keselamatan', items: [{ label: 'Airbag', value: '4 / 7 (varian)' }, { label: 'Rem ABS+EBD', value: 'Standar' }, { label: 'ASC', value: 'Standar' }, { label: 'FCM', value: 'Ultimate DS' }, { label: 'BSW + RCTA', value: 'Ultimate ke atas' }] },
       { category: 'Kenyamanan', items: [{ label: 'AC', value: 'Auto Climate / Dual Zone' }, { label: 'Head Unit', value: '8" / 12.3" Touchscreen' }, { label: 'Audio', value: '6SP / Yamaha 8SP' }, { label: 'Drive Mode', value: 'Normal/Wet/Gravel/Mud' }] },
     ],
+    promoText: 'DP ringan mulai 10%, bunga ringan 0%, dan cashback hingga jutaan rupiah.',
+    highlightBadges: [
+      { icon: 'Shield', label: 'Teknologi Diamond Sense', description: 'Mitsubishi Xforce dengan Diamond Sense menghadirkan fitur keselamatan canggih.' },
+      { icon: 'Cog', label: '4 Mode Berkendara', description: 'Apapun tantangannya, Xforce siap memberikan performa terbaik dengan kenyamanan dan kontrol penuh.' },
+      { icon: 'Car', label: 'Desain Sporty & Elegan', description: 'Kesan stylish membuat setiap pengendara tampil lebih percaya diri di jalan.' },
+      { icon: 'Users', label: 'Spacious & Comfort', description: 'Ciptakan momen seru dengan kabin lebih lega di kelasnya.' },
+    ],
+    detailItems: [
+      { title: 'Black Engine Hood Emblem', description: 'Perpaduan warna two-tone yang ikonik dengan emblem hitam eksklusif.', note: '55th Anniversary Edition' },
+      { title: 'Desain Two-Tone yang Elegan', description: 'Atap hitam yang kontras dengan bodi berwarna, memberikan kesan sporty dan elegan.', note: 'Ultimate with Diamond Sense' },
+      { title: 'Roof Rail Baru', description: 'Dilengkapi roof rail baru dengan desain dinamis yang memperkuat tampilan sporty.', note: 'Ultimate with Diamond Sense' },
+      { title: 'Generasi Terbaru Dynamic Shield', description: 'Desain ikonik Mitsubishi Motors kini tampil lebih modern, menegaskan kesan kokoh dan performa tinggi.' },
+      { title: 'Lampu Depan T-Shape yang Ikonik', description: 'T-shape LED headlight membantu jarak pandang yang lebih luas di malam hari.' },
+      { title: 'All LED Rear Combination Light', description: 'Menarik secara visual dan mudah terlihat oleh pengendara lain dan pejalan kaki.' },
+      { title: 'Desain Roda yang Khas', description: 'Ban besar 225/50R18 membuat Anda semakin percaya diri melintasi segala medan.' },
+      { title: 'Hands-Free Power Liftgate', description: 'Memudahkan membuka bagasi dengan Kick Sensor atau Kunci Remote.' },
+      { title: 'Garnish Belakang Bawah Baru', description: 'Desain modern dan dinamis menegaskan karakter tangguh dan mewah.' },
+      { title: 'Spoiler Baru', description: 'Tampil lebih agresif dan stylish dengan spoiler baru yang elegan.', note: 'Ultimate with Diamond Sense' },
+      { title: 'Desain Futuristik', description: 'Menggabungkan kesan canggih dan kokoh khas SUV lewat lekukan bodi yang tegas.' },
+    ],
     features: [
       { icon: 'Music', title: 'Yamaha Premium Audio', description: 'Sistem audio premium 8 speaker Yamaha dengan 4 preset EQ untuk pengalaman suara terbaik (Ultimate)' },
       { icon: 'Shield', title: 'Diamond Sense ADAS', description: 'Forward Collision Mitigation, Adaptive Cruise Control, BSW, RCTA, Auto High Beam (Ultimate DS)' },
@@ -256,6 +351,17 @@ export const passengerVehicles: VehicleData[] = [
       { category: 'Dimensi', items: [{ label: 'Panjang', value: '3.395 mm' }, { label: 'Lebar', value: '1.475 mm' }, { label: 'Tinggi', value: '1.915 mm' }, { label: 'Wheelbase', value: '2.390 mm' }, { label: 'Ground Clearance', value: '165 mm' }] },
       { category: 'Muatan', items: [{ label: 'Payload', value: '425 Kg' }, { label: 'Area Kargo', value: '1.830 x 1.370 x 1.230 mm' }, { label: 'Berat Kosong', value: '1.125 Kg' }, { label: 'Kursi', value: '2 Penumpang' }, { label: 'Radius Putar', value: '4.3 m' }] },
     ],
+    promoText: 'Kendaraan listrik tanpa emisi, bebas ganjil genap Jakarta.',
+    highlightBadges: [
+      { icon: 'Zap', label: 'Zero Emission', description: 'Kendaraan listrik tanpa emisi untuk logistik kota yang ramah lingkungan.' },
+      { icon: 'Gauge', label: '180 km Range', description: 'Jangkauan 180 km per pengisian penuh untuk rute distribusi harian.' },
+      { icon: 'DollarSign', label: 'Biaya Operasional Rendah', description: 'Tanpa bahan bakar, tanpa oli mesin, perawatan minimal.' },
+    ],
+    detailItems: [
+      { title: 'Desain Kompak & Modern', description: 'Bodi kompak untuk mobilitas lincah di jalanan perkotaan yang sempit.' },
+      { title: 'DC Fast Charging', description: 'Pengisian cepat 0-80% hanya 42 menit untuk minimalkan downtime.' },
+      { title: 'Area Kargo Luas', description: 'Area kargo 1.830 x 1.370 x 1.230 mm untuk kebutuhan distribusi harian.' },
+    ],
     features: [
       { icon: 'Zap', title: 'Zero Emission', description: 'Kendaraan listrik tanpa emisi — bebas ganjil genap Jakarta dan ramah lingkungan untuk logistik kota' },
       { icon: 'Gauge', title: '180 km Range', description: 'Jangkauan 180 km per pengisian penuh, cukup untuk rute distribusi harian di perkotaan' },
@@ -283,6 +389,17 @@ export const passengerVehicles: VehicleData[] = [
       { category: 'Mesin', items: [{ label: 'Tipe Mesin', value: '4N14 2.2L DOHC 4-Cyl Turbo Diesel' }, { label: 'Kapasitas', value: '2.268 cc' }, { label: 'Tenaga Maks', value: '98 PS / 3.500 rpm' }, { label: 'Torsi Maks', value: '200 Nm / 1.500-2.500 rpm' }, { label: 'Bahan Bakar', value: 'Diesel Euro 4' }] },
       { category: 'Dimensi', items: [{ label: 'Panjang', value: '4.315 mm (Flat Deck) / 4.165 mm (CC)' }, { label: 'Lebar', value: '1.695 mm' }, { label: 'Tinggi', value: '1.845 mm' }, { label: 'Wheelbase', value: '2.435 mm (FD) / 2.200 mm (CC)' }, { label: 'Ground Clearance', value: '200 mm' }] },
       { category: 'Suspensi & Rem', items: [{ label: 'Depan', value: 'Double Wishbone + Coil Spring' }, { label: 'Belakang', value: 'Semi Elliptic Leaf Spring' }, { label: 'Rem Depan', value: 'Disc' }, { label: 'Rem Belakang', value: 'Drum' }, { label: 'Tangki BBM', value: '47 L' }] },
+    ],
+    promoText: 'DP ringan mulai 10%, bunga ringan 0%, dan program pilihan cashback.',
+    highlightBadges: [
+      { icon: 'Mountain', label: 'Tangguh di Tanjakan', description: 'Menggunakan mesin yang terbukti memiliki tenaga terbesar di kelasnya.' },
+      { icon: 'Shield', label: 'Hebat di Segala Medan', description: 'Tangguh menghadapi segala jenis medan hingga cocok untuk berbagai kebutuhan.' },
+      { icon: 'DollarSign', label: 'Hemat Biaya Perawatan', description: 'Kendaraan tangguh dengan perawatan mudah dan efisien.' },
+      { icon: 'Wrench', label: 'Suku Cadang Mudah Dicari', description: 'Jaringan suku cadang dan bengkel yang luas, tersedia di seluruh Indonesia.' },
+    ],
+    detailItems: [
+      { title: 'Desain Grille Baru', description: 'Dengan aksen chrome, desain grille terbaru mempertegas karakter kendaraan menjadi tangguh dan kokoh.' },
+      { title: 'Desain Bumper Baru', description: 'Bumper kendaraan terbaru dengan desain hitam memberikan tampilan maskulin dan berani.' },
     ],
     features: [
       { icon: 'Truck', title: 'Payload 1.015 Kg', description: 'Kapasitas muat terbesar di kelasnya untuk kebutuhan distribusi UMKM sehari-hari' },
@@ -317,6 +434,19 @@ export const passengerVehicles: VehicleData[] = [
       { category: 'Mesin', items: [{ label: 'Tipe Mesin', value: '4N16 2.4L MIVEC Turbo Diesel VGT' }, { label: 'Kapasitas', value: '2.442 cc' }, { label: 'Tenaga Maks', value: '181 PS / 3.500 rpm (Ultimate)' }, { label: 'Torsi Maks', value: '430 Nm / 1.500-2.500 rpm' }, { label: 'Bahan Bakar', value: 'Diesel Euro 4' }] },
       { category: 'Dimensi', items: [{ label: 'Panjang', value: '5.265 mm (DC) / 5.305 mm (SC)' }, { label: 'Lebar', value: '1.865 mm' }, { label: 'Tinggi', value: '1.795 mm (DC) / 1.780 mm (SC)' }, { label: 'Wheelbase', value: '3.130 mm' }, { label: 'Ground Clearance', value: '203 mm' }] },
       { category: 'Keselamatan', items: [{ label: 'Airbag', value: '2 / 7 (varian)' }, { label: 'Rem ABS+EBD', value: 'Standar' }, { label: 'HSA', value: 'Standar' }, { label: 'FCM', value: 'Ultimate' }, { label: 'TSA', value: 'Varian 4x4' }] },
+    ],
+    promoText: 'DP ringan mulai 15%, bunga ringan 0%, dan cashback hingga jutaan rupiah.',
+    highlightBadges: [
+      { icon: 'Mountain', label: 'Super Select 4WD', description: 'Sistem penggerak 4 roda canggih dengan Off-road Mode dan Hill Descent Control.' },
+      { icon: 'Gauge', label: '2.4L MIVEC Turbo Diesel', description: 'Mesin 4N16 diesel turbo bertenaga 181 PS dan torsi 430 Nm.' },
+      { icon: 'Shield', label: 'Diamond Sense Safety', description: 'FCM, 7 Airbag, dan BSW untuk perlindungan menyeluruh.' },
+      { icon: 'Truck', label: 'Spacious Cargo Bed', description: 'Bak muat luas dengan rangka ladder frame yang kokoh dan tangguh.' },
+    ],
+    detailItems: [
+      { title: 'Jet Fighter Grille', description: 'Desain grille ikonik terinspirasi jet fighter untuk tampilan gagah dan sporty.' },
+      { title: 'Double Cab Spacious', description: 'Kabin double cab yang luas untuk kenyamanan pengemudi dan penumpang.' },
+      { title: 'Off-road Mode', description: 'Gravel/Snow/Mud/Sand mode untuk segala kondisi medan.' },
+      { title: 'Hill Descent Control', description: 'Kontrol turun bukit otomatis untuk keselamatan di medan menurun.' },
     ],
     features: [
       { icon: 'Mountain', title: 'Super Select 4WD', description: 'Sistem penggerak 4 roda canggih dengan Off-road Mode dan Hill Descent Control' },
@@ -356,6 +486,7 @@ export const commercialVehicles: VehicleData[] = [
       { category: 'Motor Listrik', items: [{ label: 'Tipe Motor', value: 'Electric Motor (Single-Speed Reduction)' }, { label: 'Tenaga Maks', value: '150 kW (204 PS)' }, { label: 'Torsi Maks', value: '380 Nm (instan)' }, { label: 'Baterai', value: 'Lithium-ion' }, { label: 'Jangkauan', value: '100 km (est.)' }] },
       { category: 'Dimensi', items: [{ label: 'GVW', value: '7.500 Kg' }, { label: 'Kategori', value: 'Light Duty Truck' }, { label: 'Emisi', value: '0 g/km (Zero Emission)' }, { label: 'Charging', value: 'DC Fast Charging' }, { label: 'Garansi', value: '5 tahun' }] },
     ],
+    promoText: 'Kendaraan listrik tanpa emisi untuk distribusi perkotaan.',
     features: [
       { icon: 'Zap', title: 'Zero Emission', description: 'Truk listrik tanpa emisi — solusi ramah lingkungan untuk distribusi perkotaan' },
       { icon: 'Gauge', title: 'Electric Motor 150 kW', description: 'Motor listrik bertenaga dengan torsi instan 380 Nm untuk akselerasi responsif' },
@@ -385,6 +516,7 @@ export const commercialVehicles: VehicleData[] = [
       { category: 'Dimensi', items: [{ label: 'Panjang Chassis', value: '4.735 mm' }, { label: 'Lebar Chassis', value: '1.750 mm' }, { label: 'Tinggi Chassis', value: '2.055 mm' }, { label: 'Lebar Kabin', value: '1.695 mm' }, { label: 'Tangki BBM', value: '70 L' }] },
       { category: 'Suspensi & Rem', items: [{ label: 'Suspensi Depan', value: 'Semi Elliptic Leaf Spring' }, { label: 'Suspensi Belakang', value: 'Semi Elliptic Leaf Spring' }, { label: 'Rem', value: 'Hydraulic Dual Circuit' }, { label: 'Kemudi', value: 'Recirculating Ball' }, { label: 'GVW', value: '3.500 Kg' }] },
     ],
+    promoText: 'DP ringan dan program pembiayaan menarik tersedia.',
     features: [
       { icon: 'Truck', title: 'Payload 3.4 Ton', description: 'Kapasitas muat ideal untuk distribusi menengah dan kebutuhan logistik UMKM' },
       { icon: 'Shield', title: 'Tilting Cabin', description: 'Kabin bisa dimiringkan untuk akses mesin yang mudah saat perawatan berkala' },
@@ -413,6 +545,7 @@ export const commercialVehicles: VehicleData[] = [
       { category: 'Mesin', items: [{ label: 'Tipe Mesin', value: '4D34-2AT8 Turbo Intercooler Diesel' }, { label: 'Kapasitas', value: '3.908 cc' }, { label: 'Tenaga Maks', value: '125 PS / 2.900 rpm' }, { label: 'Torsi Maks', value: '324 Nm / 1.600 rpm' }, { label: 'Bahan Bakar', value: 'Diesel Euro 2' }] },
       { category: 'Dimensi', items: [{ label: 'GVW', value: '6.000 - 6.500 Kg' }, { label: 'Tangki BBM', value: '100 L' }, { label: 'Konfigurasi', value: '6-Wheeler (Roda Ganda Belakang)' }, { label: 'Transmisi', value: '5-Speed Manual' }, { label: 'Kabin', value: 'Tilting Cabin' }] },
     ],
+    promoText: 'DP ringan dan program pembiayaan menarik tersedia.',
     features: [
       { icon: 'Truck', title: 'Payload hingga 5.8 Ton', description: 'Kapasitas muat lebih besar untuk bisnis distribusi yang sedang berkembang' },
       { icon: 'Users', title: 'Crew Cab', description: 'Kabin untuk 3 orang termasuk pengemudi, cocok untuk tim distribusi' },
@@ -441,6 +574,7 @@ export const commercialVehicles: VehicleData[] = [
       { category: 'Mesin', items: [{ label: 'Tipe Mesin', value: '4D34-2AT7 Turbo Intercooler Diesel' }, { label: 'Kapasitas', value: '3.908 cc' }, { label: 'Tenaga Maks', value: '136 PS / 2.500 rpm' }, { label: 'Torsi Maks', value: '373 Nm / 1.600 rpm' }, { label: 'Bahan Bakar', value: 'Diesel Euro 2 / Euro 4' }] },
       { category: 'Dimensi', items: [{ label: 'GVW', value: '8.500 Kg' }, { label: 'Tangki BBM', value: '100 L' }, { label: 'Transmisi', value: '5-Speed / 6-Speed Manual' }, { label: 'Kabin', value: 'Tilting Cabin' }, { label: 'Kemudi', value: 'Power Steering (SHDX/GS)' }] },
     ],
+    promoText: 'DP ringan dan program pembiayaan menarik tersedia.',
     features: [
       { icon: 'Truck', title: 'Payload hingga 6.2 Ton', description: 'Kapasitas muat besar untuk distribusi skala menengah hingga berat' },
       { icon: 'Gauge', title: '3.9L 136 PS', description: 'Mesin 4D34-2AT7 bertenaga 136 PS dan torsi 373 Nm untuk beban berat' },
@@ -470,6 +604,7 @@ export const commercialVehicles: VehicleData[] = [
       { category: 'Mesin', items: [{ label: 'Tipe Mesin', value: '6M60 7.5L 6-Cyl Turbo Diesel VGT Euro 4' }, { label: 'Kapasitas', value: '7.545 cc' }, { label: 'Tenaga Maks', value: '240 PS (4x2) / 270 PS (6x2/6x4)' }, { label: 'Torsi Maks', value: '785 Nm (4x2) / 880 Nm (6x2/6x4)' }, { label: 'Bahan Bakar', value: 'Diesel Euro 4' }] },
       { category: 'Dimensi', items: [{ label: 'GVW', value: '13.000 - 24.000 Kg' }, { label: 'Wheelbase', value: '3.680 - 5.680 mm' }, { label: 'Transmisi', value: 'Eaton 9-Speed' }, { label: 'Kabin', value: 'Tilting Cabin' }, { label: 'Rem', value: 'Full Air Brake + ABS' }] },
     ],
+    promoText: 'Program pembiayaan fleet tersedia untuk bisnis Anda.',
     features: [
       { icon: 'Truck', title: 'Payload hingga 16 Ton', description: 'Kapasitas muat besar untuk operasi logistik dan konstruksi skala besar' },
       { icon: 'Gauge', title: '7.5L VGT Euro 4', description: 'Mesin 6M60 dengan Variable Geometry Turbo, bertenaga 270 PS dan torsi 880 Nm' },
@@ -497,6 +632,7 @@ export const commercialVehicles: VehicleData[] = [
       { category: 'Mesin', items: [{ label: 'Tipe Mesin', value: '6M60 7.5L 6-Cyl Turbo Diesel VGT Euro 4' }, { label: 'Kapasitas', value: '7.545 cc' }, { label: 'Tenaga Maks', value: '270 PS / 2.400 rpm' }, { label: 'Torsi Maks', value: '880 Nm / 1.200-2.000 rpm' }, { label: 'Bahan Bakar', value: 'Diesel Euro 4' }] },
       { category: 'Dimensi', items: [{ label: 'GVW / GCW', value: '20.000 - 44.000 Kg' }, { label: 'Wheelbase', value: '3.680 mm (4x2) / lebih (6x4)' }, { label: 'Panjang', value: '5.925 mm (FM65F TH)' }, { label: 'Lebar', value: '2.470 mm' }, { label: 'Tinggi', value: '2.860 mm' }] },
     ],
+    promoText: 'Program pembiayaan fleet tersedia untuk bisnis Anda.',
     features: [
       { icon: 'Truck', title: 'GCW hingga 44 Ton', description: 'Kapasitas gabangan raksasa untuk operasi pertambangan, konstruksi, dan logistik besar' },
       { icon: 'Gauge', title: '7.5L VGT Euro 4', description: 'Mesin 6M60 diesel VGT bertenaga 270 PS dan torsi 880 Nm untuk medan berat jarak jauh' },
