@@ -3,6 +3,7 @@
 import { motion, useInView } from 'framer-motion';
 import { Shield, Zap, HeadphonesIcon, Globe, Award, Wrench } from 'lucide-react';
 import { useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
 
 function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -80,10 +81,20 @@ const values = [
 export default function WhyMitsubishi() {
   return (
     <section id="why-mitsubishi" className="relative py-24 sm:py-28 lg:py-32 overflow-hidden bg-mitsu-obsidian">
+      {/* Background image for depth */}
+      <Image
+        src="/images/hero-cinematic.png"
+        alt="Mitsubishi Background"
+        fill
+        className="object-cover object-center"
+        sizes="100vw"
+        priority={false}
+        quality={60}
+      />
       {/* Dark luxury background with red accent pattern */}
       <div className="absolute inset-0 vehicle-image-bg" />
-      {/* Subtle gradient overlay for readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-mitsu-obsidian/95 via-mitsu-obsidian/85 to-mitsu-obsidian/95" />
+      {/* Subtle gradient overlay for readability - slightly transparent to let bg image show */}
+      <div className="absolute inset-0 bg-gradient-to-b from-mitsu-obsidian/92 via-mitsu-obsidian/80 to-mitsu-obsidian/92" />
 
       {/* Decorative corner */}
       <div className="absolute top-0 left-0 w-32 h-32 border-l border-t border-white/10 pointer-events-none" />

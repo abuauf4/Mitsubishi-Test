@@ -47,6 +47,11 @@ function ModernGatewayCard({
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [imgSrc, setImgSrc] = useState(image);
+
+  useEffect(() => {
+    setImgSrc(image);
+  }, [image]);
 
   // 3D tilt on mouse move
   const x = useMotionValue(0);
@@ -97,19 +102,16 @@ function ModernGatewayCard({
       >
         {/* Background Image */}
         <Image
-          src={image}
+          src={imgSrc}
           alt={imageAlt}
           fill
           className="object-cover object-center transition-transform duration-[1.2s] ease-out group-hover:scale-110"
           sizes="(max-width: 768px) 100vw, 50vw"
-          unoptimized={image.startsWith('/api/') || image.includes('vercel-storage.com')}
-          onError={(e) => {
-            // Replace broken image with fallback — never leave it blank
-            const target = e.target as HTMLImageElement;
-            if (!target.src.includes('/images/')) {
-              target.src = '/images/xpander.png';
-            } else {
-              target.style.opacity = '0.3';
+          unoptimized={imgSrc.startsWith('/api/') || imgSrc.includes('vercel-storage.com')}
+          onError={() => {
+            // Fall back to local image — never show broken/empty
+            if (!imgSrc.includes('/images/')) {
+              setImgSrc('/images/xpander.png');
             }
           }}
         />
@@ -300,7 +302,7 @@ export default function AudienceGateway() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch(`/api/audience-categories?_t=${Date.now()}`);
+        const res = await fetch('/api/audience-categories');
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -322,7 +324,7 @@ export default function AudienceGateway() {
   const proxyImage = (url: string) => {
     if (!url) return '';
     if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}`;
+      return `/api/image?url=${encodeURIComponent(url)}`;
     }
     return url;
   };

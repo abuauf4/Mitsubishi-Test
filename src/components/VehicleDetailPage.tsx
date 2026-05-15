@@ -166,28 +166,30 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 onMouseUp={handleMouseUp}
               >
                 {/* Stacked images for seamless crossfade — NO flash, NO pause */}
-                {/* No AnimatePresence mode = simultaneous crossfade: new fades in while old fades out */}
-                <AnimatePresence>
-                  <motion.div
-                    key={selectedColor}
-                    className="absolute inset-0"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-                  >
-                    <Image
-                      src={displayImage}
-                      alt={`Mitsubishi ${vehicle.name} ${vehicle.colors[selectedColor]?.name || ''}`}
-                      fill
-                      className="object-cover relative z-[1]"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                      priority
-                      unoptimized={displayImage.startsWith('/api/') || displayImage.includes('vercel-storage.com')}
-                      draggable={false}
-                    />
-                  </motion.div>
-                </AnimatePresence>
+                {/* All color images are preloaded and stacked. Only the selected one is visible. */}
+                {vehicle.colors.map((color, i) => {
+                  const colorImage = color.image;
+                  const variantImage = vehicle.variants[selectedVariant]?.image;
+                  const imgSrc = colorImage || variantImage || vehicle.image;
+                  return (
+                    <div
+                      key={color.name}
+                      className="absolute inset-0 transition-opacity duration-300 ease-in-out"
+                      style={{ opacity: selectedColor === i ? 1 : 0 }}
+                    >
+                      <Image
+                        src={imgSrc}
+                        alt={`Mitsubishi ${vehicle.name} ${color.name}`}
+                        fill
+                        className="object-cover relative z-[1]"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        priority={i === 0}
+                        unoptimized={imgSrc.startsWith('/api/') || imgSrc.includes('vercel-storage.com')}
+                        draggable={false}
+                      />
+                    </div>
+                  );
+                })}
 
                 {/* Swipe hint — only show when multiple colors */}
                 {vehicle.colors.length > 1 && (
@@ -360,6 +362,17 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                       <span className="text-[11px] text-gray-500">Drivetrain: {vehicle.variants[selectedVariant].drivetrain}</span>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Inline Credit Calculator — directly below variants, connected to variant price */}
+              {displayPriceNum > 0 && (
+                <div className="mt-4">
+                  <CreditSimulation
+                    defaultPrice={displayPriceNum}
+                    vehicleName={vehicle.name}
+                    accentTheme={isCommercial ? 'yellow' : 'red'}
+                  />
                 </div>
               )}
 

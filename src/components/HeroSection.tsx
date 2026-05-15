@@ -36,27 +36,21 @@ export default function HeroSection() {
   const [hero, setHero] = useState<HeroData>(fallbackHero);
   const [imageSrc, setImageSrc] = useState<string>(fallbackHero.imagePath);
 
-  // Helper: proxy blob URLs and add cache-busting to prevent stale images
+  // Helper: proxy blob URLs through /api/image (no aggressive cache-busting)
   const prepareImageUrl = (url: string) => {
     if (!url) return url;
-    // Proxy Vercel Blob URLs through /api/image with aggressive cache-busting
+    // Proxy Vercel Blob URLs through /api/image
     if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-      return `/api/image?url=${encodeURIComponent(url)}&_t=${Date.now()}&_cb=${Math.random()}`;
+      return `/api/image?url=${encodeURIComponent(url)}`;
     }
-    // Add cache-busting for API proxy URLs
-    if (url.startsWith('/api/')) {
-      const sep = url.includes('?') ? '&' : '?';
-      return `${url}${sep}_t=${Date.now()}`;
-    }
-    // Local images don't need cache-busting
+    // Local images don't need proxying
     return url;
   };
 
   useEffect(() => {
     async function fetchHero() {
       try {
-        // Add cache-busting timestamp to prevent stale cached hero data
-        const res = await fetch(`/api/hero?page=home&_t=${Date.now()}`);
+        const res = await fetch('/api/hero?page=home');
         if (!res.ok) return;
         const data = await res.json();
         if (data && data.imagePath) {
@@ -97,6 +91,7 @@ export default function HeroSection() {
           sizes="100vw"
           unoptimized={(imageSrc || '').startsWith('/api/') || (imageSrc || '').includes('vercel-storage.com')}
           onError={() => {
+            // On error, immediately switch to fallback — no SVG placeholder
             setImageSrc('/images/hero-cinematic.png');
           }}
         />

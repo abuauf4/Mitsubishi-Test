@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Image proxy for Vercel Blob URLs.
- * Without BLOB_READ_WRITE_TOKEN, we attempt a public fetch.
- * Falls back to a placeholder if the fetch fails.
+ * Falls back to a redirect to a local image if the fetch fails.
+ * Never returns an SVG placeholder — always returns a real image or redirect.
  */
 
 export async function GET(request: NextRequest) {
@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // Try fetching with auth token first
     const headers: Record<string, string> = {};
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     if (token) {
@@ -24,37 +25,46 @@ export async function GET(request: NextRequest) {
       cache: 'no-store',
     });
 
-    if (!res.ok) {
-      // If blob fetch fails, return a simple SVG placeholder
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" fill="#F5F5F5"><rect width="400" height="300"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#999" font-family="sans-serif" font-size="14">Image unavailable</text></svg>`;
-      return new NextResponse(svg, {
+    if (res.ok) {
+      const contentType = res.headers.get('content-type') || 'image/jpeg';
+      const body = await res.arrayBuffer();
+
+      return new NextResponse(body, {
         status: 200,
         headers: {
-          'Content-Type': 'image/svg+xml',
-          'Cache-Control': 'no-cache',
+          'Content-Type': contentType,
+          'Cache-Control': 'public, s-maxage=300, max-age=300, stale-while-revalidate=86400',
+          'Access-Control-Allow-Origin': '*',
         },
       });
     }
 
-    const contentType = res.headers.get('content-type') || 'image/jpeg';
-    const body = await res.arrayBuffer();
+    // If auth fetch failed, try public fetch (no auth header)
+    if (token) {
+      try {
+        const publicRes = await fetch(url, { cache: 'no-store' });
+        if (publicRes.ok) {
+          const contentType = publicRes.headers.get('content-type') || 'image/jpeg';
+          const body = await publicRes.arrayBuffer();
+          return new NextResponse(body, {
+            status: 200,
+            headers: {
+              'Content-Type': contentType,
+              'Cache-Control': 'public, s-maxage=300, max-age=300, stale-while-revalidate=86400',
+              'Access-Control-Allow-Origin': '*',
+            },
+          });
+        }
+      } catch {
+        // Public fetch also failed, fall through to redirect
+      }
+    }
 
-    return new NextResponse(body, {
-      status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'Cache-Control': 'public, s-maxage=60, max-age=60, stale-while-revalidate=300',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
+    // All fetches failed — redirect to fallback image instead of SVG placeholder
+    // This ensures Next.js Image component shows a real image, not "Image unavailable"
+    return NextResponse.redirect(new URL('/images/hero-cinematic.png', request.url));
   } catch (error: any) {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" fill="#F5F5F5"><rect width="400" height="300"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#999" font-family="sans-serif" font-size="14">Image unavailable</text></svg>`;
-    return new NextResponse(svg, {
-      status: 200,
-      headers: {
-        'Content-Type': 'image/svg+xml',
-        'Cache-Control': 'no-cache',
-      },
-    });
+    // Network error or other — redirect to fallback
+    return NextResponse.redirect(new URL('/images/hero-cinematic.png', request.url));
   }
 }
