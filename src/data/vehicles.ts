@@ -49,6 +49,17 @@ export interface VehicleDetailItem {
   note?: string;
 }
 
+export interface VehicleDetailCategory {
+  category: 'eksterior' | 'interior' | 'keamanan' | 'performa';
+  items: VehicleDetailItem[];
+}
+
+export interface MitsubishiConnectInfo {
+  available: boolean;
+  features: string[];
+  description: string;
+}
+
 export interface VehicleData {
   slug: string;
   name: string;
@@ -62,10 +73,13 @@ export interface VehicleData {
   features: VehicleFeature[];
   highlightBadges?: VehicleHighlightBadge[];
   detailItems?: VehicleDetailItem[];
+  detailCategories?: VehicleDetailCategory[];
   promoText?: string;
   gallery?: VehicleGallery;
   payload?: string;
   specsShort: string[];
+  mitsubishiConnect?: MitsubishiConnectInfo;
+  videoUrl?: string;
 }
 
 // ===================== KENDARAAN PENUMPANG (8 models) =====================
@@ -118,6 +132,33 @@ export const passengerVehicles: VehicleData[] = [
       { title: 'Pilihan Interior Beragam', description: 'Setiap varian dirancang dengan sentuhan berbeda yang mencerminkan karakter dan kenyamanan.' },
       { title: 'Desain Eksterior Belakang', description: 'Desain bodi mobil bagian belakang yang lebar memberikan sentuhan tampilan kokoh dan stabil.' },
     ],
+    detailCategories: [
+      { category: 'eksterior', items: [
+        { title: 'Desain Tampilan Depan Terbaru', description: 'Desain depan terbaru yang memberikan aksen tangguh dan sporty dengan kombinasi warna chrome dan hitam.' },
+        { title: 'Lampu Depan Bentuk T-Shape', description: 'Bentuk lampu depan T-Shape baru dengan warna smoke chrome untuk visibilitas maksimal.' },
+        { title: 'Alloy Wheel 17 Inci Desain Terbaru', description: 'Alloy wheel 17 inci terbaru dengan desain dua warna memberikan sentuhan estetika modern.', note: 'Ultimate & Exceed Tourer' },
+        { title: 'Desain Bumper Belakang Terbaru', description: 'Garis dinamis dan aksen reflektor menyatu, desain bumper belakang kini lebih kokoh.' },
+        { title: 'LED Fog Light Terbaru', description: 'Didesain untuk kondisi ekstrem, LED fog light memberikan penerangan maksimal.', note: 'Ultimate' },
+        { title: 'Lampu Belakang Bentuk T-Shape', description: 'Meningkatkan visibilitas di bagian belakang kendaraan pada saat malam hari.' },
+        { title: 'Desain Eksterior Belakang', description: 'Desain bodi mobil bagian belakang yang lebar memberikan sentuhan tampilan kokoh dan stabil.' },
+      ]},
+      { category: 'interior', items: [
+        { title: 'Bagasi Luas', description: 'Bagasi yang lapang, menawarkan kapasitas penyimpanan yang optimal.' },
+        { title: 'Pilihan Interior Beragam', description: 'Setiap varian dirancang dengan sentuhan berbeda yang mencerminkan karakter dan kenyamanan.' },
+        { title: 'Kursi 7 Penumpang Fleksibel', description: 'Konfigurasi 2-3-2 yang bisa dilipat untuk kapasitas bagasi maksimal.' },
+      ]},
+      { category: 'keamanan', items: [
+        { title: 'Active Stability Control (ASC)', description: 'Sistem kontrol stabilitas aktif yang menjaga kendaraan tetap stabil di berbagai kondisi jalan.' },
+        { title: 'Hill Start Assist (HSA)', description: 'Membantu kendaraan tetap diam saat di tanjakan saat pindah kaki dari rem ke gas.' },
+        { title: 'Rem ABS + EBD', description: 'Sistem pengereman anti-lock dengan distribusi pengereman elektronik untuk pengereman lebih aman.' },
+        { title: 'Dual Front Airbag', description: 'Airbag ganda di bagian depan melindungi pengemudi dan penumpang depan.' },
+      ]},
+      { category: 'performa', items: [
+        { title: 'Mesin 4A91 1.5L MIVEC', description: 'Mesin bertenaga 105 PS dengan torsi 141 Nm yang hemat bahan bakar.' },
+        { title: 'Transmisi CVT', description: 'Continuously Variable Transmission untuk akselerasi yang halus dan efisien.', note: 'Varian CVT' },
+        { title: 'Ground Clearance 220mm', description: 'Jarak terendah ke tanah 220mm untuk melintasi jalan rusak dan banjir kecil.' },
+      ]},
+    ],
     features: [
       { icon: 'Shield', title: 'Active Stability Control', description: 'Sistem kontrol stabilitas aktif yang menjaga kendaraan tetap stabil di berbagai kondisi jalan' },
       { icon: 'Eye', title: '360° Camera', description: 'Kamera surround view untuk kemudahan parkir dan manuver di area sempit (Ultimate)' },
@@ -165,6 +206,34 @@ export const passengerVehicles: VehicleData[] = [
       { title: 'Lampu Depan Berbentuk T-Shape', description: 'Lampu depan berbentuk T-shape melengkapi kesan gagah dan meningkatkan visibilitas.' },
       { title: 'Lampu Belakang Berbentuk T-Shape', description: 'Meningkatkan visibilitas pada malam hari, memperkuat desain modern.' },
       { title: 'LED Foglamp', description: 'LED Foglamp yang menyediakan visibilitas terbaik dalam kondisi hujan dan berkabut.' },
+    ],
+    detailCategories: [
+      { category: 'eksterior', items: [
+        { title: 'Bumper & Grille Depan Baru', description: 'Tampilan depan dengan grille tebal dan garis tegas membuat kendaraan terlihat gagah di segala medan.' },
+        { title: 'Alloy Wheel 17 Inci Desain Terbaru', description: 'Alloy wheel berukuran 17 inci dengan desain sporty dan tangguh, memberikan stabilitas dan kenyamanan.' },
+        { title: 'Desain Bumper Belakang yang Gagah', description: 'Desain bumper belakang tampil lebih tegas dan elegan, dilengkapi detail aksen yang memperkuat karakter SUV.' },
+        { title: 'Lampu Depan Berbentuk T-Shape', description: 'Lampu depan berbentuk T-shape melengkapi kesan gagah dan meningkatkan visibilitas.' },
+        { title: 'Lampu Belakang Berbentuk T-Shape', description: 'Meningkatkan visibilitas pada malam hari, memperkuat desain modern.' },
+        { title: 'LED Foglamp', description: 'LED Foglamp yang menyediakan visibilitas terbaik dalam kondisi hujan dan berkabut.' },
+        { title: 'Overfender & Roof Rail Standar', description: 'Overfender lebar dan roof rail standar memperkuat kesan adventure siap menjelajah segala medan.' },
+      ]},
+      { category: 'interior', items: [
+        { title: 'Kabin 7 Penumpang Fleksibel', description: 'Kabin luas untuk 7 penumpang dengan konfigurasi kursi yang bisa dilipat untuk kapasitas bagasi maksimal.' },
+        { title: 'Digital Display Pengemudi', description: 'Dilengkapi fitur canggih pada digital display pengemudi yang lebih lengkap untuk informasi berkendara.' },
+      ]},
+      { category: 'keamanan', items: [
+        { title: 'Active Stability Control (ASC)', description: 'Sistem stabilitas aktif untuk kendali optimal di segala kondisi jalan, termasuk jalan licin dan berliku.' },
+        { title: 'Hill Start Assist (HSA)', description: 'Membantu kendaraan tetap diam saat di tanjakan saat pindah kaki dari rem ke gas.' },
+        { title: 'Rem ABS + EBD', description: 'Sistem pengereman anti-lock dengan distribusi elektronik untuk pengereman lebih aman.' },
+        { title: 'Dual Front Airbag', description: 'Airbag ganda di bagian depan melindungi pengemudi dan penumpang depan.' },
+        { title: 'Tangguh di Berbagai Medan', description: 'Fitur keselamatan canggih dirancang untuk pengalaman berkendara aman di jalan rough dan medan petualangan.' },
+      ]},
+      { category: 'performa', items: [
+        { title: 'Mesin 4A91 1.5L MIVEC', description: 'Mesin bertenaga dan efisien untuk perjalanan jauh maupun kota, hemat bahan bakar dan responsif.' },
+        { title: 'Ground Clearance 225mm', description: 'Jarak terendah ke tanah 225mm untuk melintasi jalan rusak, banjir kecil, dan medan off-road ringan.' },
+        { title: 'Transmisi CVT', description: 'Continuously Variable Transmission untuk akselerasi yang halus dan efisien.', note: 'Premium CVT' },
+        { title: 'Overfender untuk Stabilitas', description: 'Overfender lebar memberikan track width lebih lebar untuk stabilitas saat berkendara di jalan tidak rata.' },
+      ]},
     ],
     features: [
       { icon: 'Mountain', title: 'Adventure Ready', description: 'Ground clearance 225mm dengan overfender dan roof rail untuk jelajah segala medan' },
@@ -214,6 +283,38 @@ export const passengerVehicles: VehicleData[] = [
       { title: 'New Front Grille & Under Garnish', description: 'Warna putih pada grille memberikan kesan elegan, menciptakan tampilan yang berkelas dan tangguh.' },
       { title: 'Alloy Wheel Ukuran 18 Inci', description: 'Desain velg dual-tone baru membuat kendaraan Anda tampil lebih modern dan sporty.', note: 'Semua varian Dakar' },
       { title: 'Garnish Belakang Bawah Baru', description: 'Desain modern dan dinamis meningkatkan tampilan eksterior sekaligus memberikan perlindungan tambahan.' },
+    ],
+    detailCategories: [
+      { category: 'eksterior', items: [
+        { title: 'New Front Grille & Under Garnish', description: 'Warna putih pada grille memberikan kesan elegan, menciptakan tampilan yang berkelas dan tangguh.' },
+        { title: 'Jet Fighter Grille', description: 'Desain grille ikonik terinspirasi jet fighter untuk tampilan gagah dan sporty.' },
+        { title: 'Alloy Wheel Ukuran 18 Inci', description: 'Desain velg dual-tone baru membuat kendaraan Anda tampil lebih modern dan sporty.', note: 'Semua varian Dakar' },
+        { title: 'Garnish Belakang Bawah Baru', description: 'Desain modern dan dinamis meningkatkan tampilan eksterior sekaligus memberikan perlindungan tambahan.' },
+        { title: 'LED Headlamp & DRL', description: 'Lampu depan LED dengan Daytime Running Light untuk visibilitas maksimal.', note: 'Dakar ke atas' },
+        { title: 'Power Back Door', description: 'Pintu belakang otomatis untuk kemudahan akses bagasi.', note: 'Dakar Ultimate' },
+      ]},
+      { category: 'interior', items: [
+        { title: 'Kabin Luas 7 Penumpang', description: 'Interior mewah dengan material berkualitas dan ruang kabin lega untuk seluruh keluarga.' },
+        { title: 'Leather Interior', description: 'Jok kulit premium untuk kenyamanan dan kesan mewah di setiap perjalanan.', note: 'Dakar ke atas' },
+        { title: 'Touchscreen Display Audio', description: 'Head unit touchscreen untuk hiburan dan informasi berkendara.', note: 'Exceed ke atas' },
+        { title: 'Sunroof', description: 'Atap sunroof untuk suasana kabin yang lebih terang dan terbuka.', note: 'Dakar Ultimate 4x4' },
+      ]},
+      { category: 'keamanan', items: [
+        { title: '7 Airbag & Diamond Sense', description: 'Sistem keselamatan komprehensif dengan FCM, BSW, RCTA, dan UMS Prevention untuk perlindungan menyeluruh.' },
+        { title: 'Forward Collision Mitigation (FCM)', description: 'Sistem mitigasi tabrakan depan yang mendeteksi kendaraan di depan dan mengerem otomatis.', note: 'Dakar Ultimate' },
+        { title: 'Blind Spot Warning (BSW) & RCTA', description: 'Peringatan titik buta dan lalu lintas belakang untuk keselamatan saat pindah jalur dan mundur.', note: 'Dakar Ultimate' },
+        { title: 'UMS Prevention', description: 'Sistem pencegahan akselerasi tidak disengaja saat parkir untuk keselamatan tambahan.' },
+        { title: 'Active Stability & Traction Control (ASTC)', description: 'Sistem kontrol stabilitas dan traksi aktif yang menjaga kendaraan tetap stabil di segala kondisi.' },
+        { title: 'Multi Around Monitor', description: 'Kamera 360 derajat untuk kemudahan parkir dan manuver di area sempit.', note: 'Dakar Ultimate 4x4' },
+      ]},
+      { category: 'performa', items: [
+        { title: '2.4L DI-D MIVEC Turbo Diesel', description: 'Mesin diesel turbo bertenaga 181 PS dan torsi 430 Nm untuk petualangan tanpa batas.' },
+        { title: 'Super Select 4WD-II', description: 'Sistem penggerak 4 roda canggih dengan 4 mode berkendara (2H/4H/4HLc/4LLc) untuk segala medan.' },
+        { title: '8-Speed AT dengan Paddle Shift', description: 'Transmisi otomatis 8 percepatan dengan paddle shift untuk respons berkendara presisi.', note: 'Dakar ke atas' },
+        { title: 'Off-road Mode (Gravel/Snow/Mud/Sand)', description: '4 mode off-road untuk menghadapi berbagai kondisi medan dengan optimal.' },
+        { title: 'Rear Differential Lock', description: 'Kunci diferensial belakang untuk traksi maksimal di medan ekstrem.', note: 'Varian 4x4' },
+        { title: 'Ground Clearance 218mm', description: 'Jarak terendah ke tanah 218mm untuk melintasi jalan berbatu dan medan off-road.' },
+      ]},
     ],
     features: [
       { icon: 'Mountain', title: 'Super Select 4WD-II', description: 'Sistem penggerak 4 roda canggih dengan 4 mode berkendara untuk segala medan' },
@@ -266,6 +367,41 @@ export const passengerVehicles: VehicleData[] = [
       { title: 'Roof Rail Desain Pillar Iconic', description: 'Melambangkan kekuatan dan ketangguhan, memadukan kesan mewah khas SUV.' },
       { title: 'Tampilan Belakang yang Gagah', description: 'Desain belakang memberikan kesan futuristik dan premium, memperkuat karakter kendaraan.' },
     ],
+    detailCategories: [
+      { category: 'eksterior', items: [
+        { title: 'Two-Tone & Black Engine Hood Emblem', description: 'Perpaduan warna two-tone yang ikonik dengan emblem hitam eksklusif memberikan kesan elegan.', note: '55th Anniversary Edition' },
+        { title: 'Black Tailgate Pet Name Emblem', description: 'Emblem hitam eksklusif di bagian belakang membuat tampilan mobil lebih gagah.', note: '55th Anniversary Edition' },
+        { title: 'Dynamic Shield & Grille Transparan', description: 'Desain dynamic shield khas Mitsubishi Motors dipadukan dengan akrilik transparan pada grille.' },
+        { title: 'Lampu Depan Berbentuk T-Shape', description: 'Desain lampu depan berbentuk T mempertegas tampilan elegan kendaraan.' },
+        { title: 'Lampu Belakang Berbentuk T-Shape', description: 'Lampu bagian belakang memberi kesan estetika kuat pada mobil.' },
+        { title: 'Roof Rail Desain Pillar Iconic', description: 'Melambangkan kekuatan dan ketangguhan, memadukan kesan mewah khas SUV.' },
+        { title: 'Tampilan Belakang yang Gagah', description: 'Desain belakang memberikan kesan futuristik dan premium, memperkuat karakter kendaraan.' },
+      ]},
+      { category: 'interior', items: [
+        { title: 'Panoramic Sunroof', description: 'Atap panoramic sunroof untuk suasana kabin yang lebih terang dan terbuka.', note: 'Ultimate ke atas' },
+        { title: '12.3" Touchscreen Display', description: 'Head unit touchscreen 12.3 inci untuk hiburan dan navigasi yang intuitif.', note: 'Exceed ke atas' },
+        { title: 'Dual Zone Automatic AC', description: 'Pengaturan suhu kabin terpisah untuk pengemudi dan penumpang depan.', note: 'Exceed ke atas' },
+        { title: 'Yamaha Premium Audio 8 Speaker', description: 'Sistem audio premium Yamaha Dynamic Sound untuk pengalaman berkendara mewah.', note: 'Ultimate Premium' },
+        { title: '64-Color Ambient Lighting', description: 'Pencahayaan kabin 64 warna untuk suasana interior yang personal dan mewah.', note: 'Ultimate Premium' },
+        { title: 'Kursi 7 Penumpang Fleksibel', description: 'Konfigurasi kursi 7 penumpang yang bisa dilipat untuk kapasitas bagasi maksimal.' },
+      ]},
+      { category: 'keamanan', items: [
+        { title: 'Diamond Sense ADAS', description: 'Sistem keselamatan canggih: FCM, ACC, BSW, RCTA, AHB, dan Multi Around Monitor untuk perlindungan menyeluruh.', note: 'Ultimate ke atas' },
+        { title: 'Forward Collision Mitigation (FCM)', description: 'Sistem mitigasi tabrakan depan yang mendeteksi kendaraan dan pejalan kaki, mengerem otomatis.', note: 'Ultimate ke atas' },
+        { title: 'Adaptive Cruise Control (ACC)', description: 'Kontrol kecepatan adaptif yang menjaga jarak aman dengan kendaraan di depan secara otomatis.', note: 'Ultimate ke atas' },
+        { title: 'Blind Spot Warning (BSW) & RCTA', description: 'Peringatan titik buta dan lalu lintas belakang untuk keselamatan saat pindah jalur.', note: 'Ultimate ke atas' },
+        { title: 'Multi Around Monitor', description: 'Kamera 360 derajat untuk kemudahan parkir dan manuver di area sempit.', note: 'Ultimate ke atas' },
+        { title: 'Active Stability Control (ASC)', description: 'Sistem kontrol stabilitas aktif yang menjaga kendaraan tetap stabil di berbagai kondisi jalan.' },
+        { title: 'Rem ABS + EBD', description: 'Sistem pengereman anti-lock dengan distribusi elektronik untuk pengereman lebih aman.' },
+      ]},
+      { category: 'performa', items: [
+        { title: 'Mesin 4B40 1.5L MIVEC Turbo', description: 'Mesin turbo bertenaga 163 PS dan torsi 250 Nm — SUV paling bertenaga di kelasnya.' },
+        { title: 'Transmisi CVT', description: 'Continuously Variable Transmission untuk akselerasi yang halus dan efisien.' },
+        { title: '5 Mode Berkendara', description: 'Normal, Wet, Tarmac, Gravel, dan Mud — performa optimal untuk berbagai kondisi jalan.' },
+        { title: 'Ground Clearance 244mm', description: 'Jarak terendah ke tanah tertinggi di kelasnya untuk melintasi jalan rusak dan banjir.' },
+      ]},
+    ],
+    mitsubishiConnect: { available: true, features: ['Remote Lock/Unlock', 'Vehicle Status Check', 'Driving History', 'Speed Alert', 'Geofence Alert', 'Find My Car'], description: 'Selalu terhubung dengan Mitsubishi Destinator melalui genggaman smartphone. Kontrol dan pantau kendaraan dari jarak jauh.' },
     features: [
       { icon: 'Zap', title: '1.5L MIVEC Turbo', description: 'Mesin 4B40 turbo bertenaga 163 PS dan torsi 250 Nm — SUV paling bertenaga di kelasnya' },
       { icon: 'Shield', title: 'Diamond Sense ADAS', description: 'Sistem keselamatan canggih: FCM, ACC, BSW, RCTA, AHB, dan Multi Around Monitor (Ultimate+)' },
@@ -323,6 +459,44 @@ export const passengerVehicles: VehicleData[] = [
       { title: 'Spoiler Baru', description: 'Tampil lebih agresif dan stylish dengan spoiler baru yang elegan.', note: 'Ultimate with Diamond Sense' },
       { title: 'Desain Futuristik', description: 'Menggabungkan kesan canggih dan kokoh khas SUV lewat lekukan bodi yang tegas.' },
     ],
+    detailCategories: [
+      { category: 'eksterior', items: [
+        { title: 'Black Engine Hood Emblem', description: 'Perpaduan warna two-tone yang ikonik dengan emblem hitam eksklusif.', note: '55th Anniversary Edition' },
+        { title: 'Desain Two-Tone yang Elegan', description: 'Atap hitam yang kontras dengan bodi berwarna, memberikan kesan sporty dan elegan.', note: 'Ultimate with Diamond Sense' },
+        { title: 'Roof Rail Baru', description: 'Dilengkapi roof rail baru dengan desain dinamis yang memperkuat tampilan sporty.', note: 'Ultimate with Diamond Sense' },
+        { title: 'Generasi Terbaru Dynamic Shield', description: 'Desain ikonik Mitsubishi Motors kini tampil lebih modern, menegaskan kesan kokoh dan performa tinggi.' },
+        { title: 'Lampu Depan T-Shape yang Ikonik', description: 'T-shape LED headlight membantu jarak pandang yang lebih luas di malam hari.' },
+        { title: 'All LED Rear Combination Light', description: 'Menarik secara visual dan mudah terlihat oleh pengendara lain dan pejalan kaki.' },
+        { title: 'Desain Roda yang Khas', description: 'Ban besar 225/50R18 membuat Anda semakin percaya diri melintasi segala medan.' },
+        { title: 'Garnish Belakang Bawah Baru', description: 'Desain modern dan dinamis menegaskan karakter tangguh dan mewah.' },
+        { title: 'Spoiler Baru', description: 'Tampil lebih agresif dan stylish dengan spoiler baru yang elegan.', note: 'Ultimate with Diamond Sense' },
+        { title: 'Desain Futuristik', description: 'Menggabungkan kesan canggih dan kokoh khas SUV lewat lekukan bodi yang tegas.' },
+      ]},
+      { category: 'interior', items: [
+        { title: 'Hands-Free Power Liftgate', description: 'Memudahkan membuka bagasi dengan Kick Sensor atau Kunci Remote.' },
+        { title: '12.3" Touchscreen Display', description: 'Head unit touchscreen 12.3 inci untuk hiburan dan navigasi yang intuitif.', note: 'Ultimate ke atas' },
+        { title: 'Yamaha Premium Audio 8 Speaker', description: 'Sistem audio premium 8 speaker Yamaha dengan 4 preset EQ.', note: 'Ultimate ke atas' },
+        { title: 'Dual Zone Automatic AC', description: 'Pengaturan suhu kabin terpisah untuk pengemudi dan penumpang depan.', note: 'Ultimate ke atas' },
+        { title: 'Nanoe-X Air Purifier', description: 'Sistem purifikasi udara Panasonic Nanoe-X untuk kabin yang bersih dan segar.', note: 'Ultimate ke atas' },
+        { title: 'Kabin Lega 5 Penumpang', description: 'Kabin lebih lega di kelasnya untuk kenyamanan berkendara sehari-hari.' },
+      ]},
+      { category: 'keamanan', items: [
+        { title: 'Diamond Sense ADAS', description: 'Forward Collision Mitigation, Adaptive Cruise Control, BSW, RCTA, Auto High Beam.', note: 'Ultimate DS' },
+        { title: 'Forward Collision Mitigation (FCM)', description: 'Sistem mitigasi tabrakan depan yang mendeteksi kendaraan di depan dan mengerem otomatis.', note: 'Ultimate DS' },
+        { title: 'Adaptive Cruise Control (ACC)', description: 'Kontrol kecepatan adaptif yang menjaga jarak aman dengan kendaraan di depan.', note: 'Ultimate DS' },
+        { title: 'Blind Spot Warning (BSW) & RCTA', description: 'Peringatan titik buta dan lalu lintas belakang untuk keselamatan saat pindah jalur.', note: 'Ultimate ke atas' },
+        { title: 'Active Stability Control (ASC)', description: 'Sistem kontrol stabilitas aktif yang menjaga kendaraan tetap stabil di berbagai kondisi jalan.' },
+        { title: 'Rem ABS + EBD', description: 'Sistem pengereman anti-lock dengan distribusi elektronik untuk pengereman lebih aman.' },
+        { title: '7 Airbag', description: 'Airbag ganda depan, samping, dan curtain shield untuk perlindungan menyeluruh.', note: 'Ultimate ke atas' },
+      ]},
+      { category: 'performa', items: [
+        { title: 'Mesin 4A91 1.5L MIVEC', description: 'Mesin bertenaga namun hemat bahan bakar untuk perjalanan urban sehari-hari.' },
+        { title: '4 Mode Berkendara', description: 'Normal, Wet, Gravel, dan Mud — performa optimal untuk berbagai kondisi jalan dan cuaca.' },
+        { title: 'Ground Clearance 222mm', description: 'Jarak terendah ke tanah 222mm untuk melintasi jalan rusak dan genangan air.' },
+        { title: 'Transmisi CVT', description: 'Continuously Variable Transmission untuk akselerasi halus dan konsumsi bahan bakar efisien.' },
+      ]},
+    ],
+    mitsubishiConnect: { available: true, features: ['Remote Lock/Unlock', 'Vehicle Status Check', 'Driving History', 'Speed Alert', 'Geofence Alert', 'Find My Car'], description: 'Selalu terhubung dengan Mitsubishi Xforce melalui genggaman smartphone. Kontrol dan pantau kendaraan dari jarak jauh.' },
     features: [
       { icon: 'Music', title: 'Yamaha Premium Audio', description: 'Sistem audio premium 8 speaker Yamaha dengan 4 preset EQ untuk pengalaman suara terbaik (Ultimate)' },
       { icon: 'Shield', title: 'Diamond Sense ADAS', description: 'Forward Collision Mitigation, Adaptive Cruise Control, BSW, RCTA, Auto High Beam (Ultimate DS)' },
@@ -362,6 +536,32 @@ export const passengerVehicles: VehicleData[] = [
       { title: 'DC Fast Charging', description: 'Pengisian cepat 0-80% hanya 42 menit untuk minimalkan downtime.' },
       { title: 'Area Kargo Luas', description: 'Area kargo 1.830 x 1.370 x 1.230 mm untuk kebutuhan distribusi harian.' },
     ],
+    detailCategories: [
+      { category: 'eksterior', items: [
+        { title: 'Desain Kompak & Modern', description: 'Bodi kompak untuk mobilitas lincah di jalanan perkotaan yang sempit.' },
+        { title: 'Sliding Side Door', description: 'Pintu gesis samping untuk kemudahan loading dan unloading di area sempit.' },
+        { title: 'Rear Barn Doors', description: 'Pintu belakang bukaan lebar 270 derajat untuk akses kargo maksimal.' },
+      ]},
+      { category: 'interior', items: [
+        { title: 'Area Kargo Luas', description: 'Area kargo 1.830 x 1.370 x 1.230 mm untuk kebutuhan distribusi harian.' },
+        { title: 'Kabin 2 Penumpang Fungsional', description: 'Interior kabin fungsional untuk pengemudi dan penumpang dengan visibilitas optimal.' },
+        { title: 'Radius Putar 4.3m', description: 'Radius putar kecil untuk bermanuver dengan mudah di jalanan sempit perkotaan.' },
+      ]},
+      { category: 'keamanan', items: [
+        { title: 'Garansi Baterai 8 Tahun', description: 'Garansi baterai lithium-ion selama 8 tahun atau 160.000 km untuk ketenangan pikiran jangka panjang.' },
+        { title: 'Garansi Kendaraan 5 Tahun', description: 'Garansi kendaraan selama 5 tahun atau 100.000 km.' },
+        { title: 'Bebas Ganjil Genap Jakarta', description: 'Kendaraan listrik tanpa emisi mendapat pengecualian ganjil genap di Jakarta.' },
+        { title: 'Rem ABS', description: 'Sistem pengereman anti-lock untuk keamanan pengereman darurat.' },
+      ]},
+      { category: 'performa', items: [
+        { title: 'Electric Motor 41 HP', description: 'Motor listrik bertenaga 41 HP dengan torsi instan 195 Nm untuk akselerasi responsif.' },
+        { title: 'Jangkauan 180 km (WLTC)', description: 'Jangkauan 180 km per pengisian penuh, cukup untuk rute distribusi harian di perkotaan.' },
+        { title: 'DC Fast Charging 42 Menit', description: 'Pengisian cepat 0-80% hanya 42 menit untuk minimalkan downtime operasional.' },
+        { title: 'AC Charging ~7.5 Jam', description: 'Pengisian penuh AC 200V dalam ~7.5 jam, ideal untuk charging semalam.' },
+        { title: 'Zero Emission', description: 'Kendaraan listrik tanpa emisi — ramah lingkungan untuk logistik kota.' },
+        { title: 'Payload 425 Kg', description: 'Kapasitas muat 425 kg untuk kebutuhan distribusi ringan perkotaan.' },
+      ]},
+    ],
     features: [
       { icon: 'Zap', title: 'Zero Emission', description: 'Kendaraan listrik tanpa emisi — bebas ganjil genap Jakarta dan ramah lingkungan untuk logistik kota' },
       { icon: 'Gauge', title: '180 km Range', description: 'Jangkauan 180 km per pengisian penuh, cukup untuk rute distribusi harian di perkotaan' },
@@ -400,6 +600,32 @@ export const passengerVehicles: VehicleData[] = [
     detailItems: [
       { title: 'Desain Grille Baru', description: 'Dengan aksen chrome, desain grille terbaru mempertegas karakter kendaraan menjadi tangguh dan kokoh.' },
       { title: 'Desain Bumper Baru', description: 'Bumper kendaraan terbaru dengan desain hitam memberikan tampilan maskulin dan berani.' },
+    ],
+    detailCategories: [
+      { category: 'eksterior', items: [
+        { title: 'Desain Grille Baru', description: 'Dengan aksen chrome, desain grille terbaru mempertegas karakter kendaraan menjadi tangguh dan kokoh.' },
+        { title: 'Desain Bumper Baru', description: 'Bumper kendaraan terbaru dengan desain hitam memberikan tampilan maskulin dan berani.' },
+        { title: 'Flat Deck / Cab Chassis', description: 'Pilihan bodi Flat Deck untuk muatan langsung atau Cab Chassis siap kustomisasi sesuai kebutuhan bisnis.' },
+        { title: 'Headlamp Halogen', description: 'Lampu depan halogen untuk visibilitas yang andal di segala kondisi jalan.' },
+      ]},
+      { category: 'interior', items: [
+        { title: 'Kabin Fungsional', description: 'Interior kabin yang fungsional dan praktis untuk pengemudi yang bekerja seharian.' },
+        { title: 'Power Steering', description: 'Kemudi ringan power steering untuk kenyamanan berkendara seharian di segala medan.' },
+        { title: 'Pengaturan Kursi Pengemudi', description: 'Kursi pengemudi yang bisa diatur untuk kenyamanan berkendara jarak jauh.' },
+      ]},
+      { category: 'keamanan', items: [
+        { title: 'Rem Disc Depan & Drum Belakang', description: 'Sistem pengereman dengan disc depan dan drum belakang untuk kemampuan pengereman andal.' },
+        { title: 'Suspensi Double Wishbone', description: 'Suspensi depan double wishbone untuk stabilitas dan kenyamanan berkendara dengan muatan penuh.' },
+        { title: 'Sistem Kelistrikan Andal', description: 'Sistem kelistrikan yang terpercaya untuk operasional harian tanpa gangguan.' },
+      ]},
+      { category: 'performa', items: [
+        { title: 'Mesin 4N14 2.2L DOHC Turbo Diesel', description: 'Mesin diesel turbo bertenaga 98 PS dan torsi 200 Nm, tangguh di tanjakan dan segala medan.' },
+        { title: 'Payload 1.015 Kg', description: 'Kapasitas muat terbesar di kelasnya untuk kebutuhan distribusi UMKM sehari-hari.' },
+        { title: 'Euro 4 Compliant', description: 'Mesin sudah memenuhi standar emisi Euro 4, legal beroperasi di seluruh Indonesia.' },
+        { title: 'Ground Clearance 200mm', description: 'Jarak terendah ke tanah 200mm untuk melintasi jalan rusak dan medan berat.' },
+        { title: 'Transmisi 5-Speed Manual', description: 'Transmisi manual 5 percepatan untuk kontrol penuh dan daya tahan jangka panjang.' },
+        { title: 'Tangki BBM 47 Liter', description: 'Tangki bahan bakar 47 liter untuk jangkauan operasional yang lebih jauh tanpa sering isi ulang.' },
+      ]},
     ],
     features: [
       { icon: 'Truck', title: 'Payload 1.015 Kg', description: 'Kapasitas muat terbesar di kelasnya untuk kebutuhan distribusi UMKM sehari-hari' },
@@ -447,6 +673,34 @@ export const passengerVehicles: VehicleData[] = [
       { title: 'Double Cab Spacious', description: 'Kabin double cab yang luas untuk kenyamanan pengemudi dan penumpang.' },
       { title: 'Off-road Mode', description: 'Gravel/Snow/Mud/Sand mode untuk segala kondisi medan.' },
       { title: 'Hill Descent Control', description: 'Kontrol turun bukit otomatis untuk keselamatan di medan menurun.' },
+    ],
+    detailCategories: [
+      { category: 'eksterior', items: [
+        { title: 'Jet Fighter Grille', description: 'Desain grille ikonik terinspirasi jet fighter untuk tampilan gagah dan sporty.' },
+        { title: 'LED Headlamp & DRL', description: 'Lampu depan LED dengan Daytime Running Light untuk visibilitas dan gaya.', note: 'Exceed ke atas' },
+        { title: 'Ladder Frame Chassis', description: 'Rangka ladder frame yang kokoh dan tangguh untuk beban berat dan medan ekstrem.' },
+        { title: 'Cargo Bed Luas', description: 'Bak muat luas dengan dimensi optimal untuk segala kebutuhan angkut.' },
+      ]},
+      { category: 'interior', items: [
+        { title: 'Double Cab Spacious', description: 'Kabin double cab yang luas untuk kenyamanan pengemudi dan penumpang.' },
+        { title: 'Touchscreen Display Audio', description: 'Head unit touchscreen untuk hiburan dan informasi berkendara.', note: 'GLS ke atas' },
+        { title: 'AC Standar', description: 'Pendingin udara kabin untuk kenyamanan berkendara.', note: 'HDX Double Cab ke atas' },
+      ]},
+      { category: 'keamanan', items: [
+        { title: 'Hill Descent Control', description: 'Kontrol turun bukit otomatis untuk keselamatan di medan menurun.' },
+        { title: 'Forward Collision Mitigation (FCM)', description: 'Sistem mitigasi tabrakan depan yang mendeteksi kendaraan di depan dan mengerem otomatis.', note: 'Ultimate' },
+        { title: '7 Airbag', description: 'Airbag ganda depan, samping, curtain shield, dan knee airbag untuk perlindungan menyeluruh.', note: 'Ultimate' },
+        { title: 'Blind Spot Warning (BSW)', description: 'Peringatan titik buta untuk keselamatan saat pindah jalur.', note: 'Ultimate' },
+        { title: 'Hill Start Assist (HSA)', description: 'Membantu kendaraan tetap diam saat di tanjakan saat pindah kaki dari rem ke gas.' },
+        { title: 'Traction Start Assist (TSA)', description: 'Sistem bantuan traksi untuk memulai percepatan di medan licin.', note: 'Varian 4x4' },
+      ]},
+      { category: 'performa', items: [
+        { title: '2.4L MIVEC Turbo Diesel VGT', description: 'Mesin 4N16 diesel turbo bertenaga 181 PS dan torsi 430 Nm untuk beban berat.' },
+        { title: 'Super Select 4WD', description: 'Sistem penggerak 4 roda canggih dengan Off-road Mode dan kemampuan menaklukkan segala medan.' },
+        { title: 'Off-road Mode (Gravel/Snow/Mud/Sand)', description: '4 mode off-road untuk menghadapi berbagai kondisi medan dengan optimal.' },
+        { title: 'Ground Clearance 203mm', description: 'Jarak terendah ke tanah 203mm untuk melintasi jalan berbatu dan medan off-road.' },
+        { title: 'Transmisi 6-Speed AT', description: 'Transmisi otomatis 6 percepatan untuk kenyamanan dan performa.', note: 'Ultimate' },
+      ]},
     ],
     features: [
       { icon: 'Mountain', title: 'Super Select 4WD', description: 'Sistem penggerak 4 roda canggih dengan Off-road Mode dan Hill Descent Control' },
