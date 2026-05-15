@@ -79,6 +79,16 @@ export default function CommercialVehicles() {
   useEffect(() => {
     async function fetchVehicles() {
       try {
+        // Helper: proxy blob URLs
+        const proxyImg = (url: string) => {
+          if (!url) return '/images/canter.png';
+          if (url.startsWith('/api/image?')) return url;
+          if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
+            return `/api/image?url=${encodeURIComponent(url)}`;
+          }
+          return url;
+        };
+
         // Fetch niaga-ringan
         const resNR = await fetch('/api/vehicles?category=niaga-ringan');
         if (resNR.ok) {
@@ -88,7 +98,7 @@ export default function CommercialVehicles() {
               name: v.name || '',
               tagline: v.tagline || '',
               payload: v.payload || '',
-              image: v.imagePath || v.image || '/images/canter.png',
+              image: proxyImg(v.imagePath || v.image || '/images/canter.png'),
               specs: Array.isArray(v.specsShort) ? v.specsShort : [],
               icon: Truck,
               slug: v.slug || '',
@@ -108,7 +118,7 @@ export default function CommercialVehicles() {
               name: v.name || '',
               tagline: v.tagline || '',
               payload: v.payload || '',
-              image: v.imagePath || v.image || '/images/canter.png',
+              image: proxyImg(v.imagePath || v.image || '/images/canter.png'),
               specs: Array.isArray(v.specsShort) ? v.specsShort : [],
               icon: v.payload && parseInt(v.payload) > 10 ? Truck : Weight,
               slug: v.slug || '',

@@ -3,6 +3,16 @@ import { getDb } from '@/lib/db';
 import { getStaticHero } from '@/lib/static-data';
 import { ensureMigrations } from '@/lib/auto-migrate';
 
+/** Proxy raw blob URLs through /api/image so clients can load them */
+function proxyBlobUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith('/api/image?')) return url;
+  if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
+    return `/api/image?url=${encodeURIComponent(url)}`;
+  }
+  return url;
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const page = searchParams.get('page') || 'home';
@@ -33,9 +43,11 @@ export async function GET(request: NextRequest) {
       const staticData = getStaticHero(page);
       return NextResponse.json(staticData, { headers });
     }
+    const row = result.rows[0];
     const hero = {
-      ...result.rows[0],
-      active: result.rows[0].active === 1,
+      ...row,
+      imagePath: proxyBlobUrl(row.imagePath as string) || row.imagePath,
+      active: row.active === 1,
     };
     return NextResponse.json(hero, { headers });
   } catch (error) {

@@ -8,6 +8,22 @@
 
 import { getDb } from '@/lib/db';
 import { VehicleData, VehicleGallery, passengerVehicles, niagaRinganVehicles, commercialVehicles } from '@/data/vehicles';
+
+/**
+ * Proxy raw Vercel Blob URLs through /api/image so they work on the client.
+ * If the URL is already proxied (/api/image?...) or is a local path, return as-is.
+ */
+function proxyBlobUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  // Already proxied — don't double-proxy
+  if (url.startsWith('/api/image?')) return url;
+  // Raw blob URL — proxy it
+  if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
+    return `/api/image?url=${encodeURIComponent(url)}`;
+  }
+  // Local path or other URL — return as-is
+  return url;
+}
 import {
   getPassengerVehicle,
   getNiagaRinganVehicle,
@@ -52,8 +68,8 @@ export async function fetchVehicleBySlug(slug: string): Promise<VehicleData | nu
       db.execute({ sql: 'SELECT * FROM VehicleFeature WHERE vehicleId = ? ORDER BY displayOrder ASC', args: [vehicleId] }),
     ]);
 
-    // Build imagePath with cache-busting using updatedAt timestamp
-    let image = (row.imagePath as string) || '/images/canter.png';
+    // Build imagePath: proxy raw blob URLs, add cache-busting for already-proxied URLs
+    let image = proxyBlobUrl((row.imagePath as string)) || '/images/canter.png';
     if (image.startsWith('/api/image?') && row.updatedAt) {
       image = `${image}&_t=${encodeURIComponent(row.updatedAt as string)}`;
     }
@@ -71,7 +87,7 @@ export async function fetchVehicleBySlug(slug: string): Promise<VehicleData | nu
       colors: colorsRes.rows.map(c => ({
         name: (c.name as string) || '',
         hex: (c.hex as string) || '#000000',
-        image: (c.imagePath as string) || undefined,
+        image: proxyBlobUrl(c.imagePath as string),
       })),
       variants: variantsRes.rows.map(v => ({
         name: (v.name as string) || '',
@@ -79,7 +95,7 @@ export async function fetchVehicleBySlug(slug: string): Promise<VehicleData | nu
         priceNum: Number(v.priceNum) || 0,
         transmission: (v.transmission as string) || '',
         drivetrain: (v.drivetrain as string) || undefined,
-        image: (v.imagePath as string) || undefined,
+        image: proxyBlobUrl(v.imagePath as string),
         highlights: parseJSON<string[]>(v.highlights, []),
       })),
       specs: specsRes.rows.map(s => ({
@@ -122,7 +138,7 @@ function parseJSON<T>(value: unknown, fallback: T): T {
  * basePrice, image, payload, specsShort.
  */
 function buildVehicleListItem(row: Record<string, unknown>): VehicleData {
-  let image = (row.imagePath as string) || '/images/canter.png';
+  let image = proxyBlobUrl(row.imagePath as string) || '/images/canter.png';
   if (image.startsWith('/api/image?') && row.updatedAt) {
     image = `${image}&_t=${encodeURIComponent(row.updatedAt as string)}`;
   }

@@ -101,15 +101,22 @@ export default function PassengerCars() {
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
-          const mapped: VehicleCard[] = data.map((v: any) => ({
-            name: v.name || '',
-            tagline: v.tagline || '',
-            price: v.basePrice || '',
-            image: v.imagePath || v.image || '/images/canter.png',
-            specs: Array.isArray(v.specsShort) ? v.specsShort : [],
-            slug: v.slug || '',
-            category: v.category || 'passenger',
-          }));
+          const mapped: VehicleCard[] = data.map((v: any) => {
+            let img = v.imagePath || v.image || '/images/canter.png';
+            // Proxy blob URLs through /api/image (but don't double-proxy)
+            if (!img.startsWith('/api/image?') && (img.includes('vercel-storage.com') || img.includes('blob.vercel-storage.com'))) {
+              img = `/api/image?url=${encodeURIComponent(img)}`;
+            }
+            return {
+              name: v.name || '',
+              tagline: v.tagline || '',
+              price: v.basePrice || '',
+              image: img,
+              specs: Array.isArray(v.specsShort) ? v.specsShort : [],
+              slug: v.slug || '',
+              category: v.category || 'passenger',
+            };
+          });
           setVehicles(mapped);
         }
       } catch {

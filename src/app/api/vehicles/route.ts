@@ -6,6 +6,16 @@ import { getStaticVehicles } from '@/lib/static-data';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+/** Proxy raw blob URLs through /api/image so clients can load them */
+function proxyBlobUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith('/api/image?')) return url;
+  if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
+    return `/api/image?url=${encodeURIComponent(url)}`;
+  }
+  return url;
+}
+
 export async function GET(request: NextRequest) {
   const db = getDb();
   if (!db) {
@@ -44,16 +54,19 @@ export async function GET(request: NextRequest) {
 
       vehicles.push({
         ...row,
+        imagePath: proxyBlobUrl(row.imagePath as string) || row.imagePath,
         active: row.active === 1,
         displayOrder: Number(row.displayOrder),
         variants: variantsRes.rows.map(v => ({
           ...v,
+          imagePath: proxyBlobUrl(v.imagePath as string) || v.imagePath,
           highlights: typeof v.highlights === 'string' ? JSON.parse(v.highlights) : v.highlights,
           priceNum: Number(v.priceNum),
           displayOrder: Number(v.displayOrder),
         })),
         colors: colorsRes.rows.map(c => ({
           ...c,
+          imagePath: proxyBlobUrl(c.imagePath as string) || c.imagePath,
           displayOrder: Number(c.displayOrder),
         })),
         specs: specsRes.rows.map(s => ({

@@ -36,10 +36,12 @@ export default function HeroSection() {
   const [hero, setHero] = useState<HeroData>(fallbackHero);
   const [imageSrc, setImageSrc] = useState<string>(fallbackHero.imagePath);
 
-  // Helper: proxy blob URLs through /api/image (no aggressive cache-busting)
+  // Helper: proxy blob URLs through /api/image
   const prepareImageUrl = (url: string) => {
     if (!url) return url;
-    // Proxy Vercel Blob URLs through /api/image
+    // Already proxied — don't double-proxy
+    if (url.startsWith('/api/image?')) return url;
+    // Proxy raw Vercel Blob URLs through /api/image
     if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
       return `/api/image?url=${encodeURIComponent(url)}`;
     }

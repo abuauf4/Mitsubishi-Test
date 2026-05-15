@@ -24,10 +24,12 @@ export async function POST(request: NextRequest) {
     if (token) {
       try {
         const { put } = await import('@vercel/blob');
-        // Don't specify 'access' — lets Vercel Blob use the store's default (works with both public and private stores)
+        // Private stores require access:'private'. Public stores also accept it.
+        // If your store is public and you want public URLs, change this to 'public'.
         const blob = await put(`mitsubishi/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`, file, {
           token,
           addRandomSuffix: true,
+          access: 'private',
         });
 
         // Return the proxy path so images go through our /api/image proxy

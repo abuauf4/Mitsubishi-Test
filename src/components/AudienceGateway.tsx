@@ -323,6 +323,8 @@ export default function AudienceGateway() {
   // Helper: proxy blob URLs through /api/image so they load reliably
   const proxyImage = (url: string) => {
     if (!url) return '';
+    // Already proxied — don't double-proxy
+    if (url.startsWith('/api/image?')) return url;
     if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
       return `/api/image?url=${encodeURIComponent(url)}`;
     }

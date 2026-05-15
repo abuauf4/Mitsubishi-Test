@@ -20,6 +20,9 @@ export default function CommercialPageClient({ commercial }: Props) {
   // Helper: proxy blob URLs through /api/image
   const prepareImageUrl = (url: string) => {
     if (!url) return url;
+    // Already proxied — don't double-proxy
+    if (url.startsWith('/api/image?')) return url;
+    // Proxy raw Vercel Blob URLs through /api/image
     if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
       return `/api/image?url=${encodeURIComponent(url)}`;
     }
