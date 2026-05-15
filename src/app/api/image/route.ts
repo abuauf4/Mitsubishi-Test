@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Image proxy for Vercel Blob URLs.
- * Falls back to a redirect to a local image if the fetch fails.
+ * Uses signed URLs for private blob stores, with fallback to direct fetch.
  * Never returns an SVG placeholder — always returns a real image or redirect.
  */
 
@@ -12,35 +12,67 @@ export async function GET(request: NextRequest) {
     return new NextResponse('Missing url parameter', { status: 400 });
   }
 
+  // Detect if this is a Vercel Blob URL
+  const isBlobUrl = url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com');
+
   try {
-    // Try fetching with auth token first
-    const headers: Record<string, string> = {};
-    const token = process.env.BLOB_READ_WRITE_TOKEN;
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
+    // Strategy 1: For blob URLs, try signed URL first (works with private stores)
+    if (isBlobUrl) {
+      const token = process.env.BLOB_READ_WRITE_TOKEN;
+      if (token) {
+        try {
+          const { generateSignedUrl } = await import('@vercel/blob');
+          const signedUrl = await generateSignedUrl({
+            url,
+            token,
+            expiry: 3600, // 1 hour
+          });
 
-    const res = await fetch(url, {
-      headers,
-      cache: 'no-store',
-    });
+          const res = await fetch(signedUrl, { cache: 'no-store' });
+          if (res.ok) {
+            const contentType = res.headers.get('content-type') || 'image/jpeg';
+            const body = await res.arrayBuffer();
+            return new NextResponse(body, {
+              status: 200,
+              headers: {
+                'Content-Type': contentType,
+                'Cache-Control': 'public, s-maxage=300, max-age=300, stale-while-revalidate=86400',
+                'Access-Control-Allow-Origin': '*',
+              },
+            });
+          }
+        } catch (signedErr) {
+          console.warn('Signed URL fetch failed, trying direct fetch:', signedErr);
+          // Fall through to direct fetch
+        }
+      }
 
-    if (res.ok) {
-      const contentType = res.headers.get('content-type') || 'image/jpeg';
-      const body = await res.arrayBuffer();
+      // Strategy 2: Direct fetch with auth header (for public stores or if signed URL failed)
+      try {
+        const headers: Record<string, string> = {};
+        const token = process.env.BLOB_READ_WRITE_TOKEN;
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
 
-      return new NextResponse(body, {
-        status: 200,
-        headers: {
-          'Content-Type': contentType,
-          'Cache-Control': 'public, s-maxage=300, max-age=300, stale-while-revalidate=86400',
-          'Access-Control-Allow-Origin': '*',
-        },
-      });
-    }
+        const res = await fetch(url, { headers, cache: 'no-store' });
+        if (res.ok) {
+          const contentType = res.headers.get('content-type') || 'image/jpeg';
+          const body = await res.arrayBuffer();
+          return new NextResponse(body, {
+            status: 200,
+            headers: {
+              'Content-Type': contentType,
+              'Cache-Control': 'public, s-maxage=300, max-age=300, stale-while-revalidate=86400',
+              'Access-Control-Allow-Origin': '*',
+            },
+          });
+        }
+      } catch {
+        // Direct fetch also failed, fall through to redirect
+      }
 
-    // If auth fetch failed, try public fetch (no auth header)
-    if (token) {
+      // Strategy 3: Public fetch without auth (for public stores)
       try {
         const publicRes = await fetch(url, { cache: 'no-store' });
         if (publicRes.ok) {
@@ -58,13 +90,30 @@ export async function GET(request: NextRequest) {
       } catch {
         // Public fetch also failed, fall through to redirect
       }
+
+      // All blob fetch strategies failed — redirect to fallback
+      return NextResponse.redirect(new URL('/images/hero-cinematic.png', request.url));
     }
 
-    // All fetches failed — redirect to fallback image instead of SVG placeholder
-    // This ensures Next.js Image component shows a real image, not "Image unavailable"
+    // Non-blob URL: direct fetch (for external images)
+    const res = await fetch(url, { cache: 'no-store' });
+    if (res.ok) {
+      const contentType = res.headers.get('content-type') || 'image/jpeg';
+      const body = await res.arrayBuffer();
+      return new NextResponse(body, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Cache-Control': 'public, s-maxage=300, max-age=300, stale-while-revalidate=86400',
+          'Access-Control-Allow-Origin': '*',
+        },
+      });
+    }
+
+    // Non-blob fetch failed — redirect to fallback
     return NextResponse.redirect(new URL('/images/hero-cinematic.png', request.url));
   } catch (error: any) {
-    // Network error or other — redirect to fallback
+    // Any unexpected error — redirect to fallback
     return NextResponse.redirect(new URL('/images/hero-cinematic.png', request.url));
   }
 }

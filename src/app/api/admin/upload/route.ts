@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
     if (token) {
       try {
         const { put } = await import('@vercel/blob');
+        // Don't specify 'access' — lets Vercel Blob use the store's default (works with both public and private stores)
         const blob = await put(`mitsubishi/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`, file, {
-          access: 'public',
           token,
           addRandomSuffix: true,
         });

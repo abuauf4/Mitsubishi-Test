@@ -120,6 +120,56 @@ export async function PUT(request: NextRequest) {
       });
     } else {
       // Create new (id is null or static-*)
+      // But first check if a record already exists for this page — update it instead of creating duplicate
+      const existing = await db.execute({
+        sql: 'SELECT id FROM Hero WHERE page = ? LIMIT 1',
+        args: [page],
+      });
+
+      if (existing.rows.length > 0) {
+        // Record exists — update it with the new data
+        const existingId = existing.rows[0].id as string;
+        const fields: string[] = [];
+        const args: (string | number)[] = [];
+
+        if (data.title !== undefined) { fields.push('title = ?'); args.push(data.title); }
+        if (data.subtitle !== undefined) { fields.push('subtitle = ?'); args.push(data.subtitle); }
+        if (data.imagePath !== undefined) { fields.push('imagePath = ?'); args.push(data.imagePath); }
+        if (data.ctaText !== undefined) { fields.push('ctaText = ?'); args.push(data.ctaText); }
+        if (data.ctaLink !== undefined) { fields.push('ctaLink = ?'); args.push(data.ctaLink); }
+        if (data.active !== undefined) { fields.push('active = ?'); args.push(data.active ? 1 : 0); }
+
+        fields.push('updatedAt = ?');
+        args.push(now);
+        args.push(existingId);
+
+        await db.execute({
+          sql: `UPDATE Hero SET ${fields.join(', ')} WHERE id = ?`,
+          args,
+        });
+
+        // Purge caches
+        try {
+          revalidatePath('/');
+          revalidatePath('/passenger');
+          revalidatePath('/commercial');
+          revalidatePath('/api/hero');
+        } catch (e) {
+          console.warn('revalidatePath failed (non-critical):', e);
+        }
+
+        const updated = await db.execute({
+          sql: 'SELECT * FROM Hero WHERE id = ?',
+          args: [existingId],
+        });
+        const row = updated.rows[0];
+        return NextResponse.json({
+          ...row,
+          active: row.active === 1,
+        });
+      }
+
+      // No existing record — create new
       const newId = crypto.randomUUID();
       await db.execute({
         sql: `INSERT INTO Hero (id, title, subtitle, imagePath, ctaText, ctaLink, page, active, createdAt, updatedAt)
