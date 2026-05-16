@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { Upload, X, Image as ImageIcon, Link, AlertCircle } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Link, AlertCircle, Eraser } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -11,19 +11,128 @@ interface ImageUploadProps {
   label?: string;
 }
 
+/**
+ * Remove white/near-white background from an image using canvas flood-fill.
+ * Starts from all 4 edges and makes connected white pixels transparent.
+ * Preserves white areas that are enclosed inside the subject (e.g., car headlights).
+ */
+async function removeWhiteBackground(file: File, tolerance: number = 30): Promise<File> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const { data, width, height } = imageData;
+
+      // Mark visited pixels to avoid re-processing
+      const visited = new Uint8Array(width * height);
+
+      // Check if a pixel is "white enough" to be background
+      const isWhite = (idx: number): boolean => {
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        const a = data[idx + 3];
+        // Must be mostly opaque and close to white
+        return a > 200 && r > 255 - tolerance && g > 255 - tolerance && b > 255 - tolerance;
+      };
+
+      // Scanline flood-fill — much faster than BFS with queue.shift()
+      // Use a stack (LIFO) instead of queue for O(1) push/pop
+      const stack: number[] = [];
+
+      // Seed from all edge pixels
+      for (let x = 0; x < width; x++) {
+        if (isWhite(((0) * width + x) * 4)) stack.push(x, 0);
+        if (isWhite(((height - 1) * width + x) * 4)) stack.push(x, height - 1);
+      }
+      for (let y = 1; y < height - 1; y++) {
+        if (isWhite((y * width + 0) * 4)) stack.push(0, y);
+        if (isWhite((y * width + (width - 1)) * 4)) stack.push(width - 1, y);
+      }
+
+      // Process stack — pairs of (x, y)
+      while (stack.length > 0) {
+        const y = stack.pop()!;
+        const x = stack.pop()!;
+        const pixelIdx = y * width + x;
+
+        if (x < 0 || x >= width || y < 0 || y >= height) continue;
+        if (visited[pixelIdx]) continue;
+
+        const dataIdx = pixelIdx * 4;
+        if (!isWhite(dataIdx)) continue;
+
+        visited[pixelIdx] = 1;
+
+        // Make this pixel transparent with smooth anti-aliased edge
+        const whiteness = Math.min(data[dataIdx], data[dataIdx + 1], data[dataIdx + 2]);
+        const edgeFactor = (whiteness - (255 - tolerance)) / tolerance;
+        data[dataIdx + 3] = Math.round((1 - edgeFactor) * 60);
+
+        // Push neighbors (4-directional)
+        stack.push(x + 1, y);
+        stack.push(x - 1, y);
+        stack.push(x, y + 1);
+        stack.push(x, y - 1);
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+
+      // Convert canvas to PNG blob
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            resolve(file); // Fallback: return original if canvas fails
+            return;
+          }
+          // Create a new File with the same name but ensure .png extension
+          const newName = file.name.replace(/\.[^.]+$/, '.png');
+          const newFile = new File([blob], newName, { type: 'image/png' });
+          resolve(newFile);
+        },
+        'image/png'
+      );
+    };
+
+    img.onerror = () => resolve(file); // Fallback: return original on error
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 export default function ImageUpload({ value, onChange, label = 'Image' }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [mode, setMode] = useState<'upload' | 'url'>('upload');
+  const [removeBg, setRemoveBg] = useState(true); // Auto-remove white bg by default
   const inputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = useCallback(async (file: File) => {
     setUploading(true);
     setUploadError(null);
     try {
+      let fileToUpload = file;
+
+      // Auto-remove white background if enabled and file is an image (not already transparent)
+      if (removeBg && file.type !== 'image/svg+xml') {
+        setProcessing(true);
+        try {
+          fileToUpload = await removeWhiteBackground(file, 30);
+        } catch (e) {
+          console.warn('Background removal failed, uploading original:', e);
+        }
+        setProcessing(false);
+      }
+
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', fileToUpload);
       const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.path) {
@@ -38,8 +147,9 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
       setUploadError(error?.message || 'Upload failed');
     } finally {
       setUploading(false);
+      setProcessing(false);
     }
-  }, [onChange]);
+  }, [onChange, removeBg]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -152,7 +262,12 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
             />
             
             <div className="flex items-center justify-center gap-2">
-              {uploading ? (
+              {processing ? (
+                <>
+                  <Eraser className="w-5 h-5 text-mitsu-red animate-pulse" />
+                  <span className="text-sm text-mitsu-red font-medium">Removing background...</span>
+                </>
+              ) : uploading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-mitsu-red border-t-transparent rounded-full animate-spin" />
                   <span className="text-sm text-muted-foreground">Uploading...</span>
@@ -169,6 +284,19 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
                 </>
               )}
             </div>
+            {/* Background removal toggle */}
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <label className="flex items-center gap-1.5 text-[10px] text-muted-foreground cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={removeBg}
+                  onChange={(e) => setRemoveBg(e.target.checked)}
+                  className="rounded border-gray-300 text-mitsu-red focus:ring-mitsu-red w-3 h-3"
+                />
+                <Eraser className="w-3 h-3" />
+                Auto-remove white background
+              </label>
+            </div>
           </div>
         </>
       )}
@@ -181,24 +309,28 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
         </div>
       )}
 
-      {/* Preview */}
+      {/* Preview — with checkerboard to show transparency */}
       {value && (
-        <div className="mt-2 rounded-lg overflow-hidden border bg-muted/30">
+        <div className="mt-2 rounded-lg overflow-hidden border" style={{
+          backgroundImage: 'linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)',
+          backgroundSize: '12px 12px',
+          backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0px',
+        }}>
           <img
             src={previewSrc}
             alt="Preview"
-            className="w-full h-32 object-cover"
+            className="w-full h-32 object-contain"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
             }}
           />
           {isExternalUrl && (
-            <p className="text-xs text-muted-foreground p-2 truncate" title={value}>
+            <p className="text-xs text-muted-foreground p-2 truncate bg-white/80" title={value}>
               🌐 External URL
             </p>
           )}
           {!isExternalUrl && !isDataUrl && value && (
-            <p className="text-xs text-muted-foreground p-2 truncate" title={value}>
+            <p className="text-xs text-muted-foreground p-2 truncate bg-white/80" title={value}>
               📁 {value}
             </p>
           )}
