@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -101,6 +101,9 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
   const [colorFilterVariant, setColorFilterVariant] = useState<string>('all');
   const [specForm, setSpecForm] = useState({ category: '', items: '[]', displayOrder: 0 });
   const [featureForm, setFeatureForm] = useState({ icon: 'Zap', title: '', description: '', displayOrder: 0 });
+
+  // Track original values before inline edit starts (so we can compare on blur)
+  const editingOriginalRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
     if (!isNew) fetchVehicle();
@@ -798,14 +801,20 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                                 <Input
                                   value={c.name}
                                   onChange={(e) => {
-                                    // Optimistic local update
+                                    // Optimistic local update for instant feedback
                                     setVehicle(prev => prev ? {
                                       ...prev,
                                       colors: prev.colors.map(col => col.id === c.id ? { ...col, name: e.target.value } : col),
                                     } : prev);
                                   }}
+                                  onFocus={() => {
+                                    // Save original value before editing starts
+                                    editingOriginalRef.current[`color-${c.id}-name`] = c.name;
+                                  }}
                                   onBlur={(e) => {
-                                    if (e.target.value !== c.name) {
+                                    // Compare with original (not current state which was optimistically updated)
+                                    const original = editingOriginalRef.current[`color-${c.id}-name`];
+                                    if (original !== undefined && e.target.value !== original) {
                                       updateColorField(c.id, 'name', e.target.value);
                                     }
                                   }}
@@ -829,8 +838,12 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                                       colors: prev.colors.map(col => col.id === c.id ? { ...col, hex: e.target.value } : col),
                                     } : prev);
                                   }}
+                                  onFocus={() => {
+                                    editingOriginalRef.current[`color-${c.id}-hex`] = c.hex;
+                                  }}
                                   onBlur={(e) => {
-                                    if (e.target.value !== c.hex) {
+                                    const original = editingOriginalRef.current[`color-${c.id}-hex`];
+                                    if (original !== undefined && e.target.value !== original) {
                                       updateColorField(c.id, 'hex', e.target.value);
                                     }
                                   }}
@@ -844,8 +857,12 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                                       colors: prev.colors.map(col => col.id === c.id ? { ...col, hex: e.target.value } : col),
                                     } : prev);
                                   }}
+                                  onFocus={() => {
+                                    editingOriginalRef.current[`color-${c.id}-hex`] = c.hex;
+                                  }}
                                   onBlur={(e) => {
-                                    if (e.target.value !== c.hex) {
+                                    const original = editingOriginalRef.current[`color-${c.id}-hex`];
+                                    if (original !== undefined && e.target.value !== original) {
                                       updateColorField(c.id, 'hex', e.target.value);
                                     }
                                   }}
