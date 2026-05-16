@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowRight, Car, Truck, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 interface DBCategory {
   id: string;
@@ -320,15 +321,9 @@ export default function AudienceGateway() {
     fetchCategories();
   }, []);
 
-  // Helper: proxy blob URLs through /api/image so they load reliably
+  // Helper: resolve blob URLs (direct for public, proxy for private)
   const proxyImage = (url: string) => {
-    if (!url) return '';
-    // Already proxied — don't double-proxy
-    if (url.startsWith('/api/image?')) return url;
-    if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-      return `/api/image?url=${encodeURIComponent(url)}`;
-    }
-    return url;
+    return proxyBlobUrl(url) || '';
   };
 
   // Build cards from DB data or use hardcoded fallback

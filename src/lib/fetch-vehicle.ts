@@ -53,8 +53,10 @@ export async function fetchVehicleBySlug(slug: string): Promise<VehicleData | nu
       db.execute({ sql: 'SELECT * FROM VehicleFeature WHERE vehicleId = ? ORDER BY displayOrder ASC', args: [vehicleId] }),
     ]);
 
-    // Build imagePath: proxy raw blob URLs, add cache-busting for already-proxied URLs
+    // Build imagePath: resolve blob URLs (direct for public, proxy for private)
     let image = proxyBlobUrl((row.imagePath as string)) || '/images/canter.png';
+    // Cache-busting for proxy URLs (private store) — public URLs don't need this
+    // because Vercel Blob CDN handles caching natively
     if (image.startsWith('/api/image?') && row.updatedAt) {
       image = `${image}&_t=${encodeURIComponent(row.updatedAt as string)}`;
     }

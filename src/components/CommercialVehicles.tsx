@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Truck, Weight, Gauge, Zap, LucideIcon } from 'lucide-react';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 interface VehicleCard {
   name: string;
@@ -79,14 +80,9 @@ export default function CommercialVehicles() {
   useEffect(() => {
     async function fetchVehicles() {
       try {
-        // Helper: proxy blob URLs
+        // Helper: resolve blob URLs (direct for public, proxy for private)
         const proxyImg = (url: string) => {
-          if (!url) return '/images/canter.png';
-          if (url.startsWith('/api/image?')) return url;
-          if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-            return `/api/image?url=${encodeURIComponent(url)}`;
-          }
-          return url;
+          return proxyBlobUrl(url) || '/images/canter.png';
         };
 
         // Fetch niaga-ringan

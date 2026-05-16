@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRef } from 'react';
 import type { HeroData } from '@/lib/fetch-hero';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 interface HeroSectionProps {
   initialData?: HeroData;
@@ -32,17 +33,9 @@ export default function HeroSection({ initialData }: HeroSectionProps) {
 
   const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
-  // Helper: proxy blob URLs through /api/image
+  // Helper: resolve blob URLs (direct for public, proxy for private)
   const prepareImageUrl = (url: string) => {
-    if (!url) return url;
-    // Already proxied — don't double-proxy
-    if (url.startsWith('/api/image?')) return url;
-    // Proxy raw Vercel Blob URLs through /api/image
-    if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-      return `/api/image?url=${encodeURIComponent(url)}`;
-    }
-    // Local images don't need proxying
-    return url;
+    return proxyBlobUrl(url) || url;
   };
 
   // Start with server-provided data if available, otherwise fallback

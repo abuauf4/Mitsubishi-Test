@@ -8,6 +8,7 @@ import VehicleCard from '@/components/shared/VehicleCard';
 import { VehicleData } from '@/data/vehicles';
 import Link from 'next/link';
 import type { HeroData } from '@/lib/fetch-hero';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 interface Props {
   vehicles: VehicleData[];
@@ -24,16 +25,9 @@ export default function PassengerPageClient({ vehicles, initialHeroData }: Props
   const [heroTitle, setHeroTitle] = useState(initialHeroData?.title || defaultTitle);
   const [heroSubtitle, setHeroSubtitle] = useState(initialHeroData?.subtitle || defaultSubtitle);
 
-  // Helper: proxy blob URLs through /api/image
+  // Helper: resolve blob URLs (direct for public, proxy for private)
   const prepareImageUrl = (url: string) => {
-    if (!url) return url;
-    // Already proxied — don't double-proxy
-    if (url.startsWith('/api/image?')) return url;
-    // Proxy raw Vercel Blob URLs through /api/image
-    if (url.includes('vercel-storage.com') || url.includes('blob.vercel-storage.com')) {
-      return `/api/image?url=${encodeURIComponent(url)}`;
-    }
-    return url;
+    return proxyBlobUrl(url) || url;
   };
 
   useEffect(() => {

@@ -10,11 +10,12 @@ import { proxyBlobUrl } from '@/lib/image-utils';
  */
 
 export function mapApiVehicleToVehicleData(apiVehicle: any): VehicleData {
-  // Get the image path from the DB and proxy blob URLs
+  // Get the image path from the DB and resolve blob URLs
+  // Public blob URLs are served directly, private ones go through proxy
   let image = proxyBlobUrl(apiVehicle.imagePath) || '/images/canter.png';
 
-  // If the image is a proxy URL, add a cache-busting parameter using updatedAt
-  // This ensures the browser fetches a fresh image when the vehicle is updated
+  // Cache-busting for proxy URLs (private store) only
+  // Public blob URLs don't need cache-busting — Vercel Blob CDN handles this
   if (image.startsWith('/api/image?') && apiVehicle.updatedAt) {
     const separator = image.includes('&') ? '&' : '&';
     image = `${image}${separator}_t=${encodeURIComponent(apiVehicle.updatedAt)}`;

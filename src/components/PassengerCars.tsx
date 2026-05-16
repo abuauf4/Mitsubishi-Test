@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef } from 'react';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 interface VehicleCard {
   name: string;
@@ -103,10 +104,8 @@ export default function PassengerCars() {
         if (Array.isArray(data) && data.length > 0) {
           const mapped: VehicleCard[] = data.map((v: any) => {
             let img = v.imagePath || v.image || '/images/canter.png';
-            // Proxy blob URLs through /api/image (but don't double-proxy)
-            if (!img.startsWith('/api/image?') && (img.includes('vercel-storage.com') || img.includes('blob.vercel-storage.com'))) {
-              img = `/api/image?url=${encodeURIComponent(img)}`;
-            }
+            // Resolve blob URLs (direct for public, proxy for private)
+            img = proxyBlobUrl(img) || img;
             return {
               name: v.name || '',
               tagline: v.tagline || '',

@@ -25,6 +25,11 @@ export async function GET(request: NextRequest) {
   // Decode the URL if it's encoded
   const decodedUrl = decodeURIComponent(url);
 
+  // PUBLIC blob URLs — redirect directly (no signed URL needed)
+  if (decodedUrl.includes('.public.blob.vercel-storage.com')) {
+    return NextResponse.redirect(decodedUrl, 302);
+  }
+
   // Detect if this is a Vercel Blob URL
   const isBlobUrl = decodedUrl.includes('vercel-storage.com') || decodedUrl.includes('blob.vercel-storage.com');
 

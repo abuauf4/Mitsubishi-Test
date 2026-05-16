@@ -4,14 +4,20 @@ import { getDb } from '@/lib/db';
 import { getStaticVehicles } from '@/lib/static-data';
 
 /**
- * Extract the direct Vercel Blob URL from a proxy path like /api/image?url=...
- * Returns null if the path is not a proxy URL or can't be parsed.
+ * Extract the direct Vercel Blob URL from various image path formats.
+ * Handles:
+ *   - Proxy URLs: /api/image?url=https://xxx.blob.vercel-storage.com/...
+ *   - Direct public URLs: https://xxx.public.blob.vercel-storage.com/...
+ *   - Direct private URLs: https://xxx.private.blob.vercel-storage.com/...
+ * Returns null if the path is not a blob URL or can't be parsed.
  */
 function extractBlobUrl(imagePath: string): string | null {
   try {
+    // Proxy URL format: /api/image?url=<encoded-blob-url>
     if (imagePath.startsWith('/api/image?url=')) {
       return decodeURIComponent(imagePath.replace('/api/image?url=', ''));
     }
+    // Direct blob URL (public or private)
     if (imagePath.includes('vercel-storage.com')) {
       return imagePath;
     }

@@ -9,24 +9,33 @@ import { NextRequest, NextResponse } from 'next/server';
  * Previously used access:'private' + /api/image proxy, which doubled
  * bandwidth (Blob→Server + Server→Client) and exhausted transfer limits.
  */
-
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'No file provided', hint: 'Include a "file" field in the FormData' },
+        { status: 400 }
+      );
     }
 
-    // Check file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large. Max 10MB.' }, { status: 400 });
-    }
-
-    // Check file type
+    // Validate file type
     if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid file type', hint: 'Only image files are accepted' },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (max 10MB)
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json(
+        { error: 'File too large', hint: 'Maximum file size is 10MB' },
+        { status: 400 }
+      );
     }
 
     // Try uploading to Vercel Blob
@@ -63,16 +72,18 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // No blob token configured — return error
-    return NextResponse.json({
-      error: 'Image storage not configured',
-      hint: 'Set BLOB_READ_WRITE_TOKEN in Vercel environment variables to enable image uploads. Or use URL mode to paste an existing image URL.',
-    }, { status: 503 });
+    return NextResponse.json(
+      { error: 'Blob storage not configured', hint: 'Set BLOB_READ_WRITE_TOKEN env var' },
+      { status: 503 }
+    );
   } catch (error: any) {
     console.error('Upload error:', error);
-    return NextResponse.json({
-      error: 'Upload failed',
-      detail: error?.message || String(error),
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Upload failed',
+        hint: error?.message || 'Unknown error',
+      },
+      { status: 500 }
+    );
   }
 }
