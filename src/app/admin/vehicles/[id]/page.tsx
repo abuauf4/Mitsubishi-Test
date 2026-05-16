@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Save, Plus, Trash2, ArrowLeft, Palette, Wrench, Sparkles, Layers, AlertTriangle, CheckSquare, Square } from 'lucide-react';
+import { Save, Plus, Trash2, ArrowLeft, Palette, Wrench, Sparkles, Layers, AlertTriangle, CheckSquare, Square, Pencil } from 'lucide-react';
 import Link from 'next/link';
 import ImageUpload from '@/components/admin/ImageUpload';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
@@ -213,6 +213,27 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
       } else {
         const err = await res.json().catch(() => ({}));
         toast.error(err.error || 'Failed to update image');
+      }
+    } catch (error: any) {
+      toast.error(`Network error: ${error?.message || 'Update failed'}`);
+    }
+  }
+
+  // Inline update for color fields (name, hex, variantId, displayOrder)
+  async function updateColorField(colorId: string, field: string, value: string | number | null) {
+    if (!vehicle || vehicle.id.startsWith('static-')) return;
+    try {
+      const res = await fetch(`/api/admin/vehicles/${vehicle.id}/colors`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: colorId, [field]: value }),
+      });
+      if (res.ok) {
+        toast.success('Updated');
+        fetchVehicle();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.error || 'Failed to update');
       }
     } catch (error: any) {
       toast.error(`Network error: ${error?.message || 'Update failed'}`);
@@ -664,15 +685,77 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                               <div className="w-12 h-12 rounded-lg border flex-shrink-0" style={{ backgroundColor: c.hex }} />
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
-                              <p className="text-xs text-muted-foreground">{c.hex}</p>
+                              {/* Editable color name */}
+                              <div className="flex items-center gap-1.5">
+                                <Input
+                                  value={c.name}
+                                  onChange={(e) => {
+                                    // Optimistic local update
+                                    setVehicle(prev => prev ? {
+                                      ...prev,
+                                      colors: prev.colors.map(col => col.id === c.id ? { ...col, name: e.target.value } : col),
+                                    } : prev);
+                                  }}
+                                  onBlur={(e) => {
+                                    if (e.target.value !== c.name) {
+                                      updateColorField(c.id, 'name', e.target.value);
+                                    }
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="h-7 text-sm font-medium px-2 py-0 border-transparent hover:border-border focus:border-mitsu-red bg-transparent hover:bg-muted/50"
+                                />
+                                <Pencil className="w-3 h-3 text-muted-foreground/40 flex-shrink-0" />
+                              </div>
+                              {/* Editable hex color */}
+                              <div className="flex items-center gap-1.5 mt-1">
+                                <input
+                                  type="color"
+                                  value={c.hex}
+                                  onChange={(e) => {
+                                    setVehicle(prev => prev ? {
+                                      ...prev,
+                                      colors: prev.colors.map(col => col.id === c.id ? { ...col, hex: e.target.value } : col),
+                                    } : prev);
+                                  }}
+                                  onBlur={(e) => {
+                                    if (e.target.value !== c.hex) {
+                                      updateColorField(c.id, 'hex', e.target.value);
+                                    }
+                                  }}
+                                  className="w-6 h-6 rounded cursor-pointer border-0 p-0 flex-shrink-0"
+                                />
+                                <Input
+                                  value={c.hex}
+                                  onChange={(e) => {
+                                    setVehicle(prev => prev ? {
+                                      ...prev,
+                                      colors: prev.colors.map(col => col.id === c.id ? { ...col, hex: e.target.value } : col),
+                                    } : prev);
+                                  }}
+                                  onBlur={(e) => {
+                                    if (e.target.value !== c.hex) {
+                                      updateColorField(c.id, 'hex', e.target.value);
+                                    }
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="h-6 text-xs font-mono px-2 py-0 border-transparent hover:border-border focus:border-mitsu-red bg-transparent hover:bg-muted/50"
+                                />
+                              </div>
                               {/* Variant badge */}
                               {assignedVariant ? (
-                                <Badge variant="secondary" className="mt-1 text-[9px] bg-mitsu-dark/10 text-mitsu-dark">
+                                <Badge variant="secondary" className="mt-1.5 text-[9px] bg-mitsu-dark/10 text-mitsu-dark">
                                   📎 {assignedVariant.name}
                                 </Badge>
                               ) : (
-                                <Badge variant="secondary" className="mt-1 text-[9px] bg-blue-100 text-blue-700">
+                                <Badge variant="secondary" className="mt-1.5 text-[9px] bg-blue-100 text-blue-700">
                                   🌐 Global
                                 </Badge>
                               )}
@@ -687,7 +770,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
-                          {/* Variant assignment - quick change (single select for existing records) */}
+                          {/* Variant assignment - quick change */}
                           <div className="mb-3">
                             <Label className="text-[10px]">Assign ke Varian:</Label>
                             <Select
