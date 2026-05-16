@@ -1353,6 +1353,265 @@ a, button {
   z-index: 0;
 }
 
+/* ============================================
+   VEHICLE IMAGE LIGHT BACKGROUND PATTERN
+   BMW configurator-style: white + brand color
+   Passenger variant: white + red (#E60012) + black (#1A1A1A)
+   ============================================ */
+.vehicle-image-bg-light {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 30% 70%, rgba(230, 0, 18, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 30%, rgba(26, 26, 26, 0.02) 0%, transparent 50%),
+    linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 60%, #F8F8F8 100%);
+}
+
+.vehicle-image-bg-light::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    /* Layer 1: Fine diamond crosshatch in brand red */
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 24px,
+      rgba(230, 0, 18, 0.04) 24px,
+      rgba(230, 0, 18, 0.04) 24.5px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 24px,
+      rgba(230, 0, 18, 0.035) 24px,
+      rgba(230, 0, 18, 0.035) 24.5px
+    ),
+    /* Layer 2: Architect grid in black (very faint) */
+    linear-gradient(rgba(26, 26, 26, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 26, 26, 0.018) 1px, transparent 1px),
+    /* Layer 3: Brand-color accent nodes at intersections */
+    radial-gradient(circle at 1px 1px, rgba(230, 0, 18, 0.025) 0.8px, transparent 0.8px);
+  background-size: auto, auto, 48px 48px, 48px 48px, 48px 48px;
+  background-position: 0 0, 0 0, 0 0, 0 0, -1px -1px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Faint bottom-edge gradient (floor reflection / horizon) */
+.vehicle-image-bg-light::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: linear-gradient(
+    to top,
+    rgba(230, 0, 18, 0.05) 0%,
+    rgba(230, 0, 18, 0.02) 30%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================
+   VEHICLE IMAGE LIGHT BACKGROUND PATTERN
+   Commercial (FUSO) variant: white + yellow (#FFD600) + black (#1A1A1A)
+   ============================================ */
+.vehicle-image-bg-light-yellow {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 30% 70%, rgba(255, 214, 0, 0.035) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 30%, rgba(26, 26, 26, 0.02) 0%, transparent 50%),
+    linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 60%, #F8F8F8 100%);
+}
+
+.vehicle-image-bg-light-yellow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    /* Layer 1: Fine diamond crosshatch in brand yellow */
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 24px,
+      rgba(255, 214, 0, 0.05) 24px,
+      rgba(255, 214, 0, 0.05) 24.5px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 24px,
+      rgba(255, 214, 0, 0.04) 24px,
+      rgba(255, 214, 0, 0.04) 24.5px
+    ),
+    /* Layer 2: Architect grid in black (very faint) */
+    linear-gradient(rgba(26, 26, 26, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 26, 26, 0.018) 1px, transparent 1px),
+    /* Layer 3: Brand-color accent nodes at intersections */
+    radial-gradient(circle at 1px 1px, rgba(255, 214, 0, 0.03) 0.8px, transparent 0.8px);
+  background-size: auto, auto, 48px 48px, 48px 48px, 48px 48px;
+  background-position: 0 0, 0 0, 0 0, 0 0, -1px -1px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Faint bottom-edge gradient (floor reflection / horizon) */
+.vehicle-image-bg-light-yellow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: linear-gradient(
+    to top,
+    rgba(255, 214, 0, 0.06) 0%,
+    rgba(255, 214, 0, 0.02) 30%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================
+   ALTERNATIVE: Vehicle image light – Diamond Argyle variant
+   A bolder geometric pattern (larger diamonds) for premium feel
+   ============================================ */
+.vehicle-image-bg-light-argyle {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 50% 80%, rgba(230, 0, 18, 0.04) 0%, transparent 50%),
+    linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%);
+}
+
+.vehicle-image-bg-light-argyle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    /* Large diamond outlines in brand red */
+    repeating-linear-gradient(
+      60deg,
+      transparent,
+      transparent 40px,
+      rgba(230, 0, 18, 0.03) 40px,
+      rgba(230, 0, 18, 0.03) 40.5px
+    ),
+    repeating-linear-gradient(
+      -60deg,
+      transparent,
+      transparent 40px,
+      rgba(230, 0, 18, 0.03) 40px,
+      rgba(230, 0, 18, 0.03) 40.5px
+    ),
+    /* Fine overlay crosshatch in dark */
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 80px,
+      rgba(26, 26, 26, 0.015) 80px,
+      rgba(26, 26, 26, 0.015) 80.5px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 80px,
+      rgba(26, 26, 26, 0.015) 80px,
+      rgba(26, 26, 26, 0.015) 80.5px
+    ),
+    /* Accent nodes at intersections */
+    radial-gradient(circle at 2px 2px, rgba(230, 0, 18, 0.04) 1.2px, transparent 1.2px);
+  background-size: auto, auto, auto, auto, 80px 80px;
+  background-position: 0 0, 0 0, 0 0, 0 0, -1px -1px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vehicle-image-bg-light-argyle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(
+    to top,
+    rgba(230, 0, 18, 0.04) 0%,
+    rgba(230, 0, 18, 0.015) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Argyle variant – Yellow (FUSO) */
+.vehicle-image-bg-light-argyle-yellow {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 50% 80%, rgba(255, 214, 0, 0.045) 0%, transparent 50%),
+    linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%);
+}
+
+.vehicle-image-bg-light-argyle-yellow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      60deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 214, 0, 0.04) 40px,
+      rgba(255, 214, 0, 0.04) 40.5px
+    ),
+    repeating-linear-gradient(
+      -60deg,
+      transparent,
+      transparent 40px,
+      rgba(255, 214, 0, 0.04) 40px,
+      rgba(255, 214, 0, 0.04) 40.5px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 80px,
+      rgba(26, 26, 26, 0.015) 80px,
+      rgba(26, 26, 26, 0.015) 80.5px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 80px,
+      rgba(26, 26, 26, 0.015) 80px,
+      rgba(26, 26, 26, 0.015) 80.5px
+    ),
+    radial-gradient(circle at 2px 2px, rgba(255, 214, 0, 0.05) 1.2px, transparent 1.2px);
+  background-size: auto, auto, auto, auto, 80px 80px;
+  background-position: 0 0, 0 0, 0 0, 0 0, -1px -1px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vehicle-image-bg-light-argyle-yellow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(
+    to top,
+    rgba(255, 214, 0, 0.05) 0%,
+    rgba(255, 214, 0, 0.015) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* Safe area bottom for mobile notched devices */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);

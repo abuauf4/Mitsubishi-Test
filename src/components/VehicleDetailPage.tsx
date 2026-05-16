@@ -183,7 +183,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
               {/* Main Image Container — swipeable */}
               <div
                 ref={imageContainerRef}
-                className={`relative aspect-[16/10] rounded-2xl overflow-hidden border ${isCommercial ? 'vehicle-image-bg-yellow border-white/10' : 'vehicle-image-bg border-gray-800'} ${visibleColors.length > 1 ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
+                className={`relative aspect-[16/10] rounded-2xl overflow-hidden border ${isCommercial ? 'vehicle-image-bg-light-yellow border-gray-200/60' : 'vehicle-image-bg-light border-gray-200/60'} ${visibleColors.length > 1 ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 onMouseDown={handleMouseDown}
@@ -205,7 +205,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                         src={imgSrc}
                         alt={`Mitsubishi ${vehicle.name} ${color.name}`}
                         fill
-                        className="object-cover relative z-[1]"
+                        className="object-contain relative z-[1]"
                         sizes="(max-width: 1024px) 100vw, 50vw"
                         priority={i === 0}
                         unoptimized={imgSrc.startsWith('/api/') || imgSrc.includes('vercel-storage.com')}
@@ -218,7 +218,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 {/* Swipe hint — only show when multiple colors */}
                 {visibleColors.length > 1 && (
                   <div className="absolute top-4 right-4 z-[3] sm:hidden">
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-black/40 backdrop-blur-sm rounded text-[9px] text-white/70 font-medium">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/70 backdrop-blur-sm rounded text-[9px] text-gray-500 font-medium border border-gray-200/50">
                       ← Geser ganti warna →
                     </span>
                   </div>
@@ -227,7 +227,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 {/* Image source indicator */}
                 {(hasVariantImage || hasColorImage) && (
                   <div className="absolute bottom-4 right-4 z-[2] hidden sm:block">
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-black/50 backdrop-blur-sm rounded text-[9px] text-white font-medium">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/70 backdrop-blur-sm rounded text-[9px] text-gray-600 font-medium border border-gray-200/50">
                       {hasVariantImage && hasColorImage ? '📷 Varian + Warna' : hasVariantImage ? '📷 Varian' : '📷 Warna'}
                     </span>
                   </div>
@@ -241,7 +241,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 {/* Payload badge */}
                 {vehicle.payload && (
                   <div className="absolute top-4 right-4 z-[2]">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-mitsu-dark/80 text-white text-[10px] font-bold rounded-lg backdrop-blur-sm">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-mitsu-dark/90 text-white text-[10px] font-bold rounded-lg backdrop-blur-sm">
                       <Truck className="w-3 h-3" />
                       {vehicle.payload}
                     </span>

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Image Background Pattern Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #F5F5F5;
+      color: #1A1A1A;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 48px;
+    }
+
+    .demo-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 40px;
+    }
+
+    .demo-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    .demo-card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #F0F0F0;
+    }
+    .demo-card-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+    .demo-card-header p {
+      font-size: 12px;
+      color: #999;
+    }
+    .demo-card-header .class-name {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      color: #E60012;
+      background: #FFF5F5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 6px;
+    }
+    .demo-card-header .class-name.yellow {
+      color: #B8960A;
+      background: #FFFDE6;
+    }
+
+    /* ==========================================
+       PATTERN: .vehicle-image-bg-light
+       ========================================== */
+    .vehicle-image-bg-light {
+      position: relative;
+      background:
+        radial-gradient(ellipse at 30% 70%, rgba(230, 0, 18, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse at 75% 30%, rgba(26, 26, 26, 0.02) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 60%, #F8F8F8 100%);
+    }
+
+    .vehicle-image-bg-light::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        /* Layer 1: Fine diamond crosshatch in brand red */
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 24px,
+          rgba(230, 0, 18, 0.04) 24px,
+          rgba(230, 0, 18, 0.04) 24.5px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 24px,
+          rgba(230, 0, 18, 0.035) 24px,
+          rgba(230, 0, 18, 0.035) 24.5px
+        ),
+        /* Layer 2: Architect grid in black (very faint) */
+        linear-gradient(rgba(26, 26, 26, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 26, 26, 0.018) 1px, transparent 1px),
+        /* Layer 3: Brand-color accent nodes at intersections */
+        radial-gradient(circle at 1px 1px, rgba(230, 0, 18, 0.025) 0.8px, transparent 0.8px);
+      background-size: auto, auto, 48px 48px, 48px 48px, 48px 48px;
+      background-position: 0 0, 0 0, 0 0, 0 0, -1px -1px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .vehicle-image-bg-light::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 35%;
+      background: linear-gradient(
+        to top,
+        rgba(230, 0, 18, 0.05) 0%,
+        rgba(230, 0, 18, 0.02) 30%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ==========================================
+       PATTERN: .vehicle-image-bg-light-yellow
+       ========================================== */
+    .vehicle-image-bg-light-yellow {
+      position: relative;
+      background:
+        radial-gradient(ellipse at 30% 70%, rgba(255, 214, 0, 0.035) 0%, transparent 60%),
+        radial-gradient(ellipse at 75% 30%, rgba(26, 26, 26, 0.02) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 60%, #F8F8F8 100%);
+    }
+
+    .vehicle-image-bg-light-yellow::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 24px,
+          rgba(255, 214, 0, 0.05) 24px,
+          rgba(255, 214, 0, 0.05) 24.5px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 24px,
+          rgba(255, 214, 0, 0.04) 24px,
+          rgba(255, 214, 0, 0.04) 24.5px
+        ),
+        linear-gradient(rgba(26, 26, 26, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 26, 26, 0.018) 1px, transparent 1px),
+        radial-gradient(circle at 1px 1px, rgba(255, 214, 0, 0.03) 0.8px, transparent 0.8px);
+      background-size: auto, auto, 48px 48px, 48px 48px, 48px 48px;
+      background-position: 0 0, 0 0, 0 0, 0 0, -1px -1px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .vehicle-image-bg-light-yellow::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 35%;
+      background: linear-gradient(
+        to top,
+        rgba(255, 214, 0, 0.06) 0%,
+        rgba(255, 214, 0, 0.02) 30%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ==========================================
+       PATTERN: .vehicle-image-bg-light-argyle
+       ========================================== */
+    .vehicle-image-bg-light-argyle {
+      position: relative;
+      background:
+        radial-gradient(ellipse at 50% 80%, rgba(230, 0, 18, 0.04) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%);
+    }
+
+    .vehicle-image-bg-light-argyle::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          60deg,
+          transparent,
+          transparent 40px,
+          rgba(230, 0, 18, 0.03) 40px,
+          rgba(230, 0, 18, 0.03) 40.5px
+        ),
+        repeating-linear-gradient(
+          -60deg,
+          transparent,
+          transparent 40px,
+          rgba(230, 0, 18, 0.03) 40px,
+          rgba(230, 0, 18, 0.03) 40.5px
+        ),
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 80px,
+          rgba(26, 26, 26, 0.015) 80px,
+          rgba(26, 26, 26, 0.015) 80.5px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 80px,
+          rgba(26, 26, 26, 0.015) 80px,
+          rgba(26, 26, 26, 0.015) 80.5px
+        ),
+        radial-gradient(circle at 2px 2px, rgba(230, 0, 18, 0.04) 1.2px, transparent 1.2px);
+      background-size: auto, auto, auto, auto, 80px 80px;
+      background-position: 0 0, 0 0, 0 0, 0 0, -1px -1px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .vehicle-image-bg-light-argyle::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30%;
+      background: linear-gradient(
+        to top,
+        rgba(230, 0, 18, 0.04) 0%,
+        rgba(230, 0, 18, 0.015) 40%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ==========================================
+       PATTERN: .vehicle-image-bg-light-argyle-yellow
+       ========================================== */
+    .vehicle-image-bg-light-argyle-yellow {
+      position: relative;
+      background:
+        radial-gradient(ellipse at 50% 80%, rgba(255, 214, 0, 0.045) 0%, transparent 50%),
+        linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%);
+    }
+
+    .vehicle-image-bg-light-argyle-yellow::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          60deg,
+          transparent,
+          transparent 40px,
+          rgba(255, 214, 0, 0.04) 40px,
+          rgba(255, 214, 0, 0.04) 40.5px
+        ),
+        repeating-linear-gradient(
+          -60deg,
+          transparent,
+          transparent 40px,
+          rgba(255, 214, 0, 0.04) 40px,
+          rgba(255, 214, 0, 0.04) 40.5px
+        ),
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 80px,
+          rgba(26, 26, 26, 0.015) 80px,
+          rgba(26, 26, 26, 0.015) 80.5px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 80px,
+          rgba(26, 26, 26, 0.015) 80px,
+          rgba(26, 26, 26, 0.015) 80.5px
+        ),
+        radial-gradient(circle at 2px 2px, rgba(255, 214, 0, 0.05) 1.2px, transparent 1.2px);
+      background-size: auto, auto, auto, auto, 80px 80px;
+      background-position: 0 0, 0 0, 0 0, 0 0, -1px -1px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .vehicle-image-bg-light-argyle-yellow::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30%;
+      background: linear-gradient(
+        to top,
+        rgba(255, 214, 0, 0.05) 0%,
+        rgba(255, 214, 0, 0.015) 40%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ==========================================
+       OLD DARK PATTERNS (for comparison)
+       ========================================== */
+    .vehicle-image-bg {
+      background: linear-gradient(135deg, #0A0A0A 0%, #1A0808 30%, #0A0A0A 60%, #120505 100%);
+      background-image:
+        radial-gradient(ellipse at 20% 80%, rgba(230, 0, 18, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(230, 0, 18, 0.06) 0%, transparent 40%),
+        linear-gradient(135deg, #0A0A0A 0%, #1A0808 30%, #0A0A0A 60%, #120505 100%);
+    }
+
+    .vehicle-image-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 18px,
+          rgba(230, 0, 18, 0.04) 18px,
+          rgba(230, 0, 18, 0.04) 19px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 18px,
+          rgba(230, 0, 18, 0.04) 18px,
+          rgba(230, 0, 18, 0.04) 19px
+        ),
+        radial-gradient(circle at 1px 1px, rgba(230, 0, 18, 0.03) 1px, transparent 0);
+      background-size: auto, auto, 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ==========================================
+       DEMO LAYOUT
+       ========================================== */
+    .pattern-box {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      border-radius: 0;
+    }
+
+    /* Simulated car silhouette */
+    .car-silhouette {
+      position: absolute;
+      z-index: 1;
+      bottom: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      height: 40%;
+      background: linear-gradient(135deg, #C0C0C0, #999, #AAA, #888);
+      border-radius: 50% 50% 10% 10% / 60% 60% 20% 20%;
+      opacity: 0.15;
+    }
+
+    .car-label {
+      position: absolute;
+      z-index: 2;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      color: rgba(0,0,0,0.12);
+      white-space: nowrap;
+      font-style: italic;
+    }
+
+    .pattern-only {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+    }
+
+    .section-divider {
+      max-width: 1400px;
+      margin: 60px auto 30px;
+      padding: 0 20px;
+    }
+    .section-divider h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .section-divider p {
+      color: #888;
+      font-size: 13px;
+    }
+
+    /* Comparison strip */
+    .comparison-strip {
+      max-width: 1400px;
+      margin: 40px auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .comparison-strip .pattern-only {
+      aspect-ratio: 16 / 12;
+    }
+
+    /* Pattern intensity slider demo */
+    .intensity-demo {
+      max-width: 1400px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .intensity-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .intensity-item {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .intensity-item .pattern-only {
+      aspect-ratio: 1;
+    }
+    .intensity-label {
+      padding: 8px;
+      background: white;
+      text-align: center;
+      font-size: 10px;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 2;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .badge-red {
+      background: #E60012;
+      color: white;
+    }
+    .badge-yellow {
+      background: #FFD600;
+      color: #1A1A1A;
+    }
+
+    .footer-note {
+      max-width: 1400px;
+      margin: 60px auto 0;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      border-top: 1px solid #E5E5E5;
+    }
+
+    @media (max-width: 860px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+      .intensity-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .comparison-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Vehicle Image Background Patterns</h1>
+  <p class="subtitle">BMW configurator-inspired elegant CSS patterns — White base + brand color geometric overlays</p>
+
+  <!-- ==========================================
+       PRIMARY PATTERNS
+       ========================================== -->
+  <div class="section-divider">
+    <h2>Primary Patterns</h2>
+    <p>Diamond crosshatch + architect grid + bottom gradient. Best for vehicle detail pages.</p>
+  </div>
+
+  <div class="demo-grid">
+    <!-- Passenger: Red on White -->
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <h2>Passenger (Mitsubishi Red)</h2>
+        <p>White + Red (#E60012) + Black (#1A1A1A) crosshatch</p>
+        <span class="class-name">.vehicle-image-bg-light</span>
+      </div>
+      <div class="pattern-box vehicle-image-bg-light">
+        <div class="badge badge-red">E60012</div>
+        <div class="car-silhouette"></div>
+        <div class="car-label">Vehicle Image Area</div>
+      </div>
+    </div>
+
+    <!-- Commercial: Yellow on White -->
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <h2>Commercial (FUSO Yellow)</h2>
+        <p>White + Yellow (#FFD600) + Black (#1A1A1A) crosshatch</p>
+        <span class="class-name yellow">.vehicle-image-bg-light-yellow</span>
+      </div>
+      <div class="pattern-box vehicle-image-bg-light-yellow">
+        <div class="badge badge-yellow">FFD600</div>
+        <div class="car-silhouette"></div>
+        <div class="car-label">Vehicle Image Area</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       ARGYLE VARIANT
+       ========================================== -->
+  <div class="section-divider">
+    <h2>Argyle Variant</h2>
+    <p>Larger diamond shapes at 60° angles. More pronounced geometric feel, like luxury automotive branding.</p>
+  </div>
+
+  <div class="demo-grid">
+    <!-- Passenger Argyle -->
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <h2>Passenger — Argyle Diamond</h2>
+        <p>60° diamond outlines + fine crosshatch overlay</p>
+        <span class="class-name">.vehicle-image-bg-light-argyle</span>
+      </div>
+      <div class="pattern-box vehicle-image-bg-light-argyle">
+        <div class="badge badge-red">ARGYLE</div>
+        <div class="car-silhouette"></div>
+        <div class="car-label">Vehicle Image Area</div>
+      </div>
+    </div>
+
+    <!-- Commercial Argyle -->
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <h2>Commercial — Argyle Diamond</h2>
+        <p>60° diamond outlines + fine crosshatch overlay (FUSO)</p>
+        <span class="class-name yellow">.vehicle-image-bg-light-argyle-yellow</span>
+      </div>
+      <div class="pattern-box vehicle-image-bg-light-argyle-yellow">
+        <div class="badge badge-yellow">ARGYLE</div>
+        <div class="car-silhouette"></div>
+        <div class="car-label">Vehicle Image Area</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       SIDE BY SIDE COMPARISON
+       ========================================== -->
+  <div class="section-divider">
+    <h2>Direct Comparison: Pattern Only (no car overlay)</h2>
+    <p>Same patterns without the car silhouette — shows the raw pattern texture.</p>
+  </div>
+
+  <div class="comparison-strip">
+    <div class="pattern-only vehicle-image-bg-light"></div>
+    <div class="pattern-only vehicle-image-bg-light-yellow"></div>
+  </div>
+
+  <div class="comparison-strip" style="margin-top: 12px;">
+    <div class="pattern-only vehicle-image-bg-light-argyle"></div>
+    <div class="pattern-only vehicle-image-bg-light-argyle-yellow"></div>
+  </div>
+
+  <!-- ==========================================
+       VS OLD DARK PATTERN
+       ========================================== -->
+  <div class="section-divider">
+    <h2>Old vs New: Dark → Light</h2>
+    <p>Comparison of the existing dark pattern vs the new light pattern.</p>
+  </div>
+
+  <div class="comparison-strip">
+    <div class="pattern-only vehicle-image-bg" style="border-right: 1px solid rgba(255,255,255,0.1);"></div>
+    <div class="pattern-only vehicle-image-bg-light"></div>
+  </div>
+
+  <div class="footer-note">
+    All patterns are CSS-only (gradients + repeating-linear-gradient). No images, SVGs, or JavaScript required.
+    <br>Patterns use <code>::before</code> and <code>::after</code> pseudo-elements to stay behind vehicle images (z-index: 0).
+  </div>
+
+</body>
+</html>

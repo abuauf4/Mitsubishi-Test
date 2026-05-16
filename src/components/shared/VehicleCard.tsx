@@ -77,12 +77,12 @@ export default function VehicleCard({
         <div className="rounded-2xl overflow-hidden bg-white">
           {/* Vehicle Image - clickable */}
           <Link href={detailPath} className="block">
-            <div className={`relative h-[200px] sm:h-[240px] overflow-hidden bg-gray-100`}>
+            <div className={`relative h-[200px] sm:h-[240px] overflow-hidden ${useYellowAccent ? 'vehicle-image-bg-light-yellow' : 'vehicle-image-bg-light'}`}>
               <Image
                 src={image}
                 alt={`Mitsubishi ${name}`}
                 fill
-                className="object-cover relative z-[1] transition-transform duration-700 group-hover:scale-110"
+                className="object-contain relative z-[1] transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, 50vw"
                 unoptimized={image.startsWith('/api/') || image.includes('vercel-storage.com')}
                 onError={(e) => {
