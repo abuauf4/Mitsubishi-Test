@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * Detect if a file is likely a PNG based on its extension or MIME type.
+ * This ensures we explicitly set the correct content-type for Vercel Blob,
+ * which is critical for preserving PNG transparency.
+ */
+function isPngFile(file: File): boolean {
+  return file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -26,11 +35,19 @@ export async function POST(request: NextRequest) {
         const { put } = await import('@vercel/blob');
         // Private stores require access:'private'. Public stores also accept it.
         // If your store is public and you want public URLs, change this to 'public'.
-        const blob = await put(`mitsubishi/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`, file, {
+
+        // CRITICAL: Explicitly set contentType for PNG files to preserve transparency.
+        // Without this, Vercel Blob might infer a wrong type from the filename or binary.
+        const blobOptions: Record<string, any> = {
           token,
           addRandomSuffix: true,
           access: 'private',
-        });
+        };
+        if (isPngFile(file)) {
+          blobOptions.contentType = 'image/png';
+        }
+
+        const blob = await put(`mitsubishi/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`, file, blobOptions);
 
         // Return the proxy path so images go through our /api/image proxy
         const proxyPath = `/api/image?url=${encodeURIComponent(blob.url)}`;

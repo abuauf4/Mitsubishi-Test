@@ -12,9 +12,63 @@ interface ImageUploadProps {
 }
 
 /**
+ * Check if an image already has significant transparency.
+ * Returns true if >2% of pixels have alpha < 128 (semi-transparent or transparent).
+ * This detects PNGs that are already transparent and should NOT be re-processed.
+ */
+function checkHasTransparency(file: File): Promise<boolean> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const { data, width, height } = imageData;
+      const totalPixels = width * height;
+
+      // Count transparent/semi-transparent pixels
+      let transparentCount = 0;
+      // Also check edge pixels specifically — if edges are transparent, the image is already cut out
+      let edgeTransparent = 0;
+      let edgeTotal = 0;
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const alpha = data[(y * width + x) * 4 + 3];
+          if (alpha < 128) transparentCount++;
+
+          // Check edges (top, bottom, left, right rows)
+          const isEdge = y === 0 || y === height - 1 || x === 0 || x === width - 1;
+          if (isEdge) {
+            edgeTotal++;
+            if (alpha < 128) edgeTransparent++;
+          }
+        }
+      }
+
+      // Image is already transparent if:
+      // 1. More than 2% of all pixels are transparent, OR
+      // 2. More than 10% of edge pixels are transparent (strong indicator of cut-out image)
+      const transparentRatio = transparentCount / totalPixels;
+      const edgeTransparentRatio = edgeTransparent / edgeTotal;
+
+      URL.revokeObjectURL(img.src);
+      resolve(transparentRatio > 0.02 || edgeTransparentRatio > 0.1);
+    };
+    img.onerror = () => resolve(false);
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/**
  * Remove white/near-white background from an image using canvas flood-fill.
  * Starts from all 4 edges and makes connected white pixels transparent.
  * Preserves white areas that are enclosed inside the subject (e.g., car headlights).
+ * Improved version with better anti-aliasing and edge blending.
  */
 async function removeWhiteBackground(file: File, tolerance: number = 30): Promise<File> {
   return new Promise((resolve) => {
@@ -23,7 +77,11 @@ async function removeWhiteBackground(file: File, tolerance: number = 30): Promis
       const canvas = document.createElement('canvas');
       canvas.width = img.width;
       canvas.height = img.height;
-      const ctx = canvas.getContext('2d')!;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+
+      // CRITICAL: Clear canvas to transparent first, then draw image
+      // This ensures transparent areas stay transparent
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -70,10 +128,26 @@ async function removeWhiteBackground(file: File, tolerance: number = 30): Promis
 
         visited[pixelIdx] = 1;
 
-        // Make this pixel transparent with smooth anti-aliased edge
-        const whiteness = Math.min(data[dataIdx], data[dataIdx + 1], data[dataIdx + 2]);
-        const edgeFactor = (whiteness - (255 - tolerance)) / tolerance;
-        data[dataIdx + 3] = Math.round((1 - edgeFactor) * 60);
+        // Calculate smooth anti-aliased edge with gradual alpha falloff
+        const r = data[dataIdx];
+        const g = data[dataIdx + 1];
+        const b = data[dataIdx + 2];
+        const whiteness = Math.min(r, g, b);
+        const distanceFromWhite = 255 - whiteness;
+
+        // Gradual alpha: pixels very close to white → more transparent
+        // Pixels at the boundary (less white) → semi-transparent for smooth edges
+        if (distanceFromWhite < tolerance * 0.3) {
+          // Very white pixel — make fully transparent
+          data[dataIdx + 3] = 0;
+        } else if (distanceFromWhite < tolerance) {
+          // Near-edge pixel — gradual alpha for anti-aliasing
+          const edgeFactor = distanceFromWhite / tolerance;
+          data[dataIdx + 3] = Math.round(edgeFactor * edgeFactor * 180);
+        } else {
+          // This shouldn't happen (isWhite would be false), but safety fallback
+          data[dataIdx + 3] = 60;
+        }
 
         // Push neighbors (4-directional)
         stack.push(x + 1, y);
@@ -84,7 +158,7 @@ async function removeWhiteBackground(file: File, tolerance: number = 30): Promis
 
       ctx.putImageData(imageData, 0, 0);
 
-      // Convert canvas to PNG blob
+      // Convert canvas to PNG blob — PNG preserves transparency
       canvas.toBlob(
         (blob) => {
           if (!blob) {
@@ -94,6 +168,7 @@ async function removeWhiteBackground(file: File, tolerance: number = 30): Promis
           // Create a new File with the same name but ensure .png extension
           const newName = file.name.replace(/\.[^.]+$/, '.png');
           const newFile = new File([blob], newName, { type: 'image/png' });
+          URL.revokeObjectURL(img.src);
           resolve(newFile);
         },
         'image/png'
@@ -101,6 +176,40 @@ async function removeWhiteBackground(file: File, tolerance: number = 30): Promis
     };
 
     img.onerror = () => resolve(file); // Fallback: return original on error
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/**
+ * Convert an image file to PNG format, preserving transparency.
+ * Used for non-PNG images that already have transparency (e.g., WebP with alpha).
+ */
+async function convertToPng(file: File): Promise<File> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            resolve(file);
+            return;
+          }
+          const newName = file.name.replace(/\.[^.]+$/, '.png');
+          const newFile = new File([blob], newName, { type: 'image/png' });
+          URL.revokeObjectURL(img.src);
+          resolve(newFile);
+        },
+        'image/png'
+      );
+    };
+    img.onerror = () => resolve(file);
     img.src = URL.createObjectURL(file);
   });
 }
@@ -120,11 +229,27 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
     try {
       let fileToUpload = file;
 
-      // Auto-remove white background if enabled and file is an image (not already transparent)
+      // Auto-remove white background if enabled and file is an image
       if (removeBg && file.type !== 'image/svg+xml') {
         setProcessing(true);
         try {
-          fileToUpload = await removeWhiteBackground(file, 30);
+          // FIRST: Check if the image already has transparency (e.g., transparent PNG)
+          // If it does, skip bg removal to preserve the original transparency
+          const alreadyTransparent = await checkHasTransparency(file);
+          if (alreadyTransparent) {
+            console.log('Image already has transparency — skipping background removal');
+            // For transparent PNGs, just ensure it's saved as PNG
+            if (file.type === 'image/png') {
+              fileToUpload = file; // Upload original as-is
+            } else {
+              // Non-PNG with transparency (rare) — convert to PNG to preserve alpha
+              fileToUpload = await convertToPng(file);
+            }
+          } else {
+            // Image has no transparency — run background removal
+            console.log('Image has no transparency — removing white background');
+            fileToUpload = await removeWhiteBackground(file, 30);
+          }
         } catch (e) {
           console.warn('Background removal failed, uploading original:', e);
         }
@@ -265,7 +390,7 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
               {processing ? (
                 <>
                   <Eraser className="w-5 h-5 text-mitsu-red animate-pulse" />
-                  <span className="text-sm text-mitsu-red font-medium">Removing background...</span>
+                  <span className="text-sm text-mitsu-red font-medium">Processing image...</span>
                 </>
               ) : uploading ? (
                 <>
