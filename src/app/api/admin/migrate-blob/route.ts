@@ -382,33 +382,91 @@ export async function POST(request: NextRequest) {
       for (let i = 0; i < batch.length; i++) {
         const blob = batch[i];
         try {
-          // Try to get signed URL for private blob
-          let downloadUrl = blob.url;
+          // ─── Download private blob with multiple fallback methods ───
+          let downloadRes: Response | null = null;
+          let method = '';
 
+          // Method 1: generateSignedUrl from @vercel/blob
           try {
             const signedResult = await generateSignedUrl({
               url: blob.url,
               token,
               expiry: 3600,
             });
-            downloadUrl = typeof signedResult === 'string' ? signedResult : (signedResult as any).url || String(signedResult);
+            const signedUrl = typeof signedResult === 'string'
+              ? signedResult
+              : (signedResult as any).url || String(signedResult);
+
+            if (signedUrl && signedUrl.startsWith('http')) {
+              downloadRes = await fetch(signedUrl);
+              method = 'signedUrl';
+            }
           } catch (signErr: any) {
-            results.details.push(`   ⚠️ Signed URL failed for ${blob.pathname}: ${signErr?.message}`);
-            // Try direct download
+            results.details.push(`   ⚠️ generateSignedUrl failed: ${signErr?.message}`);
           }
 
-          // Download the blob
-          const downloadRes = await fetch(downloadUrl);
-          if (!downloadRes.ok) {
-            results.errors.push(`Download failed: ${blob.pathname} (HTTP ${downloadRes.status})`);
+          // Method 2: Direct fetch with Authorization header
+          if (!downloadRes || !downloadRes.ok) {
+            try {
+              downloadRes = await fetch(blob.url, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              method = 'bearerAuth';
+            } catch {}
+          }
+
+          // Method 3: Vercel Blob API - generate signed URL manually
+          if (!downloadRes || !downloadRes.ok) {
+            try {
+              const apiRes = await fetch('https://blob.vercel-storage.com/api/v1/generate-signed-url', {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: blob.url, expiry: 3600 }),
+              });
+
+              if (apiRes.ok) {
+                const apiData = await apiRes.json() as { url: string };
+                if (apiData.url) {
+                  downloadRes = await fetch(apiData.url);
+                  method = 'apiSignedUrl';
+                }
+              }
+            } catch (apiErr: any) {
+              results.details.push(`   ⚠️ API signed URL failed: ${apiErr?.message}`);
+            }
+          }
+
+          // Method 4: Vercel Blob API - download endpoint
+          if (!downloadRes || !downloadRes.ok) {
+            try {
+              const downloadUrl = blob.url.replace(
+                '.private.blob.vercel-storage.com',
+                '.public.blob.vercel-storage.com'
+              );
+              downloadRes = await fetch(downloadUrl);
+              if (downloadRes.ok) {
+                method = 'publicUrlGuess';
+              }
+            } catch {}
+          }
+
+          // All methods failed
+          if (!downloadRes || !downloadRes.ok) {
+            const status = downloadRes?.status || 'no response';
+            results.errors.push(`Download failed: ${blob.pathname} (HTTP ${status}, tried: signedUrl/bearerAuth/apiSignedUrl/publicGuess)`);
             failed++;
             continue;
           }
 
+          results.details.push(`   ↓ Downloaded via ${method}: ${blob.pathname}`);
+
           const data = await downloadRes.arrayBuffer();
           const contentType = downloadRes.headers.get('content-type') || 'image/png';
 
-          // Re-upload as PUBLIC (add a suffix to avoid name collision)
+          // Re-upload as PUBLIC
           const newBlob = await put(blob.pathname, data, {
             token,
             access: 'public',
@@ -418,7 +476,7 @@ export async function POST(request: NextRequest) {
 
           urlMapping[blob.url] = newBlob.url;
           migrated++;
-          results.details.push(`   ✅ [${offset + i + 1}/${blobsToMigrate.length}] ${blob.pathname}`);
+          results.details.push(`   ✅ [${offset + i + 1}/${blobsToMigrate.length}] ${blob.pathname} → public`);
         } catch (err: any) {
           failed++;
           results.errors.push(`Failed: ${blob.pathname}: ${err?.message || err}`);
