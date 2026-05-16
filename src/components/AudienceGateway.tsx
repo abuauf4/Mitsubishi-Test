@@ -247,8 +247,8 @@ const HARDCODED_CARDS = [
       { label: 'Mulai', value: 'Rp 240Jt' },
       { label: 'Kategori', value: 'MPV, SUV & EV' },
     ],
-    accentColor: '#E60012',
-    hoverAccent: '#E60012',
+    accentColor: '#D6001C',
+    hoverAccent: '#D6001C',
     direction: 'left' as const,
   },
   {
@@ -275,8 +275,8 @@ const HARDCODED_CARDS = [
 function getCategoryTheme(linkHref: string) {
   if (linkHref.includes('passenger')) {
     return {
-      accentColor: '#E60012',
-      hoverAccent: '#E60012',
+      accentColor: '#D6001C',
+      hoverAccent: '#D6001C',
       badgeBg: 'bg-mitsu-red/90',
       titleAccent: '#FF6B6B',
     };
@@ -290,8 +290,8 @@ function getCategoryTheme(linkHref: string) {
     };
   }
   return {
-    accentColor: '#E60012',
-    hoverAccent: '#E60012',
+    accentColor: '#D6001C',
+    hoverAccent: '#D6001C',
     badgeBg: 'bg-mitsu-red/90',
     titleAccent: '#FF6B6B',
   };

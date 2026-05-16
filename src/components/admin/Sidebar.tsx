@@ -15,6 +15,7 @@ import {
   X,
   ChevronRight,
   Camera,
+  Database,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -29,6 +30,7 @@ const navItems = [
   { href: '/admin/sales', label: 'Sales', icon: HeadphonesIcon },
   { href: '/admin/dealers', label: 'Dealers', icon: MapPin },
   { href: '/admin/vehicles', label: 'Vehicles', icon: Car },
+  { href: '/admin/migrate', label: 'DB Migration', icon: Database },
 ];
 
 export default function AdminSidebar() {

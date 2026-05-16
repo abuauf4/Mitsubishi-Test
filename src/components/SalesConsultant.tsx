@@ -82,8 +82,8 @@ export default function SalesConsultant() {
       label: 'Instagram',
       value: `@${sales.name.split(' ')[0].toLowerCase()}.mitsubishi`,
       href: `https://instagram.com/${sales.name.split(' ')[0].toLowerCase()}.mitsubishi`,
-      gradient: 'bg-purple-600',
-      hoverGradient: 'hover:bg-purple-700',
+      gradient: 'bg-mitsu-onyx',
+      hoverGradient: 'hover:bg-mitsu-dark',
     },
     {
       icon: Mail,
@@ -98,15 +98,15 @@ export default function SalesConsultant() {
       label: 'Telepon',
       value: sales.phone,
       href: `tel:+${sales.phone.replace(/\D/g, '')}`,
-      gradient: 'bg-amber-600',
-      hoverGradient: 'hover:bg-amber-700',
+      gradient: 'bg-mitsu-red',
+      hoverGradient: 'hover:bg-mitsu-red/80',
     },
   ];
 
   return (
     <section id="sales" className="relative py-24 sm:py-28 lg:py-32 bg-white overflow-hidden">
-      {/* Luxury grid pattern */}
-      <div className="absolute inset-0 luxury-pattern-grid" />
+      {/* Carbon fiber pattern overlay */}
+      <div className="absolute inset-0 carbon-fiber opacity-30" />
 
       {/* Decorative */}
       <div className="absolute top-0 left-0 w-full h-px bg-gray-200" />
@@ -126,9 +126,9 @@ export default function SalesConsultant() {
             Sales Consultant
             <span className="w-10 h-px bg-mitsu-red/50" />
           </span>
-          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
+          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-black text-mitsu-dark tracking-tight">
             Konsultasi dengan{' '}
-            <span className="text-red-shimmer italic">Ahlinya</span>
+            <span className="text-steel-shimmer italic">Ahlinya</span>
           </h2>
           <p className="mt-5 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             Hubungi sales consultant kami untuk konsultasi, test drive, dan penawaran terbaik.
@@ -152,7 +152,7 @@ export default function SalesConsultant() {
             viewport={{ once: true }}
             className="lg:col-span-2"
           >
-            <div className="relative card-light-red rounded-3xl p-6 sm:p-8 overflow-hidden card-shine-red">
+            <div className="relative card-light-red metallic-border rounded-3xl p-6 sm:p-8 overflow-hidden card-shine-red">
               {/* Red top accent */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-red" />
               
@@ -183,7 +183,7 @@ export default function SalesConsultant() {
                     </div>
                   </div>
                   <div className="text-center">
-                    <h3 className="text-xl sm:text-2xl font-bold text-mitsu-dark font-serif">{sales.name}</h3>
+                    <h3 className="text-xl sm:text-2xl font-black text-mitsu-dark tracking-tight">{sales.name}</h3>
                     <p className="text-mitsu-red text-xs font-medium mt-0.5 tracking-wide">{sales.title}</p>
                     <p className="text-gray-400 text-[11px] mt-1 flex items-center gap-1.5 justify-center">
                       <MapPin className="w-3 h-3" />
@@ -258,14 +258,14 @@ export default function SalesConsultant() {
             </div>
 
             {/* Main CTA */}
-            <div className="relative card-light-red rounded-xl p-5 overflow-hidden card-shine-red">
+            <div className="relative card-light-red metallic-border rounded-xl p-5 overflow-hidden card-shine-red">
               {/* Red top accent */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-red" />
               <div className="absolute top-0 right-0 w-40 h-40 bg-mitsu-red/5 rounded-full blur-3xl" />
 
               <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
                 <div className="flex-1 text-center sm:text-left">
-                  <h4 className="text-mitsu-dark text-base sm:text-lg font-bold font-serif">
+                  <h4 className="text-mitsu-dark text-base sm:text-lg font-black font-sans">
                     Siap Membantu Anda!
                   </h4>
                   <p className="text-gray-500 text-xs mt-1">

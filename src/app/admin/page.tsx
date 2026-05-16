@@ -50,7 +50,7 @@ export default function AdminDashboard() {
     { label: 'Vehicles', value: stats.vehicles, icon: Car, href: '/admin/vehicles', color: 'bg-mitsu-red' },
     { label: 'Testimonials', value: stats.testimonials, icon: MessageSquareQuote, href: '/admin/testimonials', color: 'bg-blue-600' },
     { label: 'Dealer Locations', value: stats.dealers, icon: MapPin, href: '/admin/dealers', color: 'bg-emerald-600' },
-    { label: 'Site Configs', value: stats.configs, icon: Settings, href: '/admin/site-config', color: 'bg-purple-600' },
+    { label: 'Site Configs', value: stats.configs, icon: Settings, href: '/admin/site-config', color: 'bg-mitsu-onyx' },
     { label: 'Categories', value: stats.categories, icon: Users, href: '/admin/categories', color: 'bg-amber-600' },
     { label: 'Hero Section', value: stats.heroes ? 'Active' : 'None', icon: ImageIcon, href: '/admin/hero', color: 'bg-rose-600' },
   ] : [];
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
           <Link href="/admin/site-config">
             <Card className="hover:shadow-md transition-all cursor-pointer p-4">
               <div className="flex items-center gap-3">
-                <Settings className="w-5 h-5 text-purple-600" />
+                <Settings className="w-5 h-5 text-mitsu-onyx" />
                 <span className="text-sm font-medium">Site Settings</span>
               </div>
             </Card>

@@ -61,11 +61,12 @@ function TypewriterText({ text, speed = 70, startDelay = 300, pauseDuration = 20
 
 export default function DriveYourAmbition() {
   return (
-    <section className="relative w-full bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 text-center">
-        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-mitsu-dark leading-tight tracking-tight font-serif">
+    <section className="relative w-full bg-mitsu-obsidian carbon-fiber overflow-hidden">
+      <div className="absolute inset-0 bg-mitsu-obsidian/80" />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 text-center">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-none tracking-tight uppercase">
           <TypewriterText text="Drive Your " speed={70} startDelay={300} pauseDuration={2500} />
-          <span className="text-mitsu-red italic">
+          <span className="text-mitsu-red font-black">
             <TypewriterText text="Ambition" speed={90} startDelay={300 + 11 * 70} pauseDuration={2500} />
           </span>
         </h1>

@@ -61,8 +61,8 @@ export default function TestDriveCTA() {
       </div>
       <div className="absolute inset-0 bg-white/93" />
 
-      {/* Luxury crosshatch pattern */}
-      <div className="absolute inset-0 luxury-pattern-crosshatch" />
+      {/* Carbon fiber pattern overlay */}
+      <div className="absolute inset-0 carbon-fiber opacity-30" />
 
       {/* Decorative */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
@@ -83,10 +83,10 @@ export default function TestDriveCTA() {
               <Calendar className="w-4 h-4" />
               Test Drive
             </span>
-            <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark leading-tight font-serif">
+            <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-black text-mitsu-dark leading-none tracking-tight">
               Rasakan Sendiri
               <br />
-              <span className="text-red-shimmer italic">Pengalaman Mitsubishi</span>
+              <span className="text-steel-shimmer italic">Pengalaman Mitsubishi</span>
             </h2>
             <p className="mt-5 text-gray-500 text-base sm:text-lg max-w-lg leading-relaxed">
               Jadwalkan test drive di dealer terdekat dan buktikan sendiri kualitas kendaraan Mitsubishi.
@@ -132,11 +132,11 @@ export default function TestDriveCTA() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
           >
-            <div className="relative card-light-red rounded-3xl p-6 sm:p-8 shadow-2xl card-shine-red">
+            <div className="relative card-light-red metallic-border rounded-3xl p-6 sm:p-8 shadow-2xl card-shine-red">
               {/* Red top accent */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-red rounded-t-3xl" />
 
-              <h3 className="text-xl font-bold text-mitsu-dark mb-1 font-serif">Jadwalkan Test Drive</h3>
+              <h3 className="text-xl font-black text-mitsu-dark mb-1 font-sans">Jadwalkan Test Drive</h3>
               <p className="text-gray-400 text-sm mb-6">Isi formulir dan sales consultant kami akan menghubungi Anda.</p>
 
               {submitted ? (
@@ -148,7 +148,7 @@ export default function TestDriveCTA() {
                   <div className="w-16 h-16 bg-mitsu-red/5 border border-mitsu-red/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Send className="w-7 h-7 text-mitsu-red" />
                   </div>
-                  <h4 className="text-lg font-bold text-mitsu-dark mb-2 font-serif">Terima Kasih!</h4>
+                  <h4 className="text-lg font-black text-mitsu-dark mb-2 font-sans">Terima Kasih!</h4>
                   <p className="text-gray-500 text-sm">
                     Sales consultant kami akan segera menghubungi Anda untuk konfirmasi jadwal test drive.
                   </p>
@@ -229,7 +229,7 @@ export default function TestDriveCTA() {
 
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center gap-2 py-3.5 btn-mitsu-red rounded-xl transition-all duration-400 min-h-[44px] text-sm tracking-wide mt-2 active:scale-[0.98] font-bold"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 btn-premium-cta rounded-xl transition-all duration-400 min-h-[44px] text-sm tracking-wide mt-2 active:scale-[0.98] font-bold"
                   >
                     <Send className="w-4 h-4" />
                     Jadwalkan Sekarang

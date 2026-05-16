@@ -71,10 +71,10 @@ const values = [
     description:
       'Sebagai bagian dari Mitsubishi Motors Corporation, kami mendukung dengan jaringan global dan standar internasional yang terpercaya.',
     stat: { value: 160, suffix: '+', label: 'Negara' },
-    accentColor: 'bg-amber-600',
-    iconBg: 'bg-amber-500/8',
-    iconColor: 'text-amber-600',
-    borderColor: 'hover:border-amber-500/25',
+    accentColor: 'bg-white/80',
+    iconBg: 'bg-white/8',
+    iconColor: 'text-white',
+    borderColor: 'hover:border-white/25',
   },
 ];
 
@@ -91,7 +91,7 @@ export default function WhyMitsubishi() {
         priority={false}
         quality={60}
       />
-      {/* Dark luxury background with red accent pattern */}
+      {/* Dark automotive background with depth */}
 
       {/* Subtle gradient overlay for readability - slightly transparent to let bg image show */}
       <div className="absolute inset-0 bg-mitsu-obsidian/90" />
@@ -114,9 +114,9 @@ export default function WhyMitsubishi() {
             Mengapa Mitsubishi
             <span className="w-10 h-px bg-mitsu-red/50" />
           </span>
-          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-serif">
+          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
             Keunggulan{' '}
-            <span className="text-red-shimmer italic">Mitsubishi</span>
+            <span className="text-steel-shimmer italic">Mitsubishi</span>
           </h2>
           <p className="mt-5 text-white/50 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             Lebih dari 60 tahun pengalaman di industri otomotif global. Mitsubishi terus berkomitmen menghadirkan kendaraan berkualitas untuk Indonesia.
@@ -143,7 +143,7 @@ export default function WhyMitsubishi() {
                 viewport={{ once: true, margin: '-50px' }}
                 className="group"
               >
-                <div className={`relative p-6 sm:p-7 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:border-mitsu-red/30 hover:bg-white/8 hover:-translate-y-1 transition-all duration-500 card-shine-red`}>
+                <div className={`relative p-6 sm:p-7 rounded-2xl bg-white/5 border border-white/10 metallic-border backdrop-blur-sm hover:border-mitsu-red/30 hover:bg-white/8 hover:-translate-y-1 transition-all duration-500 card-shine-red`}>
                   {/* Top accent line */}
                   <div className={`absolute top-0 left-0 right-0 h-[2px] ${value.accentColor} opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-t-2xl`} />
                   
@@ -153,13 +153,13 @@ export default function WhyMitsubishi() {
                         <IconComponent className={`w-7 h-7 ${value.iconColor}`} />
                       </div>
                       <div className="text-right">
-                        <p className={`text-2xl font-bold ${value.iconColor} font-serif`}>
+                        <p className={`text-2xl font-black ${value.iconColor} tracking-tight`}>
                           <AnimatedCounter target={value.stat.value} suffix={value.stat.suffix} />
                         </p>
                         <p className="text-[9px] text-white/40 uppercase tracking-wider font-medium">{value.stat.label}</p>
                       </div>
                     </div>
-                    <h3 className="text-lg sm:text-xl font-bold text-white mb-3 font-serif">{value.title}</h3>
+                    <h3 className="text-lg sm:text-xl font-black text-white mb-3 tracking-tight">{value.title}</h3>
                     <p className="text-white/50 text-sm leading-relaxed">{value.description}</p>
                   </div>
                 </div>
