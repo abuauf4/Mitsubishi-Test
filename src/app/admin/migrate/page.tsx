@@ -49,12 +49,16 @@ export default function MigratePage() {
   const [deleteResult, setDeleteResult] = useState<DeleteResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [migrateProgress, setMigrateProgress] = useState({ done: 0, total: 0, migrating: false });
 
   const scan = async () => {
     setScanning(true);
     try {
       const res = await fetch('/api/admin/migrate-blob');
-      setScanStatus(await res.json());
+      const data = await res.json();
+      setScanStatus(data);
+      if (data.blob?.error) alert('Blob error: ' + data.blob.error);
+      if (data.database?.error) alert('DB error: ' + data.database.error);
     } catch (err: any) {
       alert('Scan failed: ' + (err?.message || err));
     } finally {
@@ -62,29 +66,95 @@ export default function MigratePage() {
     }
   };
 
-  const migrate = async (step: string = 'all') => {
-    if (!confirm(`Run migration (${step})? Only images used in the database will be migrated.`)) return;
+  const dryRun = async () => {
     setLoading(true);
     setMigrateResult(null);
     try {
-      const res = await fetch(`/api/admin/migrate-blob?step=${step}`, { method: 'POST' });
-      setMigrateResult(await res.json());
-      await scan();
+      const res = await fetch('/api/admin/migrate-blob?step=scan&dryRun=true', { method: 'POST' });
+      const data = await res.json();
+      setMigrateResult(data);
     } catch (err: any) {
-      alert('Migration failed: ' + (err?.message || err));
+      alert('Dry run failed: ' + (err?.message || err));
     } finally {
       setLoading(false);
     }
   };
 
-  const dryRun = async () => {
+  // Batch migration — migrates 5 at a time, then auto-continues
+  const runMigrate = async () => {
+    if (!confirm('Migrate private blobs → public? This will copy used images and update DB URLs.')) return;
+
+    setMigrateProgress({ done: 0, total: 0, migrating: true });
+    setMigrateResult(null);
+
+    const allDetails: string[] = [];
+    const allErrors: string[] = [];
+    let totalMigrated = 0;
+    let totalFailed = 0;
+    let totalDbUpdated = 0;
+    let offset = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      try {
+        const res = await fetch(`/api/admin/migrate-blob?step=migrate&offset=${offset}`, { method: 'POST' });
+        const data: MigrateResult = await res.json();
+
+        allDetails.push(...data.details);
+        allErrors.push(...data.errors);
+
+        if (data.summary) {
+          totalMigrated += data.summary.migrated || 0;
+          totalFailed += data.summary.failed || 0;
+          totalDbUpdated += data.summary.dbUpdated || 0;
+
+          const remaining = data.summary.remaining || 0;
+          setMigrateProgress({
+            done: totalMigrated + totalFailed,
+            total: totalMigrated + totalFailed + remaining,
+            migrating: remaining > 0,
+          });
+
+          if (remaining <= 0 || data.summary.migrated === 0) {
+            hasMore = false;
+          } else {
+            offset += 5; // batch size is 5
+          }
+        } else {
+          hasMore = false;
+        }
+
+        if (data.status === 'error') {
+          hasMore = false;
+        }
+      } catch (err: any) {
+        allErrors.push(`Batch failed: ${err?.message || err}`);
+        hasMore = false;
+      }
+    }
+
+    setMigrateResult({
+      step: 'migrate',
+      status: allErrors.length > 0 ? 'completed_with_errors' : 'completed',
+      details: allDetails,
+      errors: allErrors,
+      summary: { migrated: totalMigrated, failed: totalFailed, dbUpdated: totalDbUpdated },
+    });
+
+    setMigrateProgress({ done: 0, total: 0, migrating: false });
+    await scan(); // refresh
+  };
+
+  const fixProxyUrls = async () => {
+    if (!confirm('Fix proxy URLs? This will unwrap /api/image?url=... → direct URLs in DB.')) return;
     setLoading(true);
     setMigrateResult(null);
     try {
-      const res = await fetch('/api/admin/migrate-blob?dryRun=true', { method: 'POST' });
+      const res = await fetch('/api/admin/migrate-blob?step=urls', { method: 'POST' });
       setMigrateResult(await res.json());
+      await scan();
     } catch (err: any) {
-      alert('Dry run failed: ' + (err?.message || err));
+      alert('Fix URLs failed: ' + (err?.message || err));
     } finally {
       setLoading(false);
     }
@@ -118,7 +188,7 @@ export default function MigratePage() {
 
   const confirmDelete = async () => {
     if (!confirm('⚠️ PERMANENTLY DELETE all orphan blobs? This cannot be undone!')) return;
-    if (!confirm('Are you REALLY sure? 468+ photos will be deleted forever.')) return;
+    if (!confirm('Are you REALLY sure? Photos will be deleted forever.')) return;
     setLoading(true);
     setDeleteResult(null);
     try {
@@ -126,7 +196,7 @@ export default function MigratePage() {
       const data = await res.json();
       setDeleteResult(data);
       if (data.status === 'completed') {
-        await scanCleanup(); // refresh
+        await scanCleanup();
       }
     } catch (err: any) {
       alert('Delete failed: ' + (err?.message || err));
@@ -363,6 +433,36 @@ export default function MigratePage() {
                     ))}
                   </div>
 
+                  {scanStatus.blob.error && (
+                    <div className="bg-red-950/50 rounded-lg p-3 border border-red-900">
+                      <p className="text-red-400 text-sm">❌ Blob Error: {scanStatus.blob.error}</p>
+                    </div>
+                  )}
+
+                  {scanStatus.database.error && (
+                    <div className="bg-red-950/50 rounded-lg p-3 border border-red-900">
+                      <p className="text-red-400 text-sm">❌ DB Error: {scanStatus.database.error}</p>
+                    </div>
+                  )}
+
+                  <div className="bg-gray-800/50 rounded-lg p-3">
+                    <h3 className="text-sm font-medium text-gray-300 mb-2">Blob Store</h3>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">📦 Total blobs</span>
+                        <span className="text-white">{scanStatus.blob.totalBlobs ?? '?'}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">🔒 Private (needs migration)</span>
+                        <span className="text-yellow-400 font-semibold">{scanStatus.blob.privateBlobs ?? 0}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">🌐 Public ✅</span>
+                        <span className="text-green-400">{scanStatus.blob.publicBlobs ?? 0}</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="bg-gray-800/50 rounded-lg p-3">
                     <h3 className="text-sm font-medium text-gray-300 mb-2">Database Image URLs</h3>
                     <div className="space-y-1">
@@ -389,16 +489,32 @@ export default function MigratePage() {
             </div>
 
             <div className="bg-gray-900 rounded-xl border border-gray-800 p-4 space-y-3">
-              <h2 className="text-lg font-semibold">🚀 Migrate</h2>
-              <p className="text-gray-400 text-xs">Only images used in the database will be migrated. Orphan photos are skipped.</p>
+              <h2 className="text-lg font-semibold">🚀 Actions</h2>
+              <p className="text-gray-400 text-xs">Migration runs in batches of 5 to avoid timeout. It will auto-continue until done.</p>
+
+              {/* Progress bar */}
+              {migrateProgress.migrating && (
+                <div className="bg-blue-900/30 border border-blue-800/50 rounded-lg p-3">
+                  <p className="text-blue-300 text-sm font-medium mb-2">
+                    ⏳ Migrating... {migrateProgress.done} / {migrateProgress.total}
+                  </p>
+                  <div className="w-full bg-gray-700 rounded-full h-3">
+                    <div
+                      className="bg-blue-500 h-3 rounded-full transition-all"
+                      style={{ width: `${migrateProgress.total > 0 ? (migrateProgress.done / migrateProgress.total * 100) : 0}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 gap-2">
-                <button onClick={dryRun} disabled={loading} className="px-4 py-3 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-900 rounded-lg text-sm font-medium transition-colors border border-gray-700 text-left">
-                  🔍 <strong>Dry Run</strong> — Preview changes
+                <button onClick={dryRun} disabled={loading || migrateProgress.migrating} className="px-4 py-3 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-900 rounded-lg text-sm font-medium transition-colors border border-gray-700 text-left">
+                  🔍 <strong>Dry Run</strong> — Preview what would be migrated
                 </button>
-                <button onClick={() => migrate('all')} disabled={loading} className="px-4 py-3 bg-red-700 hover:bg-red-600 disabled:bg-gray-900 rounded-lg text-sm font-medium transition-colors text-white text-left">
-                  🚀 <strong>Full Migration</strong> — Copy used private blobs → public + update DB
+                <button onClick={runMigrate} disabled={loading || migrateProgress.migrating} className="px-4 py-3 bg-red-700 hover:bg-red-600 disabled:bg-gray-900 rounded-lg text-sm font-medium transition-colors text-white text-left">
+                  🚀 <strong>Migrate Private → Public</strong> — Auto-batch, copy used blobs + update DB
                 </button>
-                <button onClick={() => migrate('urls')} disabled={loading} className="px-4 py-3 bg-amber-700 hover:bg-amber-600 disabled:bg-gray-900 rounded-lg text-sm font-medium transition-colors text-white text-left">
+                <button onClick={fixProxyUrls} disabled={loading || migrateProgress.migrating} className="px-4 py-3 bg-amber-700 hover:bg-amber-600 disabled:bg-gray-900 rounded-lg text-sm font-medium transition-colors text-white text-left">
                   🔗 <strong>Fix Proxy URLs</strong> — Unwrap /api/image?url= → direct URLs
                 </button>
               </div>

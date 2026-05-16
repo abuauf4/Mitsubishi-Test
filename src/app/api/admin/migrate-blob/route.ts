@@ -7,15 +7,16 @@ import { getDb } from '@/lib/db';
  * Smart migration: ONLY copies blobs that are actually USED in the database.
  * Skips orphan/unused photos — saves bandwidth and storage.
  *
- * Usage (from browser):
- *   POST /api/admin/migrate-blob              ← migrate only DB-referenced blobs
- *   POST /api/admin/migrate-blob?dryRun=true  ← preview only
- *   POST /api/admin/migrate-blob?step=urls    ← only fix proxy URLs in DB
+ * Query params:
+ *   ?step=scan    — scan only, don't migrate
+ *   ?step=urls    — only fix proxy URLs in DB
+ *   ?step=migrate — migrate private blobs to public
+ *   ?dryRun=true  — preview only (no changes)
  *
  * No bash needed — just hit this endpoint from your phone!
  */
 
-export const maxDuration = 300; // 5 min timeout
+export const maxDuration = 60;
 
 interface BlobInfo {
   url: string;
@@ -140,246 +141,6 @@ async function updateDbUrls(
 }
 
 // ═══════════════════════════════════════════════════
-// POST — Run migration
-// ═══════════════════════════════════════════════════
-export async function POST(request: NextRequest) {
-  const dryRun = request.nextUrl.searchParams.get('dryRun') === 'true';
-  const step = request.nextUrl.searchParams.get('step') || 'all';
-
-  const token = process.env.BLOB_READ_WRITE_TOKEN;
-  const db = getDb();
-
-  const results: {
-    step: string;
-    status: string;
-    details: string[];
-    errors: string[];
-    summary?: Record<string, number>;
-  } = {
-    step,
-    status: 'started',
-    details: [],
-    errors: [],
-  };
-
-  // ─── STEP 1: Smart migration — only blobs USED in DB ───
-  if ((step === 'all' || step === 'blobs') && token) {
-    results.details.push('📋 Step 1: Scanning database for used images...');
-
-    if (!db) {
-      results.errors.push('Database not configured — cannot determine which blobs are used');
-    } else {
-      try {
-        // 1a. Get all image URLs actually referenced in the database
-        const usedUrls = await getUsedImageUrlsFromDb(db);
-        const usedPrivateUrls = new Set(
-          [...usedUrls].filter(u => u.includes('.private.blob.vercel-storage.com'))
-        );
-        const usedPublicUrls = new Set(
-          [...usedUrls].filter(u => u.includes('.public.blob.vercel-storage.com'))
-        );
-        const usedLocalPaths = new Set(
-          [...usedUrls].filter(u => !u.includes('vercel-storage.com'))
-        );
-
-        results.details.push(`   📊 Images used in DB:`);
-        results.details.push(`      🔒 Private blob: ${usedPrivateUrls.size}`);
-        results.details.push(`      🌐 Public blob: ${usedPublicUrls.size}`);
-        results.details.push(`      📁 Local/other: ${usedLocalPaths.size}`);
-
-        if (usedPrivateUrls.size === 0) {
-          results.details.push('   ✅ No private blob URLs in DB — nothing to migrate!');
-        } else {
-          // 1b. List all blobs in store to find the actual files
-          results.details.push('   📦 Listing blob store...');
-          const { list } = await import('@vercel/blob');
-          const allBlobs: BlobInfo[] = [];
-          let cursor: string | undefined;
-          let hasMore = true;
-
-          while (hasMore) {
-            const batch = await list({ token, limit: 100, cursor });
-            for (const b of batch.blobs) {
-              allBlobs.push({ url: b.url, pathname: b.pathname, size: b.size });
-            }
-            cursor = batch.cursor ?? undefined;
-            hasMore = batch.hasMore;
-          }
-
-          const totalPrivate = allBlobs.filter(b => b.url.includes('.private.blob.vercel-storage.com')).length;
-          results.details.push(`   📦 Blob store total: ${allBlobs.length} (🔒 ${totalPrivate} private, 🌐 ${allBlobs.length - totalPrivate} public)`);
-
-          // 1c. Find only the blobs that are USED in DB
-          const blobsToMigrate = allBlobs.filter(b =>
-            b.url.includes('.private.blob.vercel-storage.com') && usedPrivateUrls.has(b.url)
-          );
-
-          const unusedPrivate = totalPrivate - blobsToMigrate.length;
-          results.details.push(`   🎯 Blobs to migrate: ${blobsToMigrate.length} (skipping ${unusedPrivate} unused/orphan)`);
-
-          if (dryRun) {
-            results.details.push(`   🔍 DRY RUN — would migrate these ${blobsToMigrate.length} blobs:`);
-            for (const b of blobsToMigrate) {
-              results.details.push(`      • ${b.pathname} (${(b.size / 1024).toFixed(0)} KB)`);
-            }
-            results.summary = { toMigrate: blobsToMigrate.length, skipped: unusedPrivate, totalPrivate };
-          } else {
-            // 1d. Migrate only the used blobs
-            results.details.push(`   🚀 Migrating ${blobsToMigrate.length} used blobs...`);
-
-            const { put } = await import('@vercel/blob');
-            let migrated = 0;
-            let failed = 0;
-            const urlMapping: Record<string, string> = {};
-
-            for (let i = 0; i < blobsToMigrate.length; i++) {
-              const blob = blobsToMigrate[i];
-              try {
-                // Download private blob
-                let downloadRes = await fetch(blob.url);
-
-                if (!downloadRes.ok) {
-                  downloadRes = await fetch(blob.url, {
-                    headers: { Authorization: `Bearer ${token}` },
-                  });
-                }
-
-                if (!downloadRes.ok) {
-                  try {
-                    const signedRes = await fetch('https://blob.vercel-storage.com/api/v1/generate-signed-url', {
-                      method: 'POST',
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({ url: blob.url, expiry: 3600 }),
-                    });
-                    if (signedRes.ok) {
-                      const signedData = await signedRes.json() as { url: string };
-                      downloadRes = await fetch(signedData.url);
-                    }
-                  } catch {
-                    // signed URL failed
-                  }
-                }
-
-                if (!downloadRes.ok) {
-                  results.errors.push(`Download failed: ${blob.pathname} (${downloadRes.status})`);
-                  failed++;
-                  continue;
-                }
-
-                const data = await downloadRes.arrayBuffer();
-                const contentType = downloadRes.headers.get('content-type') || 'image/png';
-
-                // Re-upload as PUBLIC
-                const newBlob = await put(blob.pathname, data, {
-                  token,
-                  access: 'public',
-                  contentType,
-                  addRandomSuffix: false,
-                });
-
-                urlMapping[blob.url] = newBlob.url;
-                migrated++;
-                results.details.push(`   ✅ [${i + 1}/${blobsToMigrate.length}] ${blob.pathname}`);
-              } catch (err: any) {
-                failed++;
-                results.errors.push(`Failed: ${blob.pathname}: ${err?.message || err}`);
-              }
-            }
-
-            results.details.push(`   📊 Migrated: ${migrated}, Failed: ${failed}, Skipped (unused): ${unusedPrivate}`);
-            results.summary = { migrated, failed, skipped: unusedPrivate, totalPrivate };
-
-            // 1e. Update database URLs with the mapping
-            if (Object.keys(urlMapping).length > 0) {
-              results.details.push('   📝 Updating database URLs...');
-              const dbUpdated = await updateDbUrls(db, urlMapping, false);
-              results.details.push(...dbUpdated.details);
-              results.errors.push(...dbUpdated.errors);
-              results.summary = { ...results.summary, dbUpdated: dbUpdated.updated };
-            }
-          }
-        }
-      } catch (err: any) {
-        results.errors.push(`Migration error: ${err?.message || err}`);
-      }
-    }
-  } else if (!token) {
-    results.errors.push('BLOB_READ_WRITE_TOKEN not set — cannot scan blobs');
-  }
-
-  // ─── STEP 2: Fix proxy URLs in database ───
-  if ((step === 'all' || step === 'urls') && db) {
-    results.details.push('📋 Step 2: Fixing proxy URLs in database...');
-
-    try {
-      const usedUrls = await getUsedImageUrlsFromDb(db);
-      const mapping: Record<string, string> = {};
-
-      // Find proxy-wrapped public URLs → just unwrap them
-      for (const val of usedUrls) {
-        // These are already extracted from proxy by getUsedImageUrlsFromDb
-        // We need to scan DB columns directly for the proxy format
-      }
-
-      // Scan DB directly for proxy URLs
-      const columns = [
-        { table: 'Vehicle', column: 'imagePath' },
-        { table: 'VehicleVariant', column: 'imagePath' },
-        { table: 'VehicleColor', column: 'imagePath' },
-        { table: 'Hero', column: 'imagePath' },
-        { table: 'AudienceCategory', column: 'imagePath' },
-        { table: 'Testimonial', column: 'imagePath' },
-        { table: 'SalesConsultant', column: 'imagePath' },
-        { table: 'GalleryItem', column: 'imagePath' },
-      ];
-
-      let proxyFound = 0;
-      for (const { table, column } of columns) {
-        try {
-          const rows = await db.execute({
-            sql: `SELECT ${column} FROM ${table} WHERE ${column} LIKE '%/api/image?url=%'`,
-            args: [],
-          });
-          for (const row of rows.rows) {
-            const val = row[column] as string;
-            if (!val) continue;
-            const innerUrl = decodeURIComponent(val.replace('/api/image?url=', ''));
-            // If inner URL is public blob → unwrap the proxy
-            if (innerUrl.includes('.public.blob.vercel-storage.com')) {
-              mapping[val] = innerUrl;
-              proxyFound++;
-            }
-          }
-        } catch {
-          // Table might not exist
-        }
-      }
-
-      if (proxyFound > 0) {
-        results.details.push(`   🔗 Found ${proxyFound} proxy URLs to unwrap`);
-        const dbResult = await updateDbUrls(db, mapping, dryRun);
-        results.details.push(...dbResult.details);
-        results.errors.push(...dbResult.errors);
-        results.summary = { ...results.summary, urlsFixed: dbResult.updated };
-      } else {
-        results.details.push('   ✅ No proxy URLs found — all clean!');
-      }
-    } catch (err: any) {
-      results.errors.push(`DB URL fix error: ${err?.message || err}`);
-    }
-  }
-
-  results.status = results.errors.length > 0
-    ? 'completed_with_errors'
-    : 'completed';
-
-  return NextResponse.json(results);
-}
-
-// ═══════════════════════════════════════════════════
 // GET — Scan status without making changes
 // ═══════════════════════════════════════════════════
 export async function GET() {
@@ -437,7 +198,6 @@ export async function GET() {
       let publicUrls = 0;
       let localPaths = 0;
 
-      // Also scan for proxy URLs directly
       const columns = [
         { table: 'Vehicle', column: 'imagePath' },
         { table: 'VehicleVariant', column: 'imagePath' },
@@ -479,4 +239,262 @@ export async function GET() {
   }
 
   return NextResponse.json(status);
+}
+
+// ═══════════════════════════════════════════════════
+// POST — Run migration (step by step)
+// ═══════════════════════════════════════════════════
+export async function POST(request: NextRequest) {
+  const dryRun = request.nextUrl.searchParams.get('dryRun') === 'true';
+  const step = request.nextUrl.searchParams.get('step') || 'scan';
+
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  const db = getDb();
+
+  const results: {
+    step: string;
+    status: string;
+    details: string[];
+    errors: string[];
+    summary?: Record<string, number>;
+  } = {
+    step,
+    status: 'started',
+    details: [],
+    errors: [],
+  };
+
+  // ─── Quick env check ───
+  if (!token) {
+    results.errors.push('BLOB_READ_WRITE_TOKEN not set — cannot access blob storage');
+    results.status = 'error';
+    return NextResponse.json(results);
+  }
+
+  if (!db) {
+    results.errors.push('Database not configured (TURSO_DATABASE_URL missing) — cannot determine which blobs are used');
+    results.status = 'error';
+    return NextResponse.json(results);
+  }
+
+  try {
+    // ─── STEP: SCAN (list blobs + DB URLs) ───
+    if (step === 'scan') {
+      results.details.push('📋 Scanning blob store + database...');
+
+      const { list } = await import('@vercel/blob');
+      const allBlobs: BlobInfo[] = [];
+      let cursor: string | undefined;
+      let hasMore = true;
+
+      while (hasMore) {
+        const batch = await list({ token, limit: 100, cursor });
+        for (const b of batch.blobs) {
+          allBlobs.push({ url: b.url, pathname: b.pathname, size: b.size });
+        }
+        cursor = batch.cursor ?? undefined;
+        hasMore = batch.hasMore;
+      }
+
+      const usedUrls = await getUsedImageUrlsFromDb(db);
+      const usedPrivateUrls = new Set(
+        [...usedUrls].filter(u => u.includes('.private.blob.vercel-storage.com'))
+      );
+      const usedPublicUrls = new Set(
+        [...usedUrls].filter(u => u.includes('.public.blob.vercel-storage.com'))
+      );
+
+      const privateBlobs = allBlobs.filter(b => b.url.includes('.private.blob.vercel-storage.com'));
+      const blobsToMigrate = privateBlobs.filter(b => usedPrivateUrls.has(b.url));
+
+      results.details.push(`   📦 Total blobs: ${allBlobs.length}`);
+      results.details.push(`   🔒 Private: ${privateBlobs.length} (${blobsToMigrate.length} used in DB, ${privateBlobs.length - blobsToMigrate.length} orphan)`);
+      results.details.push(`   🌐 Public: ${allBlobs.length - privateBlobs.length}`);
+      results.details.push(`   🗄️ DB used images: ${usedUrls.size}`);
+      results.details.push(`   🔒 DB private URLs: ${usedPrivateUrls.size}`);
+      results.details.push(`   🌐 DB public URLs: ${usedPublicUrls.size}`);
+
+      if (dryRun) {
+        results.details.push(`   🔍 DRY RUN — would migrate these ${blobsToMigrate.length} blobs:`);
+        for (const b of blobsToMigrate) {
+          results.details.push(`      • ${b.pathname} (${(b.size / 1024).toFixed(0)} KB)`);
+        }
+      }
+
+      results.summary = {
+        totalBlobs: allBlobs.length,
+        privateBlobs: privateBlobs.length,
+        publicBlobs: allBlobs.length - privateBlobs.length,
+        toMigrate: blobsToMigrate.length,
+        skippedOrphan: privateBlobs.length - blobsToMigrate.length,
+      };
+    }
+
+    // ─── STEP: MIGRATE (copy private → public, max 10 per call) ───
+    if (step === 'migrate') {
+      const offset = parseInt(request.nextUrl.searchParams.get('offset') || '0');
+      const batchSize = 5; // Small batch to avoid timeout
+
+      results.details.push(`🚀 Migrating private blobs → public (batch: offset=${offset}, size=${batchSize})...`);
+
+      const { list, put, generateSignedUrl } = await import('@vercel/blob');
+
+      // Get used URLs from DB
+      const usedUrls = await getUsedImageUrlsFromDb(db);
+      const usedPrivateUrls = new Set(
+        [...usedUrls].filter(u => u.includes('.private.blob.vercel-storage.com'))
+      );
+
+      if (usedPrivateUrls.size === 0) {
+        results.details.push('   ✅ No private blob URLs in DB — nothing to migrate!');
+        results.status = 'completed';
+        results.summary = { migrated: 0, failed: 0, remaining: 0 };
+        return NextResponse.json(results);
+      }
+
+      // List all private blobs
+      const allBlobs: BlobInfo[] = [];
+      let cursor: string | undefined;
+      let hasMore = true;
+
+      while (hasMore) {
+        const batch = await list({ token, limit: 100, cursor });
+        for (const b of batch.blobs) {
+          allBlobs.push({ url: b.url, pathname: b.pathname, size: b.size });
+        }
+        cursor = batch.cursor ?? undefined;
+        hasMore = batch.hasMore;
+      }
+
+      const blobsToMigrate = allBlobs.filter(b =>
+        b.url.includes('.private.blob.vercel-storage.com') && usedPrivateUrls.has(b.url)
+      );
+
+      const batch = blobsToMigrate.slice(offset, offset + batchSize);
+      const remaining = blobsToMigrate.length - (offset + batchSize);
+
+      results.details.push(`   📦 Total to migrate: ${blobsToMigrate.length}, this batch: ${batch.length}, remaining: ${Math.max(0, remaining)}`);
+
+      let migrated = 0;
+      let failed = 0;
+      const urlMapping: Record<string, string> = {};
+
+      for (let i = 0; i < batch.length; i++) {
+        const blob = batch[i];
+        try {
+          // Try to get signed URL for private blob
+          let downloadUrl = blob.url;
+
+          try {
+            const signedResult = await generateSignedUrl({
+              url: blob.url,
+              token,
+              expiry: 3600,
+            });
+            downloadUrl = typeof signedResult === 'string' ? signedResult : (signedResult as any).url || String(signedResult);
+          } catch (signErr: any) {
+            results.details.push(`   ⚠️ Signed URL failed for ${blob.pathname}: ${signErr?.message}`);
+            // Try direct download
+          }
+
+          // Download the blob
+          const downloadRes = await fetch(downloadUrl);
+          if (!downloadRes.ok) {
+            results.errors.push(`Download failed: ${blob.pathname} (HTTP ${downloadRes.status})`);
+            failed++;
+            continue;
+          }
+
+          const data = await downloadRes.arrayBuffer();
+          const contentType = downloadRes.headers.get('content-type') || 'image/png';
+
+          // Re-upload as PUBLIC (add a suffix to avoid name collision)
+          const newBlob = await put(blob.pathname, data, {
+            token,
+            access: 'public',
+            contentType,
+            addRandomSuffix: true,
+          });
+
+          urlMapping[blob.url] = newBlob.url;
+          migrated++;
+          results.details.push(`   ✅ [${offset + i + 1}/${blobsToMigrate.length}] ${blob.pathname}`);
+        } catch (err: any) {
+          failed++;
+          results.errors.push(`Failed: ${blob.pathname}: ${err?.message || err}`);
+        }
+      }
+
+      // Update DB URLs for this batch
+      if (Object.keys(urlMapping).length > 0 && !dryRun) {
+        results.details.push('   📝 Updating database URLs for this batch...');
+        const dbUpdated = await updateDbUrls(db, urlMapping, false);
+        results.details.push(...dbUpdated.details);
+        results.errors.push(...dbUpdated.errors);
+        results.summary = { migrated, failed, remaining: Math.max(0, remaining), dbUpdated: dbUpdated.updated };
+      } else {
+        results.summary = { migrated, failed, remaining: Math.max(0, remaining) };
+      }
+    }
+
+    // ─── STEP: FIX PROXY URLS ───
+    if (step === 'urls') {
+      results.details.push('🔗 Fixing proxy URLs in database...');
+
+      const columns = [
+        { table: 'Vehicle', column: 'imagePath' },
+        { table: 'VehicleVariant', column: 'imagePath' },
+        { table: 'VehicleColor', column: 'imagePath' },
+        { table: 'Hero', column: 'imagePath' },
+        { table: 'AudienceCategory', column: 'imagePath' },
+        { table: 'Testimonial', column: 'imagePath' },
+        { table: 'SalesConsultant', column: 'imagePath' },
+        { table: 'GalleryItem', column: 'imagePath' },
+      ];
+
+      const mapping: Record<string, string> = {};
+      let proxyFound = 0;
+
+      for (const { table, column } of columns) {
+        try {
+          const rows = await db.execute({
+            sql: `SELECT ${column} FROM ${table} WHERE ${column} LIKE '%/api/image?url=%'`,
+            args: [],
+          });
+          for (const row of rows.rows) {
+            const val = row[column] as string;
+            if (!val) continue;
+            const innerUrl = decodeURIComponent(val.replace('/api/image?url=', ''));
+            // If inner URL is public blob → unwrap the proxy
+            if (innerUrl.includes('.public.blob.vercel-storage.com')) {
+              mapping[val] = innerUrl;
+              proxyFound++;
+            }
+          }
+        } catch {
+          // Table might not exist
+        }
+      }
+
+      if (proxyFound > 0) {
+        results.details.push(`   🔗 Found ${proxyFound} proxy URLs to unwrap`);
+        const dbResult = await updateDbUrls(db, mapping, dryRun);
+        results.details.push(...dbResult.details);
+        results.errors.push(...dbResult.errors);
+        results.summary = { urlsFixed: dbResult.updated };
+      } else {
+        results.details.push('   ✅ No proxy URLs found — all clean!');
+        results.summary = { urlsFixed: 0 };
+      }
+    }
+  } catch (err: any) {
+    results.errors.push(`Fatal error: ${err?.message || String(err)}`);
+    console.error('Migration error:', err);
+  }
+
+  results.status = results.errors.length > 0
+    ? 'completed_with_errors'
+    : 'completed';
+
+  return NextResponse.json(results);
 }
