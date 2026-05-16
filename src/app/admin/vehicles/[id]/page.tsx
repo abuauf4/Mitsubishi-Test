@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Save, Plus, Trash2, ArrowLeft, Palette, Wrench, Sparkles, Layers, AlertTriangle, CheckSquare, Square, Pencil } from 'lucide-react';
+import { Save, Plus, Trash2, ArrowLeft, Palette, Wrench, Sparkles, Layers, AlertTriangle, CheckSquare, Square, Pencil, ChevronUp, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import ImageUpload from '@/components/admin/ImageUpload';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
@@ -240,6 +240,70 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
     }
   }
 
+  /**
+   * Move a sub-entity (color or variant) up or down in display order.
+   * Swaps displayOrder values with the adjacent item.
+   */
+  async function moveItemOrder(type: 'colors' | 'variants', itemId: string, direction: 'up' | 'down') {
+    if (!vehicle || vehicle.id.startsWith('static-')) return;
+
+    const items = type === 'colors' ? vehicle.colors : vehicle.variants;
+    // Items are already sorted by displayOrder ASC from the API
+    const sorted = [...items].sort((a, b) => a.displayOrder - b.displayOrder);
+    const currentIndex = sorted.findIndex(item => item.id === itemId);
+
+    if (currentIndex === -1) return;
+    if (direction === 'up' && currentIndex === 0) return;
+    if (direction === 'down' && currentIndex === sorted.length - 1) return;
+
+    const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    const currentItem = sorted[currentIndex];
+    const swapItem = sorted[swapIndex];
+
+    // Optimistic local update
+    if (type === 'colors') {
+      setVehicle(prev => prev ? {
+        ...prev,
+        colors: prev.colors.map(c => {
+          if (c.id === currentItem.id) return { ...c, displayOrder: swapItem.displayOrder };
+          if (c.id === swapItem.id) return { ...c, displayOrder: currentItem.displayOrder };
+          return c;
+        }),
+      } : prev);
+    } else {
+      setVehicle(prev => prev ? {
+        ...prev,
+        variants: prev.variants.map(v => {
+          if (v.id === currentItem.id) return { ...v, displayOrder: swapItem.displayOrder };
+          if (v.id === swapItem.id) return { ...v, displayOrder: currentItem.displayOrder };
+          return v;
+        }),
+      } : prev);
+    }
+
+    // Send both updates in parallel
+    try {
+      const apiPath = `/api/admin/vehicles/${vehicle.id}/${type}`;
+      await Promise.all([
+        fetch(apiPath, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: currentItem.id, displayOrder: swapItem.displayOrder }),
+        }),
+        fetch(apiPath, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: swapItem.id, displayOrder: currentItem.displayOrder }),
+        }),
+      ]);
+      toast.success(`Moved ${direction === 'up' ? 'up' : 'down'}`);
+      fetchVehicle();
+    } catch (error: any) {
+      toast.error('Failed to reorder');
+      fetchVehicle(); // Revert on error
+    }
+  }
+
   // Sub-entity CRUD helpers
   async function addSubEntity(type: string, data: Record<string, unknown>) {
     if (!vehicle) return;
@@ -435,21 +499,44 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
               </Card>
 
               {/* Variants List */}
-              {vehicle.variants.map((v) => (
+              {vehicle.variants.map((v, vIdx) => (
                 <Card key={v.id}>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-foreground">{v.name}</h4>
-                        <p className="text-sm text-muted-foreground">{v.price} • {v.transmission}{v.drivetrain ? ` • ${v.drivetrain}` : ''}</p>
-                        <div className="flex gap-1 mt-1 flex-wrap">
-                          {(() => {
-                            try {
-                              return JSON.parse(v.highlights).map((h: string, i: number) => (
-                                <Badge key={i} variant="secondary" className="text-xs">{h}</Badge>
-                              ));
-                            } catch { return null; }
-                          })()}
+                      <div className="flex items-start gap-2 flex-1">
+                        {/* Reorder buttons */}
+                        <div className="flex flex-col gap-0.5 flex-shrink-0 mt-0.5">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            disabled={vIdx === 0}
+                            onClick={() => moveItemOrder('variants', v.id, 'up')}
+                          >
+                            <ChevronUp className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            disabled={vIdx === vehicle.variants.length - 1}
+                            onClick={() => moveItemOrder('variants', v.id, 'down')}
+                          >
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground">{v.name}</h4>
+                          <p className="text-sm text-muted-foreground">{v.price} • {v.transmission}{v.drivetrain ? ` • ${v.drivetrain}` : ''}</p>
+                          <div className="flex gap-1 mt-1 flex-wrap">
+                            {(() => {
+                              try {
+                                return JSON.parse(v.highlights).map((h: string, i: number) => (
+                                  <Badge key={i} variant="secondary" className="text-xs">{h}</Badge>
+                                ));
+                              } catch { return null; }
+                            })()}
+                          </div>
                         </div>
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => { setDeleteSubId(v.id); setDeleteSubType('variants'); }} className="text-destructive flex-shrink-0">
@@ -671,12 +758,33 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                     if (colorFilterVariant === 'global') return !c.variantId;
                     return c.variantId === colorFilterVariant;
                   })
-                  .map((c) => {
+                  .map((c, cIdx, filteredArr) => {
                     const assignedVariant = c.variantId ? vehicle.variants.find(v => v.id === c.variantId) : null;
                     return (
                       <Card key={c.id} className={`relative group ${c.variantId ? 'border-mitsu-dark/20' : 'border-blue-200'}`}>
                         <CardContent className="p-4">
                           <div className="flex items-center gap-3 mb-3">
+                            {/* Reorder buttons */}
+                            <div className="flex flex-col gap-0.5 flex-shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-5 w-5"
+                                disabled={cIdx === 0}
+                                onClick={() => moveItemOrder('colors', c.id, 'up')}
+                              >
+                                <ChevronUp className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-5 w-5"
+                                disabled={cIdx === filteredArr.length - 1}
+                                onClick={() => moveItemOrder('colors', c.id, 'down')}
+                              >
+                                <ChevronDown className="w-3 h-3" />
+                              </Button>
+                            </div>
                             {c.imagePath ? (
                               <div className="w-12 h-12 rounded-lg border overflow-hidden bg-muted/30 flex-shrink-0">
                                 <img src={c.imagePath} alt={c.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
