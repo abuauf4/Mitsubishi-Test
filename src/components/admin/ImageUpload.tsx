@@ -1,9 +1,10 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { Upload, X, Image as ImageIcon, Link, AlertCircle, Eraser } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Link, AlertCircle, Eraser, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import BlobPicker from '@/components/admin/BlobPicker';
 
 interface ImageUploadProps {
   value: string;
@@ -219,8 +220,9 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
   const [processing, setProcessing] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
-  const [mode, setMode] = useState<'upload' | 'url'>('upload');
+  const [mode, setMode] = useState<'upload' | 'url' | 'blob'>('blob');
   const [removeBg, setRemoveBg] = useState(true); // Auto-remove white bg by default
+  const [blobPickerOpen, setBlobPickerOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = useCallback(async (file: File) => {
@@ -288,6 +290,21 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
     if (file) uploadFile(file);
   };
 
+  // Get a displayable filename from the URL
+  const getDisplayName = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('/images/')) return url.replace('/images/', '');
+    try {
+      const decoded = decodeURIComponent(url);
+      const parts = decoded.split('/');
+      const filename = parts[parts.length - 1] || '';
+      // Remove timestamp prefix like "1234567890-"
+      return filename.replace(/^\d+-/, '');
+    } catch {
+      return url.split('/').pop() || url;
+    }
+  };
+
   // Check if value is a Vercel Blob URL (external) or local path
   const isExternalUrl = value && (value.startsWith('http://') || value.startsWith('https://'));
   const isDataUrl = value && value.startsWith('data:');
@@ -299,9 +316,51 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
   return (
     <div className="space-y-2">
       {label && <label className="text-sm font-medium text-foreground">{label}</label>}
-      
-      {/* Mode toggle */}
-      <div className="flex gap-1 mb-2">
+
+      {/* Current image preview (ALWAYS visible when there's a value) */}
+      {value && (
+        <div className="relative rounded-lg overflow-hidden border" style={{
+          backgroundImage: 'linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)',
+          backgroundSize: '12px 12px',
+          backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0px',
+        }}>
+          <img
+            src={previewSrc}
+            alt="Preview"
+            className="w-full h-32 object-contain"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+          {/* Remove button */}
+          <button
+            type="button"
+            onClick={() => onChange('')}
+            className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-md transition-colors"
+            title="Hapus gambar"
+          >
+            <X className="w-3 h-3" />
+          </button>
+          {/* Filename badge */}
+          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent px-2 py-1">
+            <p className="text-[10px] text-white truncate" title={value}>
+              {isExternalUrl ? '☁️ ' : '📁 '}{getDisplayName(value)}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Mode toggle — 3 modes now */}
+      <div className="flex gap-1">
+        <Button
+          type="button"
+          variant={mode === 'blob' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setMode('blob')}
+          className={mode === 'blob' ? 'bg-mitsu-red text-white' : ''}
+        >
+          <Database className="w-3 h-3 mr-1" /> Storage
+        </Button>
         <Button
           type="button"
           variant={mode === 'upload' ? 'default' : 'outline'}
@@ -322,7 +381,31 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
         </Button>
       </div>
 
-      {mode === 'url' ? (
+      {mode === 'blob' ? (
+        /* Blob browser mode — pick from existing Vercel Blob Storage */
+        <div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setBlobPickerOpen(true)}
+            className="w-full h-auto py-6 border-2 border-dashed hover:border-mitsu-red/50 hover:bg-mitsu-red/5 transition-all"
+          >
+            <div className="flex flex-col items-center gap-1">
+              <Database className="w-6 h-6 text-mitsu-red" />
+              <span className="text-sm font-medium">Pilih dari Storage</span>
+              <span className="text-[10px] text-muted-foreground">Browse gambar yang udah diupload</span>
+            </div>
+          </Button>
+          <BlobPicker
+            open={blobPickerOpen}
+            onClose={() => setBlobPickerOpen(false)}
+            onSelect={(url) => {
+              onChange(url);
+            }}
+            currentUrl={value}
+          />
+        </div>
+      ) : mode === 'url' ? (
         /* URL input mode */
         <div className="flex gap-2">
           <Input
@@ -346,27 +429,6 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
       ) : (
         /* Upload mode */
         <>
-          {/* Current path display */}
-          <div className="flex gap-2">
-            <Input
-              value={value || ''}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder="/images/example.png"
-              className="flex-1"
-            />
-            {value && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => onChange('')}
-                className="flex-shrink-0"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
-
           {/* Upload drop zone */}
           <div
             className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer ${
@@ -385,7 +447,7 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
               onChange={handleFileChange}
               className="hidden"
             />
-            
+
             <div className="flex items-center justify-center gap-2">
               {processing ? (
                 <>
@@ -431,34 +493,6 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
         <div className="flex items-start gap-2 p-2 rounded bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800">
           <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
           <p className="text-xs text-red-700 dark:text-red-300">{uploadError}</p>
-        </div>
-      )}
-
-      {/* Preview — with checkerboard to show transparency */}
-      {value && (
-        <div className="mt-2 rounded-lg overflow-hidden border" style={{
-          backgroundImage: 'linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)',
-          backgroundSize: '12px 12px',
-          backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0px',
-        }}>
-          <img
-            src={previewSrc}
-            alt="Preview"
-            className="w-full h-32 object-contain"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-          {isExternalUrl && (
-            <p className="text-xs text-muted-foreground p-2 truncate bg-white/80" title={value}>
-              🌐 External URL
-            </p>
-          )}
-          {!isExternalUrl && !isDataUrl && value && (
-            <p className="text-xs text-muted-foreground p-2 truncate bg-white/80" title={value}>
-              📁 {value}
-            </p>
-          )}
         </div>
       )}
     </div>
