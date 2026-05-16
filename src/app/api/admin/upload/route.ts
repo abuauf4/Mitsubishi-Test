@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Detect if a file is likely a PNG based on its extension or MIME type.
- * This ensures we explicitly set the correct content-type for Vercel Blob,
- * which is critical for preserving PNG transparency.
+ * Image upload to Vercel Blob Storage.
+ *
+ * OPTIMIZED: Uses access:'public' so images are served directly from
+ * Vercel's CDN — no server-side proxy needed, zero data transfer cost.
+ *
+ * Previously used access:'private' + /api/image proxy, which doubled
+ * bandwidth (Blob→Server + Server→Client) and exhausted transfer limits.
  */
-function isPngFile(file: File): boolean {
-  return file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,27 +34,23 @@ export async function POST(request: NextRequest) {
     if (token) {
       try {
         const { put } = await import('@vercel/blob');
-        // Private stores require access:'private'. Public stores also accept it.
-        // If your store is public and you want public URLs, change this to 'public'.
 
-        // CRITICAL: Explicitly set contentType for PNG files to preserve transparency.
-        // Without this, Vercel Blob might infer a wrong type from the filename or binary.
+        // Detect if file is PNG to preserve transparency
+        const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+
         const blobOptions: Record<string, any> = {
           token,
           addRandomSuffix: true,
-          access: 'private',
+          access: 'public', // PUBLIC = served directly from CDN, no proxy needed
+          contentType: isPng ? 'image/png' : undefined,
         };
-        if (isPngFile(file)) {
-          blobOptions.contentType = 'image/png';
-        }
 
         const blob = await put(`mitsubishi/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`, file, blobOptions);
 
-        // Return the proxy path so images go through our /api/image proxy
-        const proxyPath = `/api/image?url=${encodeURIComponent(blob.url)}`;
-
+        // Return the DIRECT blob URL (not a proxy path!)
+        // Client loads directly from Vercel CDN — zero server transfer
         return NextResponse.json({
-          path: proxyPath,
+          path: blob.url,
           url: blob.url,
           downloadUrl: blob.downloadUrl,
         });
