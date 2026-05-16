@@ -41,8 +41,18 @@ export default function VehicleDetailPage({ vehicle }: Props) {
 
   // Compute visible colors based on selected variant:
   // Show global colors (no variantId) + variant-specific colors (variantId matches selected variant's id)
+  // Dedupe by name+hex so same color across multiple variant records doesn't show twice
   const selectedVariantId = vehicle.variants[selectedVariant]?.id;
-  const visibleColors = vehicle.colors.filter(c => !c.variantId || c.variantId === selectedVariantId);
+  const visibleColors = (() => {
+    const filtered = vehicle.colors.filter(c => !c.variantId || c.variantId === selectedVariantId);
+    const seen = new Set<string>();
+    return filtered.filter(c => {
+      const key = `${c.name}|${c.hex}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  })();
 
   // When variant changes, reset color selection if out of bounds
   const effectiveSelectedColor = selectedColor >= visibleColors.length ? 0 : selectedColor;

@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Save, Plus, Trash2, ArrowLeft, Palette, Wrench, Sparkles, Layers, AlertTriangle } from 'lucide-react';
+import { Save, Plus, Trash2, ArrowLeft, Palette, Wrench, Sparkles, Layers, AlertTriangle, CheckSquare, Square } from 'lucide-react';
 import Link from 'next/link';
 import ImageUpload from '@/components/admin/ImageUpload';
 import ConfirmDialog from '@/components/admin/ConfirmDialog';
@@ -97,7 +97,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
 
   // Sub-entity forms
   const [variantForm, setVariantForm] = useState({ name: '', price: '', priceNum: 0, transmission: '', drivetrain: '', highlights: '[]', imagePath: '', displayOrder: 0 });
-  const [colorForm, setColorForm] = useState({ name: '', hex: '#000000', variantId: '' as string | null, imagePath: '', displayOrder: 0 });
+  const [colorForm, setColorForm] = useState({ name: '', hex: '#000000', variantIds: [] as string[], isGlobal: true, imagePath: '', displayOrder: 0 });
   const [colorFilterVariant, setColorFilterVariant] = useState<string>('all');
   const [specForm, setSpecForm] = useState({ category: '', items: '[]', displayOrder: 0 });
   const [featureForm, setFeatureForm] = useState({ icon: 'Zap', title: '', description: '', displayOrder: 0 });
@@ -470,9 +470,9 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                   <div className="text-sm text-blue-700">
                     <p className="font-semibold">Warna per Varian</p>
                     <p className="text-xs text-blue-600 mt-1">
-                      Warna bisa di-assign ke varian tertentu atau bersifat global (muncul di semua varian).
-                      Warna tanpa varian = <strong>global</strong> (muncul di semua varian).
-                      Warna dengan varian = <strong>spesifik varian</strong> (hanya muncul di varian itu).
+                      Centang <strong>Global</strong> = warna muncul di semua varian.
+                      ATAU centang varian tertentu = warna hanya muncul di varian yang dipilih.
+                      Bisa centang <strong>lebih dari 1 varian</strong> — cukup upload gambar sekali!
                     </p>
                   </div>
                 </CardContent>
@@ -495,33 +495,111 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                         <Input value={colorForm.hex} onChange={(e) => setColorForm({ ...colorForm, hex: e.target.value })} className="flex-1" />
                       </div>
                     </div>
-                    <div>
-                      <Label>Assign ke Varian</Label>
-                      <Select
-                        value={colorForm.variantId || '__global__'}
-                        onValueChange={(v) => setColorForm({ ...colorForm, variantId: v === '__global__' ? null : v })}
-                      >
-                        <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="__global__">🌐 Global (Semua Varian)</SelectItem>
-                          {vehicle.variants.map((v) => (
-                            <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-[10px] text-muted-foreground mt-1">
-                        {colorForm.variantId ? 'Warna hanya muncul di varian ini' : 'Warna muncul di semua varian'}
-                      </p>
-                    </div>
                     <div><Label>Display Order</Label><Input type="number" value={colorForm.displayOrder} onChange={(e) => setColorForm({ ...colorForm, displayOrder: parseInt(e.target.value) || 0 })} className="mt-1" /></div>
                   </div>
+
+                  {/* Multi-variant selector */}
+                  <div className="mt-4">
+                    <Label className="text-xs font-semibold">Assign ke Varian</Label>
+                    <p className="text-[10px] text-muted-foreground mb-2">
+                      Centang varian yang punya warna ini. Centang <strong>Global</strong> = muncul di semua.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {/* Global checkbox */}
+                      <button
+                        type="button"
+                        onClick={() => setColorForm(prev => ({
+                          ...prev,
+                          isGlobal: !prev.isGlobal,
+                          variantIds: !prev.isGlobal ? [] : prev.variantIds, // uncheck variants when going global
+                        }))}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+                          colorForm.isGlobal
+                            ? 'border-blue-400 bg-blue-50 text-blue-700 shadow-sm'
+                            : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+                        }`}
+                      >
+                        {colorForm.isGlobal ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                        🌐 Global
+                      </button>
+                      {vehicle.variants.map((v) => (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => setColorForm(prev => {
+                            const ids = prev.variantIds.includes(v.id)
+                              ? prev.variantIds.filter(id => id !== v.id)
+                              : [...prev.variantIds, v.id];
+                            return {
+                              ...prev,
+                              variantIds: ids,
+                              isGlobal: ids.length === 0, // auto uncheck global when variants selected
+                            };
+                          })}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+                            colorForm.variantIds.includes(v.id)
+                              ? 'border-mitsu-dark bg-mitsu-dark/5 text-mitsu-dark shadow-sm'
+                              : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+                          }`}
+                        >
+                          {colorForm.variantIds.includes(v.id) ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                          {v.name}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-1.5">
+                      {colorForm.isGlobal
+                        ? '✅ Warna muncul di semua varian'
+                        : colorForm.variantIds.length > 0
+                          ? `📎 Warna muncul di ${colorForm.variantIds.length} varian: ${colorForm.variantIds.map(vid => vehicle.variants.find(v => v.id === vid)?.name).filter(Boolean).join(', ')}`
+                          : '⚠️ Pilih minimal Global atau 1 varian'
+                      }
+                    </p>
+                  </div>
+
                   {/* IMAGE UPLOAD */}
                   <div className="mt-6 p-4 border-2 border-dashed border-blue-300 bg-blue-50/50 rounded-xl">
                     <p className="text-sm font-bold text-blue-700 mb-2">📷 Upload Gambar Warna Ini</p>
-                    <p className="text-xs text-muted-foreground mb-3">Upload foto mobil dalam warna ini. Kalau ada gambar, foto asli yang muncul di website. Kalau tidak, pakai tint overlay.</p>
+                    <p className="text-xs text-muted-foreground mb-3">Upload foto mobil dalam warna ini. Cukup upload sekali — gambar dipakai di semua varian yang dipilih.</p>
                     <ImageUpload value={colorForm.imagePath} onChange={(path) => setColorForm({ ...colorForm, imagePath: path })} label="Gambar Mobil (Warna Ini)" />
                   </div>
-                  <Button onClick={() => { addSubEntity('colors', colorForm); setColorForm({ name: '', hex: '#000000', variantId: null, imagePath: '', displayOrder: 0 }); }} className="mt-4 bg-mitsu-red hover:bg-red-700 text-white">
+                  <Button
+                    onClick={async () => {
+                      if (!vehicle) return;
+                      const targets = colorForm.isGlobal
+                        ? [null] // one global record
+                        : colorForm.variantIds; // one record per variant
+                      if (targets.length === 0) {
+                        toast.error('Pilih minimal Global atau 1 varian');
+                        return;
+                      }
+                      let successCount = 0;
+                      for (const variantId of targets) {
+                        try {
+                          const res = await fetch(`/api/admin/vehicles/${vehicle.id}/colors`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              name: colorForm.name,
+                              hex: colorForm.hex,
+                              variantId: variantId,
+                              imagePath: colorForm.imagePath,
+                              displayOrder: colorForm.displayOrder,
+                            }),
+                          });
+                          if (res.ok) successCount++;
+                        } catch {}
+                      }
+                      if (successCount > 0) {
+                        toast.success(`Added color to ${successCount} ${successCount === 1 ? 'target' : 'targets'}`);
+                        fetchVehicle();
+                      } else {
+                        toast.error('Failed to add color');
+                      }
+                      setColorForm({ name: '', hex: '#000000', variantIds: [], isGlobal: true, imagePath: '', displayOrder: 0 });
+                    }}
+                    className="mt-4 bg-mitsu-red hover:bg-red-700 text-white"
+                  >
                     <Plus className="w-4 h-4 mr-2" /> Add Color
                   </Button>
                 </CardContent>
@@ -609,7 +687,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
-                          {/* Variant assignment - quick change */}
+                          {/* Variant assignment - quick change (single select for existing records) */}
                           <div className="mb-3">
                             <Label className="text-[10px]">Assign ke Varian:</Label>
                             <Select
