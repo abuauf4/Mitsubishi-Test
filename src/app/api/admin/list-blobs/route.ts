@@ -110,14 +110,23 @@ export async function GET(request: NextRequest) {
     }))].filter(Boolean).sort();
 
     return NextResponse.json({
-      blobs: paged.map(b => ({
-        url: b.url,
-        pathname: b.pathname,
-        size: b.size,
-        sizeKB: (b.size / 1024).toFixed(0),
-        uploadedAt: b.uploadedAt,
-        thumbUrl: b.url,
-      })),
+      blobs: paged.map(b => {
+        // Private blob URLs can't be loaded directly by the browser.
+        // Route them through /api/image which generates a signed URL redirect.
+        const isPrivate = b.url.includes('.private.blob.vercel-storage.com');
+        const thumbUrl = isPrivate
+          ? `/api/image?url=${encodeURIComponent(b.url)}`
+          : b.url;
+
+        return {
+          url: b.url,
+          pathname: b.pathname,
+          size: b.size,
+          sizeKB: (b.size / 1024).toFixed(0),
+          uploadedAt: b.uploadedAt,
+          thumbUrl,
+        };
+      }),
       pagination: {
         page,
         limit,
