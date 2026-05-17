@@ -1,11 +1,9 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { ArrowRight, Car, Truck, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowRight, Car, Truck } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { proxyBlobUrl } from '@/lib/image-utils';
+import { useEffect, useState } from 'react';
 
 interface DBCategory {
   id: string;
@@ -17,284 +15,114 @@ interface DBCategory {
   active: boolean;
 }
 
-function ModernGatewayCard({
+function GatewayCard({
   href,
-  image,
-  imageAlt,
-  badge,
-  badgeBg,
+  icon: Icon,
+  label,
   titleLine1,
   titleLine2,
-  titleAccent,
   description,
-  stats,
+  accentBg,
   accentColor,
-  hoverAccent,
+  accentBorder,
+  hoverBg,
+  ctaText,
   direction,
 }: {
   href: string;
-  image: string;
-  imageAlt: string;
-  badge: string;
-  badgeBg: string;
+  icon: React.ElementType;
+  label: string;
   titleLine1: string;
   titleLine2: string;
-  titleAccent: string;
   description: string;
-  stats: { label: string; value: string }[];
+  accentBg: string;
   accentColor: string;
-  hoverAccent: string;
+  accentBorder: string;
+  hoverBg: string;
+  ctaText: string;
   direction: 'left' | 'right';
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [imgSrc, setImgSrc] = useState(image);
-
-  useEffect(() => {
-    setImgSrc(image);
-  }, [image]);
-
-  // 3D tilt on mouse move
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
-  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['4deg', '-4deg']);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-4deg', '4deg']);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-    setIsHovered(false);
-  };
-
   return (
     <Link href={href} className="block">
       <motion.div
-        ref={cardRef}
-        initial={{ opacity: 0, x: direction === 'left' ? -80 : 80 }}
+        initial={{ opacity: 0, x: direction === 'left' ? -60 : 60 }}
         whileInView={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        viewport={{ once: true, margin: '-100px' }}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: 'preserve-3d',
-        }}
-        className="relative group cursor-pointer overflow-hidden min-h-[380px] sm:min-h-[480px] lg:min-h-[520px] rounded-2xl sm:rounded-none lg:first:rounded-l-2xl lg:last:rounded-r-2xl"
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        viewport={{ once: true, margin: '-80px' }}
+        className={`group relative flex flex-col justify-between min-h-[320px] sm:min-h-[380px] p-8 sm:p-10 lg:p-12 rounded-2xl border-2 ${accentBorder} bg-white transition-all duration-500 hover:${accentBg} hover:shadow-2xl overflow-hidden`}
       >
-        {/* Background Image */}
-        <Image
-          src={imgSrc}
-          alt={imageAlt}
-          fill
-          className="object-cover object-center transition-transform duration-[1.2s] ease-out group-hover:scale-110"
-          sizes="(max-width: 768px) 100vw, 50vw"
-          unoptimized={imgSrc.startsWith('/api/') || imgSrc.includes('vercel-storage.com')}
-          onError={() => {
-            // Fall back to local image — never show broken/empty
-            if (!imgSrc.includes('/images/')) {
-              setImgSrc('/images/xpander.png');
-            }
-          }}
+        {/* Top accent bar */}
+        <div
+          className="absolute top-0 left-0 right-0 h-1 transition-all duration-500 group-hover:h-1.5"
+          style={{ backgroundColor: accentColor }}
         />
 
-        {/* Dark gradient for readability */}
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="absolute inset-0 bg-black/20" />
-
-        {/* Animated border glow on hover */}
-        <div className={`absolute inset-0 rounded-2xl sm:rounded-none lg:first:rounded-l-2xl lg:last:rounded-r-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}
-          style={{ boxShadow: `inset 0 0 0 2px ${hoverAccent}40, 0 0 30px ${hoverAccent}15` }}
+        {/* Background decorative element */}
+        <div
+          className="absolute -right-8 -bottom-8 w-40 h-40 rounded-full opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500"
+          style={{ backgroundColor: accentColor }}
+        />
+        <div
+          className="absolute -left-4 -top-4 w-24 h-24 rounded-full opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-500"
+          style={{ backgroundColor: accentColor }}
         />
 
-        {/* Top accent line with animation */}
-        <div className="absolute top-0 left-0 right-0 h-[3px] overflow-hidden">
-          <motion.div
-            className="h-full"
-            style={{ backgroundColor: accentColor }}
-            initial={{ scaleX: 0, originX: direction === 'left' ? 0 : 1 }}
-            animate={{ scaleX: isHovered ? 1 : 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          />
-        </div>
-
-        {/* Floating particles on hover */}
-        {isHovered && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {[...Array(6)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 rounded-full"
-                style={{
-                  backgroundColor: `${accentColor}60`,
-                  left: `${15 + i * 15}%`,
-                  bottom: '20%',
-                }}
-                initial={{ y: 0, opacity: 0 }}
-                animate={{
-                  y: [0, -80 - i * 20],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 1.5 + i * 0.2,
-                  repeat: Infinity,
-                  delay: i * 0.15,
-                  ease: 'easeOut',
-                }}
+        {/* Icon + Label */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-6">
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110"
+              style={{ backgroundColor: `${accentColor}15` }}
+            >
+              <Icon
+                className="w-6 h-6 transition-colors duration-500"
+                style={{ color: accentColor }}
               />
-            ))}
+            </div>
+            <span
+              className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase transition-colors duration-500"
+              style={{ color: accentColor }}
+            >
+              {label}
+            </span>
           </div>
-        )}
-
-        {/* Content - positioned at bottom */}
-        <div className={`absolute bottom-0 left-0 right-0 z-10 p-6 sm:p-8 lg:p-10 ${direction === 'right' ? 'text-right' : ''}`}>
-          {/* Badge */}
-          <motion.div
-            style={{ transform: 'translateZ(40px)' }}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 ${badgeBg} rounded-full mb-4 ${direction === 'right' ? 'ml-auto' : ''}`}
-          >
-            <span className="w-1.5 h-1.5 bg-white rounded-full" />
-            <span className="text-white text-[10px] font-bold tracking-[0.2em] uppercase">{badge}</span>
-          </motion.div>
 
           {/* Title */}
-          <div style={{ transform: 'translateZ(30px)' }}>
-            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 leading-tight font-serif ${direction === 'right' ? 'ml-auto max-w-md' : 'max-w-md'}`}>
-              {titleLine1}
-              <br />
-              <span style={{ color: titleAccent }} className="italic">{titleLine2}</span>
-            </h2>
-          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-mitsu-dark leading-[1.1] mb-4 tracking-tight">
+            {titleLine1}
+            <br />
+            <span className="transition-colors duration-500 group-hover:text-mitsu-dark" style={{ color: accentColor }}>
+              {titleLine2}
+            </span>
+          </h2>
 
           {/* Description */}
-          <p className={`text-white/60 text-sm sm:text-base max-w-sm mb-5 leading-relaxed ${direction === 'right' ? 'ml-auto' : ''}`}
-            style={{ transform: 'translateZ(20px)' }}
-          >
+          <p className="text-mitsu-dark/50 text-sm sm:text-base max-w-md leading-relaxed transition-colors duration-500 group-hover:text-mitsu-dark/70">
             {description}
           </p>
+        </div>
 
-          {/* Stats row */}
-          <div className={`flex items-center gap-4 mb-5 ${direction === 'right' ? 'justify-end' : ''}`}
-            style={{ transform: 'translateZ(15px)' }}
+        {/* CTA Button */}
+        <div className="relative z-10 mt-8 flex items-center gap-3">
+          <div
+            className="flex items-center gap-2.5 px-5 py-3 rounded-lg font-bold text-xs sm:text-sm tracking-[0.1em] uppercase text-white transition-all duration-500 group-hover:gap-4 group-hover:shadow-lg"
+            style={{ backgroundColor: accentColor }}
           >
-            {stats.map((stat) => (
-              <div key={stat.label} className="px-3 py-1.5 rounded-lg bg-white/8 backdrop-blur-sm border border-white/10">
-                <p className="text-white font-bold text-xs">{stat.value}</p>
-                <p className="text-white/40 text-[9px]">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* CTA */}
-          <div className={`flex items-center gap-2.5 group/cta ${direction === 'right' ? 'justify-end' : ''}`}
-            style={{ transform: 'translateZ(25px)' }}
-          >
-            <span className="text-white/60 group-hover/cta:text-white font-semibold text-xs tracking-[0.15em] uppercase transition-colors duration-400">
-              {badge === 'Passenger Cars' ? 'Jelajahi Lineup' : 'Lihat Armada'}
-            </span>
-            <motion.div
-              className={`w-9 h-9 rounded-full border border-white/20 flex items-center justify-center transition-all duration-400`}
-              style={{
-                borderColor: isHovered ? accentColor : 'rgba(255,255,255,0.2)',
-                backgroundColor: isHovered ? accentColor : 'transparent',
-              }}
-            >
-              <ArrowRight className={`w-3.5 h-3.5 transition-all duration-400 ${isHovered ? 'text-white' : 'text-white/60'} ${isHovered ? 'translate-x-0.5' : ''}`} />
-            </motion.div>
+            <span>{ctaText}</span>
+            <ArrowRight className="w-4 h-4" />
           </div>
         </div>
 
-        {/* Bottom shine effect */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-white/10" />
+        {/* Corner accent */}
+        <div
+          className="absolute bottom-0 right-0 w-16 h-16 opacity-0 group-hover:opacity-100 transition-all duration-500"
+          style={{
+            background: `linear-gradient(135deg, transparent 50%, ${accentColor}08 50%)`,
+          }}
+        />
       </motion.div>
     </Link>
   );
-}
-
-/** Default hardcoded cards as fallback */
-const HARDCODED_CARDS = [
-  {
-    href: '/passenger',
-    image: '/images/xpander.png',
-    imageAlt: 'Mitsubishi Passenger Cars',
-    badge: 'Passenger Cars',
-    badgeBg: 'bg-mitsu-red/90',
-    titleLine1: 'Untuk Hidup',
-    titleLine2: 'yang Lebih Baik',
-    titleAccent: '#FF6B6B',
-    description: 'MPV keluarga, SUV tangguh, hingga kendaraan listrik. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.',
-    stats: [
-      { label: 'Model', value: '8' },
-      { label: 'Mulai', value: 'Rp 240Jt' },
-      { label: 'Kategori', value: 'MPV, SUV & EV' },
-    ],
-    accentColor: '#E60012',
-    hoverAccent: '#E60012',
-    direction: 'left' as const,
-  },
-  {
-    href: '/commercial',
-    image: '/images/l300.png',
-    imageAlt: 'Mitsubishi Commercial Vehicles',
-    badge: 'Commercial Vehicles',
-    badgeBg: 'bg-mitsu-fuso-yellow/90',
-    titleLine1: 'Bisnis yang',
-    titleLine2: 'Lebih Kuat',
-    titleAccent: '#FFD600',
-    description: 'FUSO Commercial dari Canter hingga Heavy Duty untuk UMKM hingga enterprise.',
-    stats: [
-      { label: 'Model', value: '6' },
-      { label: 'Mulai', value: 'Rp 468Jt' },
-      { label: 'Payload', value: '3.4-44 Ton' },
-    ],
-    accentColor: '#FFD600',
-    hoverAccent: '#FFD600',
-    direction: 'right' as const,
-  },
-];
-
-function getCategoryTheme(linkHref: string) {
-  if (linkHref.includes('passenger')) {
-    return {
-      accentColor: '#E60012',
-      hoverAccent: '#E60012',
-      badgeBg: 'bg-mitsu-red/90',
-      titleAccent: '#FF6B6B',
-    };
-  }
-  if (linkHref.includes('commercial')) {
-    return {
-      accentColor: '#FFD600',
-      hoverAccent: '#FFD600',
-      badgeBg: 'bg-mitsu-fuso-yellow/90',
-      titleAccent: '#FFD600',
-    };
-  }
-  return {
-    accentColor: '#E60012',
-    hoverAccent: '#E60012',
-    badgeBg: 'bg-mitsu-red/90',
-    titleAccent: '#FF6B6B',
-  };
 }
 
 export default function AudienceGateway() {
@@ -307,59 +135,65 @@ export default function AudienceGateway() {
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
-          // Use DB categories — they have real images uploaded via admin
-          // Only skip if ALL categories are static fallbacks with no custom images
-          const hasRealImages = data.some((cat: DBCategory) => cat.imagePath && !cat.imagePath.startsWith('/images/'));
-          if (hasRealImages || !data[0]?.id?.startsWith('static')) {
-            setDbCategories(data);
-          }
+          setDbCategories(data);
         }
       } catch {
-        // Silently fall back to hardcoded cards
+        // Silently fall back
       }
     }
     fetchCategories();
   }, []);
 
-  // Helper: resolve blob URLs (direct for public, proxy for private)
-  const proxyImage = (url: string) => {
-    return proxyBlobUrl(url) || '';
-  };
-
-  // Build cards from DB data or use hardcoded fallback
   const cards = dbCategories && dbCategories.length > 0
     ? dbCategories.map((cat, index) => {
-        const theme = getCategoryTheme(cat.linkHref);
-        const isRed = cat.linkHref.includes('passenger');
-        const fallbackImg = isRed ? '/images/xpander.png' : '/images/l300.png';
-        const proxiedImage = cat.imagePath ? proxyImage(cat.imagePath) : fallbackImg;
+        const isPassenger = cat.linkHref.includes('passenger');
         return {
-          href: cat.linkHref || (isRed ? '/passenger' : '/commercial'),
-          image: proxiedImage || fallbackImg,
-          imageAlt: cat.title || (isRed ? 'Passenger Cars' : 'Commercial Vehicles'),
-          badge: cat.title || (isRed ? 'Passenger Cars' : 'Commercial Vehicles'),
-          badgeBg: theme.badgeBg,
-          titleLine1: cat.title?.includes('Passenger') ? 'Untuk Hidup' : cat.title?.includes('Commercial') ? 'Bisnis yang' : cat.title || 'Pilihan',
-          titleLine2: isRed ? 'yang Lebih Baik' : 'Lebih Kuat',
-          titleAccent: theme.titleAccent,
-          description: cat.description || (isRed ? 'MPV keluarga, SUV tangguh, hingga kendaraan listrik.' : 'Niaga ringan hingga heavy duty untuk bisnis Anda.'),
-          stats: isRed
-            ? [
-                { label: 'Model', value: '8' },
-                { label: 'Mulai', value: 'Rp 240Jt' },
-                { label: 'Kategori', value: 'MPV, SUV & EV' },
-              ]
-            : [
-                { label: 'Model', value: '6' },
-                { label: 'Mulai', value: 'Rp 468Jt' },
-                { label: 'Payload', value: '3.4-44 Ton' },
-              ],
-          accentColor: theme.accentColor,
-          hoverAccent: theme.hoverAccent,
+          href: cat.linkHref || (isPassenger ? '/passenger' : '/commercial'),
+          icon: isPassenger ? Car : Truck,
+          label: cat.title || (isPassenger ? 'Passenger Cars' : 'Commercial Vehicles'),
+          titleLine1: isPassenger ? 'Untuk Hidup' : 'Bisnis yang',
+          titleLine2: isPassenger ? 'yang Lebih Baik' : 'Lebih Kuat',
+          description: cat.description || (isPassenger
+            ? 'MPV keluarga, SUV tangguh, hingga kendaraan listrik. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.'
+            : 'FUSO Commercial dari Canter hingga Heavy Duty untuk UMKM hingga enterprise.'),
+          accentBg: isPassenger ? 'bg-mitsu-red/5' : 'bg-[#FFD600]/5',
+          accentColor: isPassenger ? '#E60012' : '#FFD600',
+          accentBorder: isPassenger ? 'border-mitsu-red/20 hover:border-mitsu-red' : 'border-[#FFD600]/30 hover:border-[#FFD600]',
+          hoverBg: isPassenger ? 'bg-mitsu-red/5' : 'bg-[#FFD600]/5',
+          ctaText: isPassenger ? 'Jelajahi Lineup' : 'Lihat Armada',
           direction: (index % 2 === 0 ? 'left' : 'right') as 'left' | 'right',
         };
       })
-    : HARDCODED_CARDS;
+    : [
+        {
+          href: '/passenger',
+          icon: Car,
+          label: 'Passenger Cars',
+          titleLine1: 'Untuk Hidup',
+          titleLine2: 'yang Lebih Baik',
+          description: 'MPV keluarga, SUV tangguh, hingga kendaraan listrik. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.',
+          accentBg: 'bg-mitsu-red/5',
+          accentColor: '#E60012',
+          accentBorder: 'border-mitsu-red/20 hover:border-mitsu-red',
+          hoverBg: 'bg-mitsu-red/5',
+          ctaText: 'Jelajahi Lineup',
+          direction: 'left' as const,
+        },
+        {
+          href: '/commercial',
+          icon: Truck,
+          label: 'Commercial Vehicles',
+          titleLine1: 'Bisnis yang',
+          titleLine2: 'Lebih Kuat',
+          description: 'FUSO Commercial dari Canter hingga Heavy Duty untuk UMKM hingga enterprise.',
+          accentBg: 'bg-[#FFD600]/5',
+          accentColor: '#FFD600',
+          accentBorder: 'border-[#FFD600]/30 hover:border-[#FFD600]',
+          hoverBg: 'bg-[#FFD600]/5',
+          ctaText: 'Lihat Armada',
+          direction: 'right' as const,
+        },
+      ];
 
   return (
     <section id="audience-gateway" className="relative w-full bg-white">
@@ -387,9 +221,9 @@ export default function AudienceGateway() {
 
       {/* Cards Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 sm:pb-14">
-        <div className={`grid ${cards.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'} gap-4 sm:gap-5`}>
+        <div className={`grid ${cards.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'} gap-5 sm:gap-6`}>
           {cards.map((card, index) => (
-            <ModernGatewayCard key={card.href + '-' + index} {...card} />
+            <GatewayCard key={card.href + '-' + index} {...card} />
           ))}
         </div>
       </div>
