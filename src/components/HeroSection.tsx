@@ -79,16 +79,17 @@ export default function HeroSection({ initialData }: HeroSectionProps) {
       className="relative w-full overflow-hidden bg-black"
     >
       {/* 
-        Desktop: full viewport height (100vh), image covers area
-        Mobile: fixed height, image still fully visible via object-fit: cover + center
+        Desktop: full viewport width, image scales naturally
+        Mobile: fixed min-height so it's not too short, image fully visible (no crop)
       */}
-      <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-screen">
+      <div className="relative w-full min-h-[50vh] sm:min-h-[60vh] md:min-h-[70vh]">
         <Image
           src={imageSrc || fallbackHero.imagePath}
           alt="Mitsubishi Motor Indonesia"
-          fill
+          width={1920}
+          height={1080}
           priority
-          className="object-cover object-center"
+          className="w-full h-auto block"
           sizes="100vw"
           unoptimized={(imageSrc || '').startsWith('/api/') || (imageSrc || '').includes('vercel-storage.com')}
           onError={() => {
@@ -97,7 +98,7 @@ export default function HeroSection({ initialData }: HeroSectionProps) {
         />
 
         {/* Bottom gradient for readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
       </div>
 
       {/* Selengkapnya Button */}
