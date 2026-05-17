@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -26,12 +25,6 @@ const fallbackHero: HeroData = {
 
 export default function HeroSection({ initialData }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start start', 'end start'],
-  });
-
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   // Helper: resolve blob URLs (direct for public, proxy for private)
   const prepareImageUrl = (url: string) => {
@@ -83,58 +76,50 @@ export default function HeroSection({ initialData }: HeroSectionProps) {
     <section
       ref={sectionRef}
       id="home"
-      className="relative w-full overflow-hidden bg-mitsu-obsidian"
+      className="relative w-full overflow-hidden bg-black"
     >
-      {/* Image — scales naturally with viewport width, NO cropping ever */}
-      <div className="relative w-full">
+      {/* 
+        Desktop: full viewport height (100vh), image covers area
+        Mobile: fixed height, image still fully visible via object-fit: cover + center
+      */}
+      <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-screen">
         <Image
           src={imageSrc || fallbackHero.imagePath}
           alt="Mitsubishi Motor Indonesia"
-          width={1344}
-          height={768}
+          fill
           priority
-          className="w-full h-auto block"
+          className="object-cover object-center"
           sizes="100vw"
           unoptimized={(imageSrc || '').startsWith('/api/') || (imageSrc || '').includes('vercel-storage.com')}
           onError={() => {
-            // On error, immediately switch to fallback — no SVG placeholder
             setImageSrc('/images/hero-cinematic.png');
           }}
         />
 
-        {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+        {/* Bottom gradient for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
       </div>
 
-      {/* Selengkapnya Button — transparent with white outline */}
-      <motion.div
-        className="absolute bottom-4 sm:bottom-8 lg:bottom-12 left-1/2 -translate-x-1/2 z-10"
-        style={{ opacity: contentOpacity }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      {/* Selengkapnya Button */}
+      <div className="absolute bottom-4 sm:bottom-6 lg:bottom-10 left-1/2 -translate-x-1/2 z-10">
+        <Link
+          href={ctaLink}
+          onClick={(e) => {
+            if (ctaLink.startsWith('#')) {
+              e.preventDefault();
+              const id = ctaLink.slice(1);
+              document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+          className="group inline-flex items-center gap-2 px-6 py-2.5 sm:px-8 sm:py-3 transition-all duration-300 text-sm sm:text-base tracking-wider font-semibold bg-transparent border border-white/50 text-white hover:bg-white/10 hover:border-white min-w-[44px] min-h-[44px]"
         >
-          <Link
-            href={ctaLink}
-            onClick={(e) => {
-              if (ctaLink.startsWith('#')) {
-                e.preventDefault();
-                const id = ctaLink.slice(1);
-                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-            className="group inline-flex items-center gap-2 px-8 py-3 sm:px-10 sm:py-3.5 rounded-xl transition-all duration-500 min-h-[44px] text-sm sm:text-base tracking-wider font-semibold bg-transparent border-2 border-white/60 text-white hover:bg-white/10 hover:border-white min-w-[44px]"
-          >
-            {hero.ctaText || 'Selengkapnya'}
-            <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
-          </Link>
-        </motion.div>
-      </motion.div>
+          {hero.ctaText || 'Selengkapnya'}
+          <ChevronDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
+        </Link>
+      </div>
 
       {/* Bottom red line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-mitsu-red/20 z-[4]" />
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-mitsu-red z-10" />
     </section>
   );
 }
