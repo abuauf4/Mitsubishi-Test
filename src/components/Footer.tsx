@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUp, Globe, Camera, Mail, Send, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
-import { proxyBlobUrl } from '@/lib/image-utils';
+import { useSiteConfig } from '@/lib/site-config-context';
 
 const footerLinks = {
   kendaraan: {
@@ -61,32 +61,9 @@ export default function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
-  // Initialize from localStorage cache (prevents flash)
-  const [logoSrc, setLogoSrc] = useState<string>(() => {
-    if (typeof window === 'undefined') return '/mitsubishi-logo.png';
-    try {
-      const cached = localStorage.getItem('mitsu_logo_logo_passenger');
-      if (cached) return proxyBlobUrl(cached) || cached;
-    } catch {}
-    return '/mitsubishi-logo.png';
-  });
-
-  useEffect(() => {
-    // Fetch fresh from API
-    fetch('/api/site-config', { cache: 'no-store' })
-      .then(res => res.ok ? res.json() : [])
-      .then(data => {
-        if (Array.isArray(data)) {
-          const item = data.find((c: any) => c.key === 'logo_passenger');
-          if (item && item.value) {
-            const url = proxyBlobUrl(item.value) || item.value;
-            setLogoSrc(url);
-            try { localStorage.setItem('mitsu_logo_logo_passenger', item.value); } catch {}
-          }
-        }
-      })
-      .catch(() => {});
-  }, []);
+  // Logo from server-side context — no flash!
+  const { getUrl } = useSiteConfig();
+  const logoSrc = getUrl('logo_passenger', '/mitsubishi-logo.png');
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();

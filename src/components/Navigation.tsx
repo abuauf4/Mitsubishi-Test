@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import MobileMenu from './MobileMenu';
 import AnnouncementBar from './AnnouncementBar';
-import { proxyBlobUrl } from '@/lib/image-utils';
+import { useSiteConfig } from '@/lib/site-config-context';
 
 const navLinks = [
   { label: 'Home', href: '/', isRoute: true },
@@ -41,93 +41,19 @@ function FusoLogo({ className = 'w-14 h-6 sm:w-16 sm:h-8', color = '#FFD600' }: 
   );
 }
 
-interface SiteConfigItem {
-  id: string;
-  key: string;
-  value: string;
-  type: string;
-  page: string;
-}
-
-// Read cached logo URL from localStorage (synchronous, safe for useState initializer)
-function readCachedLogo(key: string): string | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    return localStorage.getItem(`mitsu_logo_${key}`);
-  } catch {
-    return null;
-  }
-}
-
-// Cache a logo URL to localStorage
-function cacheLogo(key: string, value: string) {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(`mitsu_logo_${key}`, value);
-  } catch {
-    // Ignore storage errors
-  }
-}
-
 export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const { getUrl } = useSiteConfig();
 
-  // Initialize logo URLs from localStorage cache FIRST to prevent flash
-  const [passengerLogoSrc, setPassengerLogoSrc] = useState<string>(() => {
-    const cached = readCachedLogo('logo_passenger');
-    return cached ? (proxyBlobUrl(cached) || cached) : '/mitsubishi-logo.png';
-  });
-
-  const [commercialLogoSrc, setCommercialLogoSrc] = useState<string>(() => {
-    const cached = readCachedLogo('logo_commercial');
-    return cached ? (proxyBlobUrl(cached) || cached) : '/mitsubishi-logo.png';
-  });
-
-  // Separate dark navbar FUSO logo (for home page with black navbar)
-  const [commercialDarkLogoSrc, setCommercialDarkLogoSrc] = useState<string>(() => {
-    const cached = readCachedLogo('logo_commercial_dark');
-    return cached ? (proxyBlobUrl(cached) || cached) : '';
-  });
+  // Logo URLs come directly from server-side context — no flash!
+  const passengerLogoSrc = getUrl('logo_passenger', '/mitsubishi-logo.png');
+  const commercialLogoSrc = getUrl('logo_commercial', '/mitsubishi-logo.png');
+  const commercialDarkLogoSrc = getUrl('logo_commercial_dark');
 
   const [logoError, setLogoError] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    async function fetchConfig() {
-      try {
-        const res = await fetch('/api/site-config', { cache: 'no-store' });
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data)) {
-            setLogoError({});
-
-            // Process each config item
-            for (const item of data as SiteConfigItem[]) {
-              if (!item.key || !item.value) continue;
-
-              const url = proxyBlobUrl(item.value) || item.value;
-
-              if (item.key === 'logo_passenger') {
-                setPassengerLogoSrc(url);
-                cacheLogo('logo_passenger', item.value);
-              } else if (item.key === 'logo_commercial') {
-                setCommercialLogoSrc(url);
-                cacheLogo('logo_commercial', item.value);
-              } else if (item.key === 'logo_commercial_dark') {
-                setCommercialDarkLogoSrc(url);
-                cacheLogo('logo_commercial_dark', item.value);
-              }
-            }
-          }
-        }
-      } catch {
-        // Keep cached/default values
-      }
-    }
-    fetchConfig();
-  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -140,10 +66,10 @@ export default function Navigation() {
   const isCommercial = pathname.startsWith('/commercial');
   const isHome = pathname === '/';
 
-  // Has custom logo uploaded? (not default mitsubishi-logo.png and not empty)
-  const hasPassengerLogo = passengerLogoSrc !== '/mitsubishi-logo.png' && !logoError['passenger'];
-  const hasCommercialLogo = commercialLogoSrc !== '/mitsubishi-logo.png' && !logoError['commercial'];
-  const hasCommercialDarkLogo = commercialDarkLogoSrc !== '' && !logoError['commercial_dark'];
+  // Has custom logo uploaded?
+  const hasPassengerLogo = !!passengerLogoSrc && passengerLogoSrc !== '/mitsubishi-logo.png' && !logoError['passenger'];
+  const hasCommercialLogo = !!commercialLogoSrc && commercialLogoSrc !== '/mitsubishi-logo.png' && !logoError['commercial'];
+  const hasCommercialDarkLogo = !!commercialDarkLogoSrc && !logoError['commercial_dark'];
 
   // For Home page FUSO logo: prefer dark variant, fallback to commercial logo
   const homeFusoLogoSrc = hasCommercialDarkLogo ? commercialDarkLogoSrc : commercialLogoSrc;

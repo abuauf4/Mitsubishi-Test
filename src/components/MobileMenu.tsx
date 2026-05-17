@@ -3,8 +3,7 @@
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { proxyBlobUrl } from '@/lib/image-utils';
+import { useSiteConfig } from '@/lib/site-config-context';
 
 interface NavLink {
   label: string;
@@ -21,37 +20,12 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ links, onClose, onNavClick, variant = 'default' }: MobileMenuProps) {
   const isCommercial = variant === 'commercial';
+  const { getUrl } = useSiteConfig();
 
-  // Initialize from localStorage cache (prevents flash)
-  const [logoSrc, setLogoSrc] = useState<string>(() => {
-    if (typeof window === 'undefined') return '/mitsubishi-logo.png';
-    try {
-      const cacheKey = isCommercial ? 'mitsu_logo_logo_commercial' : 'mitsu_logo_logo_passenger';
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) return proxyBlobUrl(cached) || cached;
-    } catch {}
-    return '/mitsubishi-logo.png';
-  });
-
-  useEffect(() => {
-    const cacheKey = isCommercial ? 'mitsu_logo_logo_commercial' : 'mitsu_logo_logo_passenger';
-
-    // Fetch fresh from API
-    fetch('/api/site-config', { cache: 'no-store' })
-      .then(res => res.ok ? res.json() : [])
-      .then(data => {
-        if (Array.isArray(data)) {
-          const configKey = isCommercial ? 'logo_commercial' : 'logo_passenger';
-          const item = data.find((c: any) => c.key === configKey);
-          if (item && item.value) {
-            const url = proxyBlobUrl(item.value) || item.value;
-            setLogoSrc(url);
-            try { localStorage.setItem(cacheKey, item.value); } catch {}
-          }
-        }
-      })
-      .catch(() => {});
-  }, [isCommercial]);
+  // Logo from server-side context — no flash!
+  const logoSrc = isCommercial
+    ? getUrl('logo_commercial', '/mitsubishi-logo.png')
+    : getUrl('logo_passenger', '/mitsubishi-logo.png');
 
   const accentColor = isCommercial ? '#FFD600' : '#E60012';
   const bgClass = isCommercial ? 'bg-white' : 'bg-white';

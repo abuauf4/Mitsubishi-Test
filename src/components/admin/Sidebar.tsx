@@ -38,7 +38,8 @@ export default function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Initialize from localStorage cache (prevents flash)
+  // Admin sidebar fetches its own logo (separate layout, no SiteConfigProvider)
+  // But uses localStorage cache to prevent flash
   const [logoSrc, setLogoSrc] = useState<string>(() => {
     if (typeof window === 'undefined') return '/mitsubishi-logo.png';
     try {
