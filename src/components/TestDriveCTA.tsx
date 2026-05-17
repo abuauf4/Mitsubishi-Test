@@ -86,7 +86,7 @@ export default function TestDriveCTA() {
             <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark leading-tight font-serif">
               Rasakan Sendiri
               <br />
-              <span className="text-red-shimmer italic">Pengalaman Mitsubishi</span>
+              <span className="text-mitsu-red">Pengalaman Mitsubishi</span>
             </h2>
             <p className="mt-5 text-gray-500 text-base sm:text-lg max-w-lg leading-relaxed">
               Jadwalkan test drive di dealer terdekat dan buktikan sendiri kualitas kendaraan Mitsubishi.

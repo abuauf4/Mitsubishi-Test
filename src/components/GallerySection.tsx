@@ -72,7 +72,7 @@ export default function GallerySection() {
             <span className="w-10 h-px bg-mitsu-red/50" />
           </span>
           <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
-            Momen <span className="text-red-shimmer italic">Spesial</span> Kami
+            Momen <span className="text-mitsu-red">Spesial</span> Kami
           </h2>
           <p className="mt-3 text-mitsu-text/70 text-base sm:text-lg max-w-xl">
             Serah terima kendaraan pelanggan dan artikel menarik seputar Mitsubishi.

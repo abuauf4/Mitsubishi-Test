@@ -75,7 +75,7 @@ export default function TestimonialSection() {
           </span>
           <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
             Dipercaya Ratusan{' '}
-            <span className="text-red-shimmer italic">Pelanggan</span>
+            <span className="text-mitsu-red">Pelanggan</span>
           </h2>
           <p className="mt-4 text-gray-500 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
             Kepuasan pelanggan adalah prioritas utama kami. Simak pengalaman mereka yang telah memilih Mitsubishi.

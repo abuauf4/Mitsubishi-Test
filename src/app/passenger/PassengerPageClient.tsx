@@ -82,7 +82,7 @@ export default function PassengerPageClient({ vehicles, initialHeroData }: Props
             </span>
             <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
               Lineup Kendaraan{' '}
-              <span className="text-red-shimmer italic">Passenger</span>
+              <span className="text-mitsu-red">Passenger</span>
             </h2>
             <p className="mt-4 text-gray-500 text-base sm:text-lg max-w-xl">
               Pilihan kendaraan passenger terbaik dari Mitsubishi Motor Indonesia.
@@ -194,7 +194,7 @@ export default function PassengerPageClient({ vehicles, initialHeroData }: Props
           >
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-mitsu-dark mb-4 font-serif">
               Tertarik dengan kendaraan{' '}
-              <span className="text-red-shimmer italic">passenger</span>?
+              <span className="text-mitsu-red">passenger</span>?
             </h2>
             <p className="text-gray-500 text-base sm:text-lg mb-8 max-w-xl mx-auto">
               Hubungi sales consultant kami untuk konsultasi gratis, test drive, dan penawaran harga terbaik!

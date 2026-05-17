@@ -110,7 +110,7 @@ export default function PromoSection() {
             Promo Terbaru
           </span>
           <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
-            Penawaran <span className="text-red-shimmer italic">Spesial</span>
+            Penawaran <span className="text-mitsu-red">Spesial</span>
           </h2>
           <p className="mt-5 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto">
             Jangan lewatkan promo terbatas dari Mitsubishi. Segera dapatkan sebelum berakhir!

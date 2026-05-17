@@ -380,7 +380,7 @@ export default function AudienceGateway() {
             <span className="w-10 h-px bg-mitsu-red/50" />
           </span>
           <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-mitsu-dark font-serif">
-            Temukan Kendaraan <span className="text-red-shimmer italic">Anda</span>
+            Temukan Kendaraan <span className="text-mitsu-red">Anda</span>
           </h2>
         </motion.div>
       </div>

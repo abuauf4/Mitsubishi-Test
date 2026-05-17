@@ -311,7 +311,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif leading-tight">
                 Mitsubishi{' '}
-                <span className={isCommercial ? 'text-mitsu-fuso-yellow-dark italic' : 'text-red-shimmer italic'}>
+                <span className={isCommercial ? 'text-mitsu-fuso-yellow-dark italic' : 'text-mitsu-red'}>
                   {vehicle.name}
                 </span>
               </h1>
@@ -1225,7 +1225,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
           >
             <h2 className="text-2xl sm:text-3xl font-bold text-mitsu-dark font-serif">
               Tertarik dengan Mitsubishi{' '}
-              <span className={isCommercial ? 'text-mitsu-fuso-yellow-dark italic' : 'text-red-shimmer italic'}>
+              <span className={isCommercial ? 'text-mitsu-fuso-yellow-dark italic' : 'text-mitsu-red'}>
                 {vehicle.name}
               </span>?
             </h2>

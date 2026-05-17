@@ -116,7 +116,7 @@ export default function WhyMitsubishi() {
           </span>
           <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold text-white font-serif">
             Keunggulan{' '}
-            <span className="text-red-shimmer italic">Mitsubishi</span>
+            <span className="text-mitsu-red">Mitsubishi</span>
           </h2>
           <p className="mt-5 text-white/50 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             Lebih dari 60 tahun pengalaman di industri otomotif global. Mitsubishi terus berkomitmen menghadirkan kendaraan berkualitas untuk Indonesia.

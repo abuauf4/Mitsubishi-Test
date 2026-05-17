@@ -339,30 +339,6 @@
 }
 
 /* ============================================
-   GOLD TEXT SHIMMER
-   ============================================ */
-@keyframes gold-shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-.text-gold-shimmer {
-  background: linear-gradient(
-    90deg,
-    #C9A96E 0%,
-    #E2CC9C 25%,
-    #FFF5E0 50%,
-    #E2CC9C 75%,
-    #C9A96E 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gold-shimmer 4s linear infinite;
-}
-
-/* ============================================
    TEXT REVEAL ANIMATION
    ============================================ */
 @keyframes text-reveal-up {
@@ -830,37 +806,7 @@ a, button {
   animation: luxury-rotate 30s linear infinite;
 }
 
-/* ============================================
-   RED SHIMMER TEXT (for passenger)
-   ============================================ */
-@keyframes red-shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
 
-.text-red-shimmer {
-  background: linear-gradient(90deg, #E60012 0%, #FF3333 25%, #FF6666 50%, #FF3333 75%, #E60012 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: red-shimmer 4s linear infinite;
-}
-
-/* YELLOW SHIMMER TEXT (for commercial) */
-@keyframes yellow-shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-.text-yellow-shimmer {
-  background: linear-gradient(90deg, #FFD600 0%, #FFE44D 25%, #FFF5B3 50%, #FFE44D 75%, #FFD600 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: yellow-shimmer 4s linear infinite;
-}
 
 /* GLASS RED */
 .glass-red {
