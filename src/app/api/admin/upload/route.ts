@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Image upload to Vercel Blob Storage.
+ * Upload images to Vercel Blob Storage.
  *
- * OPTIMIZED: Uses access:'public' so images are served directly from
- * Vercel's CDN — no server-side proxy needed, zero data transfer cost.
- *
- * Previously used access:'private' + /api/image proxy, which doubled
- * bandwidth (Blob→Server + Server→Client) and exhausted transfer limits.
+ * IMPORTANT: The Vercel Blob store is configured as PRIVATE,
+ * so we MUST use access: 'private' when uploading.
+ * Public access on a private store will throw an error.
  */
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -16,73 +15,53 @@ export async function POST(request: NextRequest) {
 
     if (!file) {
       return NextResponse.json(
-        { error: 'No file provided', hint: 'Include a "file" field in the FormData' },
+        { error: 'No file provided' },
         { status: 400 }
       );
     }
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json(
-        { error: 'Invalid file type', hint: 'Only image files are accepted' },
-        { status: 400 }
-      );
-    }
-
-    // Validate file size (max 10MB)
-    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
-    if (file.size > MAX_SIZE) {
-      return NextResponse.json(
-        { error: 'File too large', hint: 'Maximum file size is 10MB' },
-        { status: 400 }
-      );
-    }
-
-    // Try uploading to Vercel Blob
     const token = process.env.BLOB_READ_WRITE_TOKEN;
-    if (token) {
-      try {
-        const { put } = await import('@vercel/blob');
-
-        // Detect if file is PNG to preserve transparency
-        const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
-
-        const blobOptions: Record<string, any> = {
-          token,
-          addRandomSuffix: true,
-          access: 'public', // PUBLIC = served directly from CDN, no proxy needed
-          contentType: isPng ? 'image/png' : undefined,
-        };
-
-        const blob = await put(`mitsubishi/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`, file, blobOptions);
-
-        // Return the DIRECT blob URL (not a proxy path!)
-        // Client loads directly from Vercel CDN — zero server transfer
-        return NextResponse.json({
-          path: blob.url,
-          url: blob.url,
-          downloadUrl: blob.downloadUrl,
-        });
-      } catch (blobError: any) {
-        console.error('Blob upload failed:', blobError?.message);
-        return NextResponse.json({
-          error: 'Failed to upload to blob storage',
-          hint: blobError?.message || 'Check BLOB_READ_WRITE_TOKEN environment variable',
-        }, { status: 500 });
-      }
+    if (!token) {
+      return NextResponse.json(
+        { error: 'BLOB_READ_WRITE_TOKEN not set', hint: 'Add it in Vercel Dashboard → Settings → Environment Variables' },
+        { status: 503 }
+      );
     }
 
-    return NextResponse.json(
-      { error: 'Blob storage not configured', hint: 'Set BLOB_READ_WRITE_TOKEN env var' },
-      { status: 503 }
-    );
+    const { put } = await import('@vercel/blob');
+
+    // Generate a unique pathname with timestamp to avoid collisions
+    const timestamp = Date.now();
+    const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const pathname = `uploads/${timestamp}-${sanitizedName}`;
+
+    // MUST use access: 'private' because the store is private
+    const blob = await put(pathname, file, {
+      access: 'private',
+      token,
+      addRandomSuffix: true,
+    });
+
+    return NextResponse.json({
+      path: blob.url,
+      url: blob.url,
+      pathname: blob.pathname,
+      size: blob.size,
+    });
   } catch (error: any) {
     console.error('Upload error:', error);
+
+    // Provide helpful error messages
+    const message = error?.message || 'Upload failed';
+    if (message.includes('public access on a private store')) {
+      return NextResponse.json(
+        { error: 'Cannot use public access on a private store. The upload route has been configured for private access.', hint: 'This should be fixed now — please try again.' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      {
-        error: 'Upload failed',
-        hint: error?.message || 'Unknown error',
-      },
+      { error: message },
       { status: 500 }
     );
   }
