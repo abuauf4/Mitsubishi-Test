@@ -45,25 +45,25 @@ export async function GET() {
     }
 
     // Clean up configs with empty keys (bad data)
-    await db.execute({
+    const deleteResult = await db.execute({
       sql: "DELETE FROM SiteConfig WHERE key = '' OR key IS NULL",
       args: [],
     });
-
-    // Clean up configs with old private blob URLs that are broken
-    // (pointing to disconnected stores)
-    const allConfigs = await db.execute({
-      sql: 'SELECT key, value FROM SiteConfig WHERE value LIKE "%private.blob.vercel-storage.com%"',
-      args: [],
-    });
-    for (const row of allConfigs.rows) {
-      console.log(`[site-config] WARNING: ${row.key} has private blob URL (may be broken): ${(row.value as string)?.substring(0, 60)}...`);
+    if (deleteResult.rowsAffected > 0) {
+      console.log(`[site-config] Cleaned up ${deleteResult.rowsAffected} config(s) with empty keys`);
     }
 
     const result = await db.execute({
       sql: 'SELECT * FROM SiteConfig ORDER BY key ASC',
       args: [],
     });
+
+    console.log(`[site-config] GET returning ${result.rows.length} configs`);
+    for (const row of result.rows) {
+      const val = row.value as string;
+      console.log(`  - ${row.key}: ${val ? (val.length > 60 ? val.substring(0, 60) + '...' : val) : '(empty)'}`);
+    }
+
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error('Error fetching site configs:', error);
@@ -80,6 +80,12 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { configs } = body as { configs: { key: string; value: string; type: string; page: string }[] };
 
+    console.log(`[site-config] PUT received ${configs?.length || 0} configs`);
+
+    if (!Array.isArray(configs)) {
+      return NextResponse.json({ error: 'configs must be an array' }, { status: 400 });
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const results: any[] = [];
 
@@ -89,6 +95,9 @@ export async function PUT(request: NextRequest) {
         console.warn('[site-config] Skipping config with empty key');
         continue;
       }
+
+      const valueStr = config.value || '';
+      console.log(`[site-config] Saving: key="${config.key}", value=${valueStr ? `"${valueStr.substring(0, 60)}${valueStr.length > 60 ? '...' : ''}"` : '(empty)'}, type="${config.type}", page="${config.page}"`);
 
       // Check if the key exists
       const existing = await db.execute({
@@ -100,27 +109,30 @@ export async function PUT(request: NextRequest) {
         // Update
         await db.execute({
           sql: 'UPDATE SiteConfig SET value = ?, type = ?, page = ? WHERE key = ?',
-          args: [config.value, config.type, config.page, config.key],
+          args: [valueStr, config.type || 'text', config.page || 'home', config.key],
         });
-        const updated = await db.execute({
-          sql: 'SELECT * FROM SiteConfig WHERE key = ?',
-          args: [config.key],
-        });
-        if (updated.rows.length > 0) results.push(updated.rows[0]);
+        console.log(`[site-config] Updated: ${config.key}`);
       } else {
         // Insert
         const id = crypto.randomUUID();
         await db.execute({
           sql: 'INSERT INTO SiteConfig (id, key, value, type, page) VALUES (?, ?, ?, ?, ?)',
-          args: [id, config.key, config.value, config.type, config.page],
+          args: [id, config.key, valueStr, config.type || 'text', config.page || 'home'],
         });
-        results.push({
-          id,
-          key: config.key,
-          value: config.value,
-          type: config.type,
-          page: config.page,
-        });
+        console.log(`[site-config] Inserted: ${config.key}`);
+      }
+
+      // Verify the save
+      const verifyResult = await db.execute({
+        sql: 'SELECT * FROM SiteConfig WHERE key = ?',
+        args: [config.key],
+      });
+      if (verifyResult.rows.length > 0) {
+        results.push(verifyResult.rows[0]);
+        const savedVal = verifyResult.rows[0].value as string;
+        console.log(`[site-config] Verified: ${config.key} = ${savedVal ? `"${savedVal.substring(0, 40)}..."` : '(empty)'}`);
+      } else {
+        console.error(`[site-config] VERIFY FAILED: ${config.key} not found after save!`);
       }
     }
 

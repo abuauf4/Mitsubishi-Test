@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Plus, Trash2, Save } from 'lucide-react';
+import { Plus, Trash2, Save, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import ImageUpload from '@/components/admin/ImageUpload';
 
 interface SiteConfig {
@@ -18,10 +18,30 @@ interface SiteConfig {
   page: string;
 }
 
+// Default values that mirror what the website shows when no custom logo is uploaded
+const LOGO_DEFAULTS: Record<string, { label: string; defaultValue: string; page: string }> = {
+  logo_passenger: {
+    label: '🚗 Logo Passenger (Mitsubishi)',
+    defaultValue: '',
+    page: 'passenger',
+  },
+  logo_commercial: {
+    label: '🚛 Logo Commercial (FUSO)',
+    defaultValue: '',
+    page: 'commercial',
+  },
+  site_logo: {
+    label: '🌐 Site Logo',
+    defaultValue: '',
+    page: 'global',
+  },
+};
+
 export default function SiteConfigPage() {
   const [configs, setConfigs] = useState<SiteConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveResult, setSaveResult] = useState<{ success: boolean; message: string } | null>(null);
 
   useEffect(() => {
     fetchConfigs();
@@ -29,9 +49,39 @@ export default function SiteConfigPage() {
 
   async function fetchConfigs() {
     try {
-      const res = await fetch('/api/admin/site-config');
+      const res = await fetch('/api/admin/site-config', { cache: 'no-store' });
       const data = await res.json();
-      setConfigs(Array.isArray(data) ? data : []);
+
+      if (Array.isArray(data)) {
+        // Ensure all required logo configs exist in the list
+        // If they're missing from DB response, add them as empty entries
+        const existingKeys = new Set(data.map((c: SiteConfig) => c.key));
+        const merged = [...data];
+
+        for (const [key, def] of Object.entries(LOGO_DEFAULTS)) {
+          if (!existingKeys.has(key)) {
+            merged.push({
+              id: '',
+              key,
+              value: def.defaultValue,
+              type: 'image',
+              page: def.page,
+            });
+          }
+        }
+
+        // Sort: logo_ entries first, then alphabetically
+        merged.sort((a: SiteConfig, b: SiteConfig) => {
+          const aIsLogo = a.key.startsWith('logo_') ? 0 : 1;
+          const bIsLogo = b.key.startsWith('logo_') ? 0 : 1;
+          if (aIsLogo !== bIsLogo) return aIsLogo - bIsLogo;
+          return a.key.localeCompare(b.key);
+        });
+
+        setConfigs(merged);
+      } else {
+        setConfigs([]);
+      }
     } catch (error) {
       toast.error('Failed to load site configs');
     } finally {
@@ -41,20 +91,34 @@ export default function SiteConfigPage() {
 
   async function handleSave() {
     setSaving(true);
+    setSaveResult(null);
+
     try {
+      // Filter out configs with empty keys before saving
+      const validConfigs = configs.filter(c => c.key.trim() !== '');
+
       const res = await fetch('/api/admin/site-config', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ configs }),
+        body: JSON.stringify({ configs: validConfigs }),
       });
+
+      const responseData = await res.json();
+
       if (res.ok) {
         toast.success('Site configs saved successfully');
-        fetchConfigs();
+        setSaveResult({ success: true, message: `Saved ${validConfigs.length} configs` });
+        // Re-fetch to get the latest data from DB
+        await fetchConfigs();
       } else {
-        toast.error('Failed to save site configs');
+        const errMsg = responseData.error || 'Failed to save site configs';
+        const detail = responseData.detail ? `: ${responseData.detail}` : '';
+        toast.error(errMsg + detail);
+        setSaveResult({ success: false, message: errMsg + detail });
       }
-    } catch {
+    } catch (err: any) {
       toast.error('Failed to save site configs');
+      setSaveResult({ success: false, message: err?.message || 'Network error' });
     } finally {
       setSaving(false);
     }
@@ -72,6 +136,8 @@ export default function SiteConfigPage() {
     const updated = [...configs];
     updated[index] = { ...updated[index], [field]: value };
     setConfigs(updated);
+    // Clear save result when user makes changes
+    setSaveResult(null);
   }
 
   if (loading) {
@@ -90,6 +156,11 @@ export default function SiteConfigPage() {
   const logoConfigs = configs.filter(c => c.key.startsWith('logo_'));
   const generalConfigs = configs.filter(c => !c.key.startsWith('logo_'));
 
+  // Get display label for a logo config
+  const getLogoLabel = (key: string) => {
+    return LOGO_DEFAULTS[key]?.label || key.replace('logo_', 'Logo ').replace(/_/g, ' ');
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -97,7 +168,20 @@ export default function SiteConfigPage() {
           <h1 className="text-2xl font-bold text-foreground">Site Configuration</h1>
           <p className="text-muted-foreground mt-1">Manage logos, badges, and site settings</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
+          {saveResult && (
+            <div className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full ${
+              saveResult.success
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+            }`}>
+              {saveResult.success
+                ? <CheckCircle2 className="w-3.5 h-3.5" />
+                : <AlertTriangle className="w-3.5 h-3.5" />
+              }
+              {saveResult.message}
+            </div>
+          )}
           <Button variant="outline" onClick={addConfig}>
             <Plus className="w-4 h-4 mr-2" /> Add Config
           </Button>
@@ -110,7 +194,7 @@ export default function SiteConfigPage() {
       {/* Logo Section - dedicated with image upload */}
       {logoConfigs.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-foreground mb-1 flex items-center gap-2">
             <svg viewBox="0 0 100 100" className="w-5 h-5">
               <g transform="translate(50, 50)">
                 <polygon fill="#E60012" points="0,-34 -12,-10 0,0 12,-10" />
@@ -120,19 +204,19 @@ export default function SiteConfigPage() {
             </svg>
             Logos
           </h2>
+          <p className="text-xs text-muted-foreground mb-3">
+            Upload logo custom untuk mengganti logo default di website. Kosongkan jika ingin pakai logo default.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {logoConfigs.map((config, idx) => {
               const realIdx = configs.indexOf(config);
               return (
-                <Card key={config.id || `logo-${idx}`}>
+                <Card key={config.id || `logo-${config.key}-${idx}`}>
                   <CardContent className="p-5">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <Label className="text-sm font-semibold">
-                          {config.key === 'logo_passenger' ? '🚗 Logo Passenger (Mitsubishi)' :
-                           config.key === 'logo_commercial' ? '🚛 Logo Commercial (FUSO)' :
-                           config.key === 'site_logo' ? '🌐 Site Logo' :
-                           config.key.replace('logo_', 'Logo ').replace(/_/g, ' ')}
+                          {getLogoLabel(config.key)}
                         </Label>
                         <Select
                           value={config.page}
@@ -149,6 +233,32 @@ export default function SiteConfigPage() {
                           </SelectContent>
                         </Select>
                       </div>
+
+                      {/* Show current default preview if no custom logo uploaded */}
+                      {!config.value && (
+                        <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-dashed">
+                          <div className="flex items-center justify-center w-10 h-10 bg-mitsu-dark rounded">
+                            {config.key === 'logo_commercial' ? (
+                              <svg viewBox="0 0 120 40" className="w-8 h-4">
+                                <text x="0" y="30" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="36" fill="#FFD600" letterSpacing="2">FUSO</text>
+                              </svg>
+                            ) : (
+                              <svg viewBox="0 0 100 100" className="w-6 h-6">
+                                <g transform="translate(50, 50)">
+                                  <polygon fill="#E60012" points="0,-34 -12,-10 0,0 12,-10" />
+                                  <polygon fill="#E60012" points="12,-10 0,0 12,22 24,0" />
+                                  <polygon fill="#E60012" points="-12,-10 0,0 -12,22 -24,0" />
+                                </g>
+                              </svg>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground">Default Logo</p>
+                            <p className="text-[10px] text-muted-foreground">Upload gambar untuk mengganti</p>
+                          </div>
+                        </div>
+                      )}
+
                       <ImageUpload
                         value={config.value}
                         onChange={(path) => updateConfig(realIdx, 'value', path)}
