@@ -45,12 +45,7 @@
   --color-mitsu-red: #E60012;
   --color-mitsu-dark: #1A1A1A;
   --color-mitsu-light: #F5F5F5;
-  --color-mitsu-silver: #C0C0C0;
   --color-mitsu-text: #333333;
-  --color-mitsu-gold: #C9A96E;
-  --color-mitsu-gold-light: #E2CC9C;
-  --color-mitsu-gold-dark: #A68B4B;
-  --color-mitsu-champagne: #D4B896;
   --color-mitsu-obsidian: #0A0A0A;
   --color-mitsu-onyx: #121212;
   --color-mitsu-fuso-yellow: #FFD600;
@@ -80,7 +75,7 @@
   --ring: #E60012;
   --chart-1: #E60012;
   --chart-2: #1A1A1A;
-  --chart-3: #C0C0C0;
+  --chart-3: #E60012;
   --chart-4: #F5F5F5;
   --chart-5: #666666;
   --sidebar: #FFFFFF;
@@ -114,7 +109,7 @@
   --ring: #E60012;
   --chart-1: #E60012;
   --chart-2: #F5F5F5;
-  --chart-3: #C0C0C0;
+  --chart-3: #E60012;
   --chart-4: #2A2A2A;
   --chart-5: #999999;
   --sidebar: #1A1A1A;
@@ -182,21 +177,14 @@
   background: rgba(10, 10, 10, 0.88);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(201, 169, 110, 0.08);
+  border: 1px solid rgba(230, 0, 18, 0.08);
 }
 
 .glass-light {
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(201, 169, 110, 0.15);
-}
-
-.glass-gold {
-  background: rgba(201, 169, 110, 0.06);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(201, 169, 110, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 /* ============================================
@@ -213,7 +201,7 @@
   inset: 0;
   padding: 1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(201, 169, 110, 0.5), rgba(230, 0, 18, 0.3), rgba(201, 169, 110, 0.2));
+  background: linear-gradient(135deg, rgba(230, 0, 18, 0.4), rgba(26, 26, 26, 0.3), rgba(230, 0, 18, 0.15));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -222,7 +210,7 @@
 }
 
 .gradient-border-glow::before {
-  background: linear-gradient(135deg, rgba(201, 169, 110, 0.7), rgba(230, 0, 18, 0.4), rgba(226, 204, 156, 0.5));
+  background: linear-gradient(135deg, rgba(230, 0, 18, 0.6), rgba(26, 26, 26, 0.4), rgba(230, 0, 18, 0.3));
   filter: blur(0.5px);
 }
 
@@ -271,16 +259,16 @@
     135deg,
     rgba(10, 10, 10, 0.95) 0%,
     rgba(10, 10, 10, 0.7) 35%,
-    rgba(201, 169, 110, 0.05) 70%,
+    rgba(230, 0, 18, 0.03) 70%,
     rgba(10, 10, 10, 0.5) 100%
   );
 }
 
 .hero-gradient-v2 {
   background: 
-    radial-gradient(ellipse at 15% 50%, rgba(201, 169, 110, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 15% 50%, rgba(230, 0, 18, 0.06) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgba(230, 0, 18, 0.06) 0%, transparent 40%),
-    radial-gradient(ellipse at 50% 80%, rgba(201, 169, 110, 0.04) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(26, 26, 26, 0.04) 0%, transparent 40%),
     linear-gradient(180deg, rgba(10, 10, 10, 0.97) 0%, rgba(10, 10, 10, 0.6) 50%, rgba(10, 10, 10, 0.9) 100%);
 }
 
@@ -302,9 +290,9 @@
   background: linear-gradient(
     45deg,
     transparent 35%,
-    rgba(201, 169, 110, 0.04) 42%,
-    rgba(201, 169, 110, 0.12) 48%,
-    rgba(201, 169, 110, 0.04) 54%,
+    rgba(230, 0, 18, 0.04) 42%,
+    rgba(230, 0, 18, 0.10) 48%,
+    rgba(230, 0, 18, 0.04) 54%,
     transparent 61%
   );
   transform: translateX(-100%);
@@ -330,13 +318,7 @@
   box-shadow: 0 0 15px rgba(37, 211, 102, 0.3), 0 0 30px rgba(37, 211, 102, 0.1);
 }
 
-.glow-gold {
-  box-shadow: 0 0 15px rgba(201, 169, 110, 0.25), 0 0 30px rgba(201, 169, 110, 0.1);
-}
 
-.glow-gold-hover:hover {
-  box-shadow: 0 0 20px rgba(201, 169, 110, 0.35), 0 0 40px rgba(201, 169, 110, 0.15);
-}
 
 /* ============================================
    TEXT REVEAL ANIMATION
@@ -404,15 +386,7 @@
   animation: red-pulse 2s infinite;
 }
 
-@keyframes gold-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(201, 169, 110, 0.4); }
-  70% { box-shadow: 0 0 0 12px rgba(201, 169, 110, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(201, 169, 110, 0); }
-}
 
-.gold-pulse {
-  animation: gold-pulse 2.5s infinite;
-}
 
 /* ============================================
    BOUNCE SLOW
@@ -480,7 +454,7 @@
 }
 
 .shimmer {
-  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.08), transparent);
+  background: linear-gradient(90deg, transparent, rgba(230, 0, 18, 0.06), transparent);
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite;
 }
@@ -555,13 +529,13 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(230, 0, 18, 0.3), transparent);
 }
 
 .luxury-divider-diamond {
   width: 6px;
   height: 6px;
-  background: #C9A96E;
+  background: #E60012;
   transform: rotate(45deg);
   flex-shrink: 0;
 }
@@ -705,9 +679,9 @@ a, button {
    LUXURY BADGE STYLES
    ============================================ */
 .badge-luxury {
-  background: linear-gradient(135deg, rgba(201, 169, 110, 0.15), rgba(201, 169, 110, 0.05));
-  border: 1px solid rgba(201, 169, 110, 0.25);
-  color: #C9A96E;
+  background: linear-gradient(135deg, rgba(230, 0, 18, 0.12), rgba(230, 0, 18, 0.04));
+  border: 1px solid rgba(230, 0, 18, 0.2);
+  color: #E60012;
 }
 
 /* ============================================
@@ -716,15 +690,15 @@ a, button {
 .btn-luxury {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #C9A96E, #A68B4B);
-  color: #0A0A0A;
+  background: linear-gradient(135deg, #E60012, #CC0010);
+  color: #FFFFFF;
   font-weight: 700;
   letter-spacing: 0.05em;
   transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .btn-luxury:hover {
-  box-shadow: 0 0 25px rgba(201, 169, 110, 0.3), 0 0 50px rgba(201, 169, 110, 0.1);
+  box-shadow: 0 0 25px rgba(230, 0, 18, 0.3), 0 0 50px rgba(230, 0, 18, 0.1);
   transform: translateY(-2px);
 }
 
@@ -748,7 +722,7 @@ a, button {
    ============================================ */
 .luxury-pattern {
   background-image: 
-    radial-gradient(circle at 1px 1px, rgba(201, 169, 110, 0.04) 1px, transparent 0);
+    radial-gradient(circle at 1px 1px, rgba(230, 0, 18, 0.04) 1px, transparent 0);
   background-size: 40px 40px;
 }
 
@@ -761,8 +735,8 @@ a, button {
 }
 
 .hover-gold-border:hover {
-  border-color: rgba(201, 169, 110, 0.3);
-  box-shadow: 0 0 20px rgba(201, 169, 110, 0.08);
+  border-color: rgba(230, 0, 18, 0.3);
+  box-shadow: 0 0 20px rgba(230, 0, 18, 0.08);
 }
 
 /* ============================================
@@ -770,7 +744,7 @@ a, button {
    ============================================ */
 .luxury-dark-card {
   background: linear-gradient(145deg, #121212, #0A0A0A);
-  border: 1px solid rgba(201, 169, 110, 0.1);
+  border: 1px solid rgba(230, 0, 18, 0.1);
 }
 
 /* ============================================
@@ -1141,7 +1115,7 @@ a, button {
 .badge-yellow-light {
   background: rgba(255, 214, 0, 0.06);
   border: 1px solid rgba(255, 214, 0, 0.12);
-  color: #B8960A;
+  color: #E6BF00;
 }
 
 /* Navigation white */
