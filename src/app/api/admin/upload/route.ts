@@ -23,7 +23,10 @@ export async function POST(request: NextRequest) {
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     if (!token) {
       return NextResponse.json(
-        { error: 'BLOB_READ_WRITE_TOKEN not set', hint: 'Add it in Vercel Dashboard → Settings → Environment Variables' },
+        {
+          error: 'BLOB_READ_WRITE_TOKEN tidak ditemukan!',
+          hint: 'Buka Vercel Dashboard → Settings → Environment Variables → pastikan BLOB_READ_WRITE_TOKEN ada. Kalau baru connect Blob Store, klik "Connect" di Storage tab untuk auto-inject token.',
+        },
         { status: 503 }
       );
     }
@@ -64,7 +67,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: error?.message || 'Upload failed' },
+      { error: error?.message || 'Upload failed', hint: 'Pastikan Blob Store terhubung ke project di Vercel Dashboard' },
       { status: 500 }
     );
   }
