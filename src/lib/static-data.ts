@@ -224,5 +224,7 @@ export function getStaticSiteConfig() {
     { id: 'static-config-1', key: 'site_logo', value: '/mitsubishi-logo.png', type: 'image', page: 'global' },
     { id: 'static-config-2', key: 'brand_name', value: 'Mitsubishi Motor Indonesia', type: 'text', page: 'global' },
     { id: 'static-config-3', key: 'phone', value: '0812-3456-7890', type: 'text', page: 'global' },
+    { id: 'static-config-4', key: 'logo_passenger', value: '/mitsubishi-logo.png', type: 'image', page: 'passenger' },
+    { id: 'static-config-5', key: 'logo_commercial', value: '/mitsubishi-logo.png', type: 'image', page: 'commercial' },
   ];
 }

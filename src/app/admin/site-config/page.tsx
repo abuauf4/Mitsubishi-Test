@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Plus, Trash2, Save } from 'lucide-react';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 interface SiteConfig {
   id: string;
@@ -85,6 +86,10 @@ export default function SiteConfigPage() {
     );
   }
 
+  // Separate logo configs from general configs for better UX
+  const logoConfigs = configs.filter(c => c.key.startsWith('logo_'));
+  const generalConfigs = configs.filter(c => !c.key.startsWith('logo_'));
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -102,78 +107,149 @@ export default function SiteConfigPage() {
         </div>
       </div>
 
+      {/* Logo Section - dedicated with image upload */}
+      {logoConfigs.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+            <svg viewBox="0 0 100 100" className="w-5 h-5">
+              <g transform="translate(50, 50)">
+                <polygon fill="#E60012" points="0,-34 -12,-10 0,0 12,-10" />
+                <polygon fill="#E60012" points="12,-10 0,0 12,22 24,0" />
+                <polygon fill="#E60012" points="-12,-10 0,0 -12,22 -24,0" />
+              </g>
+            </svg>
+            Logos
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {logoConfigs.map((config, idx) => {
+              const realIdx = configs.indexOf(config);
+              return (
+                <Card key={config.id || `logo-${idx}`}>
+                  <CardContent className="p-5">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-semibold">
+                          {config.key === 'logo_passenger' ? '🚗 Logo Passenger (Mitsubishi)' :
+                           config.key === 'logo_commercial' ? '🚛 Logo Commercial (FUSO)' :
+                           config.key === 'site_logo' ? '🌐 Site Logo' :
+                           config.key.replace('logo_', 'Logo ').replace(/_/g, ' ')}
+                        </Label>
+                        <Select
+                          value={config.page}
+                          onValueChange={(v) => updateConfig(realIdx, 'page', v)}
+                        >
+                          <SelectTrigger className="w-[130px] h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="global">Global</SelectItem>
+                            <SelectItem value="home">Home</SelectItem>
+                            <SelectItem value="passenger">Passenger</SelectItem>
+                            <SelectItem value="commercial">Commercial</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <ImageUpload
+                        value={config.value}
+                        onChange={(path) => updateConfig(realIdx, 'value', path)}
+                        label={config.key === 'logo_passenger' ? 'Upload Logo Mitsubishi' :
+                               config.key === 'logo_commercial' ? 'Upload Logo FUSO' : 'Upload Logo'}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* General Configs */}
       <div className="space-y-3">
-        {configs.map((config, index) => (
-          <Card key={config.id || index}>
-            <CardContent className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div>
-                  <Label className="text-xs text-muted-foreground">Key</Label>
-                  <Input
-                    value={config.key}
-                    onChange={(e) => updateConfig(index, 'key', e.target.value)}
-                    placeholder="site_logo"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Value</Label>
-                  <Input
-                    value={config.value}
-                    onChange={(e) => updateConfig(index, 'value', e.target.value)}
-                    placeholder="Value"
-                    className="mt-1"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
+        <h2 className="text-lg font-semibold text-foreground mb-3">General Settings</h2>
+        {generalConfigs.map((config, idx) => {
+          const realIdx = configs.indexOf(config);
+          return (
+            <Card key={config.id || `gen-${idx}`}>
+              <CardContent className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                   <div>
-                    <Label className="text-xs text-muted-foreground">Type</Label>
-                    <Select
-                      value={config.type}
-                      onValueChange={(v) => updateConfig(index, 'type', v)}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="text">Text</SelectItem>
-                        <SelectItem value="image">Image</SelectItem>
-                        <SelectItem value="url">URL</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="text-xs text-muted-foreground">Key</Label>
+                    <Input
+                      value={config.key}
+                      onChange={(e) => updateConfig(realIdx, 'key', e.target.value)}
+                      placeholder="site_logo"
+                      className="mt-1"
+                    />
                   </div>
                   <div>
-                    <Label className="text-xs text-muted-foreground">Page</Label>
-                    <Select
-                      value={config.page}
-                      onValueChange={(v) => updateConfig(index, 'page', v)}
+                    <Label className="text-xs text-muted-foreground">Value</Label>
+                    {config.type === 'image' ? (
+                      <div className="mt-1">
+                        <ImageUpload
+                          value={config.value}
+                          onChange={(path) => updateConfig(realIdx, 'value', path)}
+                        />
+                      </div>
+                    ) : (
+                      <Input
+                        value={config.value}
+                        onChange={(e) => updateConfig(realIdx, 'value', e.target.value)}
+                        placeholder="Value"
+                        className="mt-1"
+                      />
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Type</Label>
+                      <Select
+                        value={config.type}
+                        onValueChange={(v) => updateConfig(realIdx, 'type', v)}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="text">Text</SelectItem>
+                          <SelectItem value="image">Image</SelectItem>
+                          <SelectItem value="url">URL</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Page</Label>
+                      <Select
+                        value={config.page}
+                        onValueChange={(v) => updateConfig(realIdx, 'page', v)}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="global">Global</SelectItem>
+                          <SelectItem value="home">Home</SelectItem>
+                          <SelectItem value="passenger">Passenger</SelectItem>
+                          <SelectItem value="commercial">Commercial</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeConfig(realIdx)}
+                      className="text-destructive hover:text-destructive"
                     >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="global">Global</SelectItem>
-                        <SelectItem value="home">Home</SelectItem>
-                        <SelectItem value="passenger">Passenger</SelectItem>
-                        <SelectItem value="commercial">Commercial</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex justify-end">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeConfig(index)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {configs.length === 0 && (

@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useCallback, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import MobileMenu from './MobileMenu';
 import AnnouncementBar from './AnnouncementBar';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 const navLinks = [
   { label: 'Home', href: '/', isRoute: true },
@@ -18,10 +20,74 @@ const navLinks = [
   { label: 'Test Drive', href: '/#test-drive', isRoute: false },
 ];
 
+// Default Mitsubishi 3-diamond SVG as fallback
+function MitsubishiDiamond({ className = 'w-7 h-7 sm:w-8 sm:h-8' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" className={className} aria-label="Mitsubishi">
+      <g transform="translate(50, 50)">
+        <polygon fill="#E60012" points="0,-34 -12,-10 0,0 12,-10" />
+        <polygon fill="#E60012" points="12,-10 0,0 12,22 24,0" />
+        <polygon fill="#E60012" points="-12,-10 0,0 -12,22 -24,0" />
+      </g>
+    </svg>
+  );
+}
+
+// Default FUSO logo as fallback (yellow text-based)
+function FusoLogo({ className = 'w-7 h-7 sm:w-8 sm:h-8' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 120 40" className={className} aria-label="FUSO">
+      <text x="0" y="30" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="36" fill="#FFD600" letterSpacing="2">FUSO</text>
+    </svg>
+  );
+}
+
+interface SiteConfigItem {
+  id: string;
+  key: string;
+  value: string;
+  type: string;
+  page: string;
+}
+
 export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const [siteConfig, setSiteConfig] = useState<SiteConfigItem[]>([]);
+
+  useEffect(() => {
+    async function fetchConfig() {
+      try {
+        const res = await fetch('/api/site-config');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) setSiteConfig(data);
+        }
+      } catch {
+        // Use defaults
+      }
+    }
+    fetchConfig();
+  }, []);
+
+  // Resolve image URL from config
+  const getConfigValue = (key: string, fallback: string): string => {
+    const item = siteConfig.find(c => c.key === key);
+    if (!item || !item.value) return fallback;
+    return proxyBlobUrl(item.value) || item.value;
+  };
+
+  // Determine which logos to show based on route
+  const isPassenger = pathname.startsWith('/passenger');
+  const isCommercial = pathname.startsWith('/commercial');
+  const isHome = pathname === '/';
+
+  const passengerLogoSrc = getConfigValue('logo_passenger', '/mitsubishi-logo.png');
+  const commercialLogoSrc = getConfigValue('logo_commercial', '/mitsubishi-logo.png');
+
+  const isPassengerLogoExternal = passengerLogoSrc.startsWith('http') || passengerLogoSrc.startsWith('/api/');
+  const isCommercialLogoExternal = commercialLogoSrc.startsWith('http') || commercialLogoSrc.startsWith('/api/');
 
   const handleNavClick = useCallback((href: string, isRoute: boolean) => {
     setMobileOpen(false);
@@ -52,18 +118,91 @@ export default function Navigation() {
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
-              {/* Logo - clean like official Mitsubishi site */}
-              <Link href="/" className="flex items-center gap-2.5 group">
-                <svg viewBox="0 0 100 100" className="w-7 h-7 sm:w-8 sm:h-8" aria-label="Mitsubishi">
-                  <g transform="translate(50, 50)">
-                    <polygon fill="#E60012" points="0,-34 -12,-10 0,0 12,-10" />
-                    <polygon fill="#E60012" points="12,-10 0,0 12,22 24,0" />
-                    <polygon fill="#E60012" points="-12,-10 0,0 -12,22 -24,0" />
-                  </g>
-                </svg>
-                <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
-                  MITSUBISHI
-                </span>
+              {/* Logo - dynamic based on route */}
+              <Link href="/" className="flex items-center gap-3 group">
+                {isHome ? (
+                  /* Home: show both Mitsubishi + FUSO logos */
+                  <>
+                    <div className="flex items-center gap-3">
+                      {passengerLogoSrc === '/mitsubishi-logo.png' ? (
+                        <MitsubishiDiamond />
+                      ) : (
+                        <Image
+                          src={passengerLogoSrc}
+                          alt="Mitsubishi"
+                          width={32}
+                          height={32}
+                          className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+                          unoptimized={isPassengerLogoExternal}
+                        />
+                      )}
+                      <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
+                        MITSUBISHI
+                      </span>
+                    </div>
+                    <div className="w-px h-6 bg-white/20" />
+                    <div className="flex items-center gap-2">
+                      {commercialLogoSrc === '/mitsubishi-logo.png' ? (
+                        <FusoLogo />
+                      ) : (
+                        <Image
+                          src={commercialLogoSrc}
+                          alt="FUSO"
+                          width={60}
+                          height={28}
+                          className="w-10 h-5 sm:w-12 sm:h-6 object-contain"
+                          unoptimized={isCommercialLogoExternal}
+                        />
+                      )}
+                    </div>
+                  </>
+                ) : isPassenger ? (
+                  /* Passenger page: Mitsubishi logo only */
+                  <div className="flex items-center gap-3">
+                    {passengerLogoSrc === '/mitsubishi-logo.png' ? (
+                      <MitsubishiDiamond />
+                    ) : (
+                      <Image
+                        src={passengerLogoSrc}
+                        alt="Mitsubishi"
+                        width={32}
+                        height={32}
+                        className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+                        unoptimized={isPassengerLogoExternal}
+                      />
+                    )}
+                    <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
+                      MITSUBISHI
+                    </span>
+                  </div>
+                ) : isCommercial ? (
+                  /* Commercial page: FUSO logo only */
+                  <div className="flex items-center gap-2">
+                    {commercialLogoSrc === '/mitsubishi-logo.png' ? (
+                      <FusoLogo className="w-16 h-8 sm:w-20 sm:h-10" />
+                    ) : (
+                      <Image
+                        src={commercialLogoSrc}
+                        alt="FUSO"
+                        width={80}
+                        height={32}
+                        className="w-12 h-6 sm:w-16 sm:h-8 object-contain"
+                        unoptimized={isCommercialLogoExternal}
+                      />
+                    )}
+                    <span className="text-[13px] sm:text-sm font-bold tracking-[0.2em] uppercase text-[#FFD600]">
+                      FUSO
+                    </span>
+                  </div>
+                ) : (
+                  /* Other pages: Mitsubishi default */
+                  <div className="flex items-center gap-3">
+                    <MitsubishiDiamond />
+                    <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
+                      MITSUBISHI
+                    </span>
+                  </div>
+                )}
               </Link>
 
               {/* Desktop Navigation */}
@@ -83,13 +222,8 @@ export default function Navigation() {
                     >
                       {link.label}
                       {isActive && (
-                        <motion.div
-                          layoutId="nav-active"
-                          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-mitsu-red rounded-full"
-                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        />
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-mitsu-red rounded-full" />
                       )}
-                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-mitsu-red/50 group-hover:w-3/4 transition-all duration-400" />
                     </Link>
                   );
                 })}
