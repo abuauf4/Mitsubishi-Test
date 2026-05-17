@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * Upload images to Vercel Blob Storage.
  *
  * The blob store is PRIVATE — must use access: 'private'.
- * Private URLs go through /api/image which generates signed URLs.
+ * Returns the raw blob URL. Display layer (proxyBlobUrl) handles signed URLs.
  */
 
 export async function POST(request: NextRequest) {
@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
 
     const { put } = await import('@vercel/blob');
 
-    // Generate a unique pathname with timestamp to avoid collisions
     const timestamp = Date.now();
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const pathname = `uploads/${timestamp}-${sanitizedName}`;
@@ -40,18 +39,12 @@ export async function POST(request: NextRequest) {
       addRandomSuffix: true,
     });
 
-    // For private blobs, return the proxy URL so browser can display it
-    // /api/image?url=... redirects to a signed URL automatically
-    const displayUrl = blob.url.includes('.private.blob.vercel-storage.com')
-      ? `/api/image?url=${encodeURIComponent(blob.url)}`
-      : blob.url;
-
+    // Always return the raw blob URL — proxyBlobUrl() handles display
     return NextResponse.json({
-      path: displayUrl,
-      url: displayUrl,
+      path: blob.url,
+      url: blob.url,
       pathname: blob.pathname,
       size: blob.size,
-      rawUrl: blob.url,
     });
   } catch (error: any) {
     console.error('Upload error:', error);

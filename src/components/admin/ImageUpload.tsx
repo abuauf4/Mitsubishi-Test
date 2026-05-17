@@ -5,6 +5,7 @@ import { Upload, X, Image as ImageIcon, Link, AlertCircle, Eraser, Database } fr
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import BlobPicker from '@/components/admin/BlobPicker';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 interface ImageUploadProps {
   value: string;
@@ -305,13 +306,14 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
     }
   };
 
-  // Check if value is a Vercel Blob URL (external) or local path
+  // Always resolve through proxy for private blob URLs
   const isExternalUrl = value && (value.startsWith('http://') || value.startsWith('https://'));
   const isDataUrl = value && value.startsWith('data:');
-  // Add cache-busting to proxy URLs so preview always shows the latest upload
-  const previewSrc = value && value.startsWith('/api/image?')
-    ? `${value}&_t=${Date.now()}`
-    : value;
+  // proxyBlobUrl converts private blob URLs to /api/image?url=... proxy
+  const resolvedUrl = proxyBlobUrl(value) || value;
+  const previewSrc = resolvedUrl && resolvedUrl.startsWith('/api/image?')
+    ? `${resolvedUrl}&_t=${Date.now()}`
+    : resolvedUrl;
 
   return (
     <div className="space-y-2">
