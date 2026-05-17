@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * Upload images to Vercel Blob Storage.
  *
- * The blob store is PRIVATE — must use access: 'private'.
- * Returns the raw blob URL. Display layer (proxyBlobUrl) handles signed URLs.
+ * Strategy: Try public access first (for public stores), then fallback to
+ * private (for private stores). Public blob URLs are directly accessible
+ * without a proxy, which is simpler and more reliable.
  */
 
 export async function POST(request: NextRequest) {
@@ -33,13 +34,27 @@ export async function POST(request: NextRequest) {
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const pathname = `uploads/${timestamp}-${sanitizedName}`;
 
-    const blob = await put(pathname, file, {
-      access: 'private',
-      token,
-      addRandomSuffix: true,
-    });
+    // Try public access first — public URLs are directly accessible without proxy
+    let blob;
+    try {
+      blob = await put(pathname, file, {
+        access: 'public',
+        token,
+        addRandomSuffix: true,
+      });
+      console.log('[upload] Uploaded as PUBLIC blob:', blob.url.substring(0, 80) + '...');
+    } catch (publicErr: any) {
+      // Store is private — can't use public access. Fall back to private.
+      console.log('[upload] Public access failed (' + (publicErr?.message || 'unknown') + '), trying private...');
+      blob = await put(pathname, file, {
+        access: 'private',
+        token,
+        addRandomSuffix: true,
+      });
+      console.log('[upload] Uploaded as PRIVATE blob:', blob.url.substring(0, 80) + '...');
+    }
 
-    // Always return the raw blob URL — proxyBlobUrl() handles display
+    // Return the raw blob URL — proxyBlobUrl() handles display resolution
     return NextResponse.json({
       path: blob.url,
       url: blob.url,

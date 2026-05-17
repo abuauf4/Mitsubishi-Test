@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const tursoUrl = process.env.TURSO_DATABASE_URL;
   const tursoToken = process.env.TURSO_AUTH_TOKEN;
@@ -17,6 +19,25 @@ export async function GET() {
         status: '✅ Connected',
         detail: `${result.rows[0].count} vehicles in database`,
       };
+
+      // Also check SiteConfig
+      try {
+        const configResult = await db.execute('SELECT key, value, type FROM SiteConfig');
+        const configs = configResult.rows.map(r => ({
+          key: r.key,
+          value: typeof r.value === 'string' ? (r.value.length > 80 ? r.value.substring(0, 80) + '...' : r.value) : r.value,
+          type: r.type,
+        }));
+        checks.site_config = {
+          status: '✅ Found',
+          detail: `${configs.length} configs: ${configs.map(c => c.key).join(', ')}`,
+        };
+      } catch (err: any) {
+        checks.site_config = {
+          status: '⚠️ Table missing',
+          detail: 'SiteConfig table does not exist yet',
+        };
+      }
     } catch (err: any) {
       checks.turso = {
         status: '❌ Error',
@@ -36,6 +57,21 @@ export async function GET() {
       status: '✅ Token found',
       detail: `BLOB_READ_WRITE_TOKEN is set (${blobToken.substring(0, 8)}...)`,
     };
+
+    // Try to list blobs to check store type
+    try {
+      const { list } = await import('@vercel/blob');
+      const { blobs } = await list({ token: blobToken, limit: 1 });
+      if (blobs.length > 0) {
+        const blobUrl = blobs[0].url;
+        const isPublic = blobUrl.includes('.public.blob.vercel-storage.com');
+        checks.blob.detail += ` | Store: ${isPublic ? 'PUBLIC ✅' : 'PRIVATE ⚠️'} | Sample URL: ${blobUrl.substring(0, 60)}...`;
+      } else {
+        checks.blob.detail += ' | No blobs found in store';
+      }
+    } catch (err: any) {
+      checks.blob.detail += ` | List failed: ${err?.message || 'unknown'}`;
+    }
   } else {
     checks.blob = {
       status: '❌ Token NOT found',
