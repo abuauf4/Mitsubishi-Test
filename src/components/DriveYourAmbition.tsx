@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-function TypewriterText({ text, speed = 70, startDelay = 300, pauseDuration = 2000 }: {
+function TypewriterText({ text, speed = 70, startDelay = 300, eraseSpeed = 40, pauseDuration = 3000 }: {
   text: string;
   speed?: number;
   startDelay?: number;
+  eraseSpeed?: number;
   pauseDuration?: number;
 }) {
   const [displayed, setDisplayed] = useState('');
-  const [phase, setPhase] = useState<'waiting' | 'typing' | 'done' | 'pausing'>('waiting');
+  const [phase, setPhase] = useState<'waiting' | 'typing' | 'pausing' | 'erasing' | 'idle'>('waiting');
 
   useEffect(() => {
     const timer = setTimeout(() => setPhase('typing'), startDelay);
@@ -24,7 +25,7 @@ function TypewriterText({ text, speed = 70, startDelay = 300, pauseDuration = 20
   useEffect(() => {
     if (phase === 'typing') {
       if (displayed.length >= text.length) {
-        const timer = setTimeout(() => setPhase('done'), 0);
+        const timer = setTimeout(() => setPhase('pausing'), 0);
         return () => clearTimeout(timer);
       }
       const timer = setTimeout(() => {
@@ -33,21 +34,26 @@ function TypewriterText({ text, speed = 70, startDelay = 300, pauseDuration = 20
       return () => clearTimeout(timer);
     }
 
-    if (phase === 'done') {
-      const timer = setTimeout(() => {
-        setPhase('pausing');
-      }, pauseDuration);
+    if (phase === 'pausing') {
+      const timer = setTimeout(() => setPhase('erasing'), pauseDuration);
       return () => clearTimeout(timer);
     }
 
-    if (phase === 'pausing') {
-      // Erase quickly then restart
+    if (phase === 'erasing') {
+      if (displayed.length <= 0) {
+        const timer = setTimeout(() => {
+          setPhase('idle');
+          const idleTimer = setTimeout(() => restart(), 800);
+          return () => clearTimeout(idleTimer);
+        }, 100);
+        return () => clearTimeout(timer);
+      }
       const timer = setTimeout(() => {
-        restart();
-      }, 500);
+        setDisplayed(text.slice(0, displayed.length - 1));
+      }, eraseSpeed);
       return () => clearTimeout(timer);
     }
-  }, [phase, displayed, text, speed, pauseDuration, restart]);
+  }, [phase, displayed, text, speed, eraseSpeed, pauseDuration, restart]);
 
   return (
     <span>
@@ -63,10 +69,10 @@ export default function DriveYourAmbition() {
   return (
     <section className="relative w-full bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 text-center">
-        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-mitsu-dark leading-tight tracking-tight font-serif">
-          <TypewriterText text="Drive Your " speed={70} startDelay={300} pauseDuration={2500} />
-          <span className="text-mitsu-red italic">
-            <TypewriterText text="Ambition" speed={90} startDelay={300 + 11 * 70} pauseDuration={2500} />
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-mitsu-dark leading-none tracking-wider uppercase font-serif">
+          <TypewriterText text="Drive Your " speed={70} startDelay={300} eraseSpeed={35} pauseDuration={3000} />
+          <span className="text-mitsu-red">
+            <TypewriterText text="Ambition" speed={90} startDelay={300 + 11 * 70} eraseSpeed={35} pauseDuration={3000} />
           </span>
         </h1>
       </div>
