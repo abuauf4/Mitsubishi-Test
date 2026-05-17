@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Image handler for Vercel Blob URLs.
+ * Image proxy for Vercel Blob Storage.
  *
- * OPTIMIZED: Instead of proxying image bytes (which doubles bandwidth —
- * Blob→Server + Server→Client), we now REDIRECT to the blob URL directly.
- * This means:
- * - Zero server-side data transfer
- * - Zero fast origin transfer
- * - Client loads image directly from Vercel's CDN
- * - Vercel Blob serves from edge cache automatically
+ * For private blobs: fetches the image server-side using the blob token
+ * and streams the bytes back to the client. This is the most reliable
+ * approach since:
+ * 1. `generateSignedUrl` doesn't exist in @vercel/blob@2.x
+ * 2. Direct redirects to private blob URLs return 403
+ * 3. Client-side <img> tags can't authenticate to private blob storage
  *
- * For private blobs: generates a signed URL with 1hr expiry and redirects.
- * For public blobs: redirects directly (no signed URL needed).
- * For non-blob URLs: redirects directly.
+ * For public blobs and non-blob URLs: redirects directly.
  */
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get('url');
@@ -22,53 +21,84 @@ export async function GET(request: NextRequest) {
     return new NextResponse('Missing url parameter', { status: 400 });
   }
 
-  // Decode the URL if it's encoded
   const decodedUrl = decodeURIComponent(url);
 
-  // PUBLIC blob URLs — redirect directly (no signed URL needed)
+  // PUBLIC blob URLs — redirect directly (no proxy needed)
   if (decodedUrl.includes('.public.blob.vercel-storage.com')) {
     return NextResponse.redirect(decodedUrl, 302);
   }
 
-  // Detect if this is a Vercel Blob URL
+  // Non-blob URL: redirect directly
   const isBlobUrl = decodedUrl.includes('vercel-storage.com') || decodedUrl.includes('blob.vercel-storage.com');
 
+  if (!isBlobUrl) {
+    return NextResponse.redirect(decodedUrl, 302);
+  }
+
+  // PRIVATE blob URL — proxy the image bytes server-side
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+
+  if (!token) {
+    console.error('BLOB_READ_WRITE_TOKEN not set — cannot fetch private blob');
+    return new NextResponse('Server misconfiguration: missing blob token', { status: 503 });
+  }
+
   try {
-    // For blob URLs: try to redirect to a signed URL (private) or direct URL (public)
-    if (isBlobUrl) {
-      const token = process.env.BLOB_READ_WRITE_TOKEN;
+    // Method 1: Try getDownloadUrl from @vercel/blob (generates a short-lived signed URL)
+    try {
+      const { getDownloadUrl } = await import('@vercel/blob');
+      const downloadUrl = await getDownloadUrl(decodedUrl, {
+        token,
+        expiresIn: 3600,
+      });
 
-      // Try generating a signed URL (works for both private and public stores)
-      if (token) {
-        try {
-          const { generateSignedUrl } = await import('@vercel/blob');
-          const result = await generateSignedUrl({
-            url: decodedUrl,
-            token,
-            expiry: 3600, // 1 hour
-          });
+      // Fetch the image from the signed download URL
+      const imageResponse = await fetch(downloadUrl);
 
-          // generateSignedUrl returns { url: string } in v1+, or string in older versions
-          const signedUrl = typeof result === 'string' ? result : (result as any).url || String(result);
-
-          // Redirect client to the signed URL — they load directly from Vercel CDN
-          // No server-side data transfer needed!
-          return NextResponse.redirect(signedUrl, 302);
-        } catch (signedErr: any) {
-          console.warn('Signed URL generation failed:', signedErr?.message || signedErr);
-        }
+      if (!imageResponse.ok) {
+        throw new Error(`Download URL fetch failed: ${imageResponse.status}`);
       }
 
-      // No token or signed URL failed — try redirecting directly (works for public stores)
-      // Public blob URLs can be accessed directly without auth
-      return NextResponse.redirect(decodedUrl, 302);
+      const contentType = imageResponse.headers.get('content-type') || 'image/png';
+      const imageBuffer = await imageResponse.arrayBuffer();
+
+      return new NextResponse(imageBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+          'CDN-Cache-Control': 'public, max-age=3600',
+        },
+      });
+    } catch (downloadUrlErr: any) {
+      console.warn('getDownloadUrl failed, trying direct fetch with token:', downloadUrlErr?.message || downloadUrlErr);
     }
 
-    // Non-blob URL: redirect directly (external images don't need proxying)
-    return NextResponse.redirect(decodedUrl, 302);
+    // Method 2: Direct fetch with authorization header
+    const imageResponse = await fetch(decodedUrl, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!imageResponse.ok) {
+      console.error(`Direct fetch failed: ${imageResponse.status} ${imageResponse.statusText}`);
+      return new NextResponse(`Failed to fetch image: ${imageResponse.status}`, { status: imageResponse.status });
+    }
+
+    const contentType = imageResponse.headers.get('content-type') || 'image/png';
+    const imageBuffer = await imageResponse.arrayBuffer();
+
+    return new NextResponse(imageBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+        'CDN-Cache-Control': 'public, max-age=3600',
+      },
+    });
   } catch (error: any) {
-    console.error('Image redirect error:', error?.message || error);
-    // Fallback to a local image instead of erroring out
-    return NextResponse.redirect(new URL('/images/hero-cinematic.png', request.url));
+    console.error('Image proxy error:', error?.message || error);
+    return new NextResponse('Failed to load image', { status: 500 });
   }
 }

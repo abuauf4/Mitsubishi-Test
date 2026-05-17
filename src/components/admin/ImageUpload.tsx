@@ -220,6 +220,7 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [mode, setMode] = useState<'upload' | 'url' | 'blob'>('upload');
   const [removeBg, setRemoveBg] = useState(true); // Auto-remove white bg by default
@@ -264,6 +265,7 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
       const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.path) {
+        setPreviewError(false); // Reset preview error on new upload
         onChange(data.path);
         setUploadError(null);
       } else {
@@ -306,14 +308,21 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
     }
   };
 
+  // Reset preview error when value changes
+  const prevValueRef = useRef(value);
+  if (prevValueRef.current !== value) {
+    prevValueRef.current = value;
+    setPreviewError(false);
+  }
+
   // Always resolve through proxy for private blob URLs
   const isExternalUrl = value && (value.startsWith('http://') || value.startsWith('https://'));
   const isDataUrl = value && value.startsWith('data:');
   // proxyBlobUrl converts private blob URLs to /api/image?url=... proxy
   const resolvedUrl = proxyBlobUrl(value) || value;
-  const previewSrc = resolvedUrl && resolvedUrl.startsWith('/api/image?')
-    ? `${resolvedUrl}&_t=${Date.now()}`
-    : resolvedUrl;
+  // Don't add cache-busting _t param — it causes re-renders and re-fetches.
+  // The /api/image route sets Cache-Control headers for proper caching.
+  const previewSrc = resolvedUrl;
 
   return (
     <div className="space-y-2">
@@ -326,14 +335,21 @@ export default function ImageUpload({ value, onChange, label = 'Image' }: ImageU
           backgroundSize: '12px 12px',
           backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0px',
         }}>
-          <img
-            src={previewSrc}
-            alt="Preview"
-            className="w-full h-32 object-contain"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
+          {previewError ? (
+            <div className="w-full h-32 flex flex-col items-center justify-center text-red-500 bg-red-50 dark:bg-red-950/30">
+              <AlertCircle className="w-6 h-6 mb-1" />
+              <span className="text-xs">Failed to load image</span>
+            </div>
+          ) : (
+            <img
+              src={previewSrc}
+              alt="Preview"
+              className="w-full h-32 object-contain"
+              onError={() => {
+                setPreviewError(true);
+              }}
+            />
+          )}
           {/* Remove button */}
           <button
             type="button"
