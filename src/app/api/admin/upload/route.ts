@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * Upload images to Vercel Blob Storage.
  *
- * The store was migrated from private to public.
- * Use access: 'public' so URLs are directly accessible.
+ * The blob store is PRIVATE — must use access: 'private'.
+ * Private URLs go through /api/image which generates signed URLs.
  */
 
 export async function POST(request: NextRequest) {
@@ -34,9 +34,8 @@ export async function POST(request: NextRequest) {
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const pathname = `uploads/${timestamp}-${sanitizedName}`;
 
-    // Store is public — uploaded URLs are directly accessible without signing
     const blob = await put(pathname, file, {
-      access: 'public',
+      access: 'private',
       token,
       addRandomSuffix: true,
     });
@@ -49,11 +48,8 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Upload error:', error);
-
-    const message = error?.message || 'Upload failed';
-
     return NextResponse.json(
-      { error: message },
+      { error: error?.message || 'Upload failed' },
       { status: 500 }
     );
   }
