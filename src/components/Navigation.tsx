@@ -52,24 +52,18 @@ export default function Navigation() {
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
-              {/* Logo */}
-              <Link href="/" className="flex items-center gap-3 group">
-                <div className="relative w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center">
-                  <div className="absolute inset-[-4px] border border-mitsu-red/20 rounded-full luxury-rotate-slow opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <img
-                    src="/mitsubishi-logo.png"
-                    alt="Mitsubishi Motor Indonesia Logo"
-                    className="w-full h-full object-contain group-hover:drop-shadow-[0_0_12px_rgba(230,0,18,0.4)] transition-all duration-500"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm sm:text-base font-bold tracking-[0.25em] group-hover:tracking-[0.3em] transition-all duration-500 font-serif text-white">
-                    MITSUBISHI
-                  </span>
-                  <span className="text-[8px] sm:text-[9px] tracking-[0.2em] uppercase font-medium text-mitsu-red/50">
-                    Motor Indonesia
-                  </span>
-                </div>
+              {/* Logo - clean like official Mitsubishi site */}
+              <Link href="/" className="flex items-center gap-2.5 group">
+                <svg viewBox="0 0 100 100" className="w-7 h-7 sm:w-8 sm:h-8" aria-label="Mitsubishi">
+                  <g transform="translate(50, 50)">
+                    <polygon fill="#E60012" points="0,-34 -12,-10 0,0 12,-10" />
+                    <polygon fill="#E60012" points="12,-10 0,0 12,22 24,0" />
+                    <polygon fill="#E60012" points="-12,-10 0,0 -12,22 -24,0" />
+                  </g>
+                </svg>
+                <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
+                  MITSUBISHI
+                </span>
               </Link>
 
               {/* Desktop Navigation */}
