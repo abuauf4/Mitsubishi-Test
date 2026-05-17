@@ -60,16 +60,19 @@ export default function Footer() {
 
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
-  const [logoSrc, setLogoSrc] = useState('/mitsubishi-logo.png');
+
+  // Initialize from localStorage cache (prevents flash)
+  const [logoSrc, setLogoSrc] = useState<string>(() => {
+    if (typeof window === 'undefined') return '/mitsubishi-logo.png';
+    try {
+      const cached = localStorage.getItem('mitsu_logo_logo_passenger');
+      if (cached) return proxyBlobUrl(cached) || cached;
+    } catch {}
+    return '/mitsubishi-logo.png';
+  });
 
   useEffect(() => {
-    // Try to get cached logo from localStorage first (prevents flash)
-    try {
-      const cached = localStorage.getItem('logo_logo_passenger');
-      if (cached) setLogoSrc(proxyBlobUrl(cached) || cached);
-    } catch {}
-
-    // Then fetch fresh from API
+    // Fetch fresh from API
     fetch('/api/site-config', { cache: 'no-store' })
       .then(res => res.ok ? res.json() : [])
       .then(data => {
@@ -78,7 +81,7 @@ export default function Footer() {
           if (item && item.value) {
             const url = proxyBlobUrl(item.value) || item.value;
             setLogoSrc(url);
-            try { localStorage.setItem('logo_logo_passenger', item.value); } catch {}
+            try { localStorage.setItem('mitsu_logo_logo_passenger', item.value); } catch {}
           }
         }
       })

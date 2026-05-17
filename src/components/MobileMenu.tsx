@@ -22,15 +22,19 @@ interface MobileMenuProps {
 export default function MobileMenu({ links, onClose, onNavClick, variant = 'default' }: MobileMenuProps) {
   const isCommercial = variant === 'commercial';
 
-  const [logoSrc, setLogoSrc] = useState('/mitsubishi-logo.png');
+  // Initialize from localStorage cache (prevents flash)
+  const [logoSrc, setLogoSrc] = useState<string>(() => {
+    if (typeof window === 'undefined') return '/mitsubishi-logo.png';
+    try {
+      const cacheKey = isCommercial ? 'mitsu_logo_logo_commercial' : 'mitsu_logo_logo_passenger';
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) return proxyBlobUrl(cached) || cached;
+    } catch {}
+    return '/mitsubishi-logo.png';
+  });
 
   useEffect(() => {
-    const cacheKey = isCommercial ? 'logo_logo_commercial' : 'logo_logo_passenger';
-    // Try localStorage cache first
-    try {
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) setLogoSrc(proxyBlobUrl(cached) || cached);
-    } catch {}
+    const cacheKey = isCommercial ? 'mitsu_logo_logo_commercial' : 'mitsu_logo_logo_passenger';
 
     // Fetch fresh from API
     fetch('/api/site-config', { cache: 'no-store' })

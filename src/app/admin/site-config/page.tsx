@@ -26,9 +26,14 @@ const LOGO_DEFAULTS: Record<string, { label: string; defaultValue: string; page:
     page: 'passenger',
   },
   logo_commercial: {
-    label: '🚛 Logo Commercial (FUSO)',
+    label: '🚛 Logo Commercial (FUSO) — Navbar Putih',
     defaultValue: '',
     page: 'commercial',
+  },
+  logo_commercial_dark: {
+    label: '🚛 Logo FUSO Dark — Navbar Hitam (Home)',
+    defaultValue: '',
+    page: 'home',
   },
   site_logo: {
     label: '🌐 Site Logo',
@@ -237,10 +242,14 @@ export default function SiteConfigPage() {
                       {/* Show current default preview if no custom logo uploaded */}
                       {!config.value && (
                         <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-dashed">
-                          <div className="flex items-center justify-center w-10 h-10 bg-mitsu-dark rounded">
-                            {config.key === 'logo_commercial' ? (
+                          <div className={`flex items-center justify-center w-10 h-10 rounded ${config.key === 'logo_commercial_dark' ? 'bg-black' : 'bg-mitsu-dark'}`}>
+                            {config.key === 'logo_commercial_dark' ? (
                               <svg viewBox="0 0 120 40" className="w-8 h-4">
                                 <text x="0" y="30" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="36" fill="#FFD600" letterSpacing="2">FUSO</text>
+                              </svg>
+                            ) : config.key === 'logo_commercial' ? (
+                              <svg viewBox="0 0 120 40" className="w-8 h-4">
+                                <text x="0" y="30" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="36" fill="#1A1A1A" letterSpacing="2">FUSO</text>
                               </svg>
                             ) : (
                               <svg viewBox="0 0 100 100" className="w-6 h-6">
@@ -253,7 +262,11 @@ export default function SiteConfigPage() {
                             )}
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-muted-foreground">Default Logo</p>
+                            <p className="text-xs font-medium text-muted-foreground">
+                              {config.key === 'logo_commercial_dark' ? 'Default: FUSO Kuning (untuk bg hitam)' :
+                               config.key === 'logo_commercial' ? 'Default: FUSO Hitam (untuk bg putih)' :
+                               'Default Logo'}
+                            </p>
                             <p className="text-[10px] text-muted-foreground">Upload gambar untuk mengganti</p>
                           </div>
                         </div>
@@ -263,7 +276,8 @@ export default function SiteConfigPage() {
                         value={config.value}
                         onChange={(path) => updateConfig(realIdx, 'value', path)}
                         label={config.key === 'logo_passenger' ? 'Upload Logo Mitsubishi' :
-                               config.key === 'logo_commercial' ? 'Upload Logo FUSO' : 'Upload Logo'}
+                               config.key === 'logo_commercial_dark' ? 'Upload Logo FUSO (Dark/Navbar Hitam)' :
+                               config.key === 'logo_commercial' ? 'Upload Logo FUSO (Navbar Putih)' : 'Upload Logo'}
                       />
                     </div>
                   </CardContent>
