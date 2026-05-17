@@ -71,7 +71,7 @@ export default function VehicleCard({
         className={`group rounded-2xl overflow-hidden ${
           useYellowAccent
             ? 'card-light-yellow hover-yellow-border-light'
-            : 'card-light-red metallic-border hover-steel-border'
+            : 'card-light-red hover-red-border-light'
         } transition-all duration-500`}
       >
         <div className="rounded-2xl overflow-hidden bg-white">
@@ -95,7 +95,7 @@ export default function VehicleCard({
 
               {/* Price Badge */}
               <div className="absolute top-3 left-3 z-[2]">
-                <span className={`inline-flex items-center gap-1 px-2.5 py-1 ${useYellowAccent ? 'bg-mitsu-fuso-yellow text-mitsu-dark' : 'bg-mitsu-red text-white'} text-[10px] sm:text-xs font-black rounded-md shadow-md ${useYellowAccent ? 'shadow-mitsu-fuso-yellow/20' : 'shadow-mitsu-red/20'}`}>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-1 ${useYellowAccent ? 'bg-mitsu-fuso-yellow text-mitsu-dark' : 'bg-mitsu-red text-white'} text-[10px] sm:text-xs font-bold rounded-md shadow-md ${useYellowAccent ? 'shadow-mitsu-fuso-yellow/20' : 'shadow-mitsu-red/20'}`}>
                   {price}
                 </span>
               </div>
@@ -119,7 +119,7 @@ export default function VehicleCard({
           {/* Vehicle Info */}
           <div className="p-4 sm:p-5">
             <Link href={detailPath}>
-              <h3 className="text-base sm:text-lg font-black text-mitsu-dark tracking-tight hover:underline decoration-mitsu-red/30 underline-offset-4">
+              <h3 className="text-base sm:text-lg font-bold text-mitsu-dark font-serif hover:underline decoration-mitsu-red/30 underline-offset-4">
                 Mitsubishi {name}
               </h3>
             </Link>
@@ -152,7 +152,7 @@ export default function VehicleCard({
               </a>
               <Link
                 href={detailPath}
-                className={`flex items-center gap-1.5 px-3 py-1.5 ${useYellowAccent ? 'btn-fuso-yellow' : 'btn-premium-cta'} rounded-lg transition-all duration-300 text-[11px] tracking-wide active:scale-[0.97] font-bold`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 ${useYellowAccent ? 'btn-fuso-yellow' : 'btn-mitsu-red'} rounded-lg transition-all duration-300 text-[11px] tracking-wide active:scale-[0.97] font-semibold`}
               >
                 Detail
                 <ArrowRight className="w-3 h-3" />

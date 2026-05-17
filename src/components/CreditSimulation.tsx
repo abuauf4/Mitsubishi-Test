@@ -41,7 +41,7 @@ export default function CreditSimulation({
 
   const monthlyPayment = calculateMonthlyPayment();
 
-  const accentMain = isYellow ? '#FFD600' : '#D6001C';
+  const accentMain = isYellow ? '#FFD600' : '#E60012';
   const accentLight = isYellow ? 'bg-mitsu-fuso-yellow/5' : 'bg-mitsu-red/5';
   const accentBorder = isYellow ? 'border-mitsu-fuso-yellow/10' : 'border-mitsu-red/10';
   const accentText = isYellow ? 'text-mitsu-fuso-yellow-dark' : 'text-mitsu-red';

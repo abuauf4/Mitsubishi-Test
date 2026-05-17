@@ -65,7 +65,7 @@ export default function PageHero({
   }, [backgroundImage, displayedImage, fallbackImage]);
 
   return (
-    <section ref={sectionRef} className="relative w-full min-h-[40vh] sm:min-h-[50vh] lg:min-h-[55vh] overflow-hidden bg-mitsu-obsidian hero-gradient-cinematic">
+    <section ref={sectionRef} className="relative w-full min-h-[40vh] sm:min-h-[50vh] lg:min-h-[55vh] overflow-hidden bg-mitsu-obsidian">
       {/* Background Image with Parallax — seamless crossfade, NO blank flash */}
       <motion.div className="absolute inset-0 will-change-transform" style={{ y: bgY }}>
         {/* No AnimatePresence mode = simultaneous crossfade, old stays until new is fully visible */}
@@ -97,15 +97,15 @@ export default function PageHero({
         </AnimatePresence>
       </motion.div>
 
-      {/* Cinematic overlay with vignette */}
-      <div className="absolute inset-0 bg-black/50 vignette" />
+      {/* Flat overlay */}
+      <div className="absolute inset-0 bg-black/40" />
 
       {/* Particle Effects - hidden on mobile */}
       <div className="hidden sm:block">
         <ParticleField />
       </div>
 
-      {/* Decorative Lines - hidden on mobile */}
+      {/* Luxury Decorative Lines - hidden on mobile */}
       <div className="absolute inset-0 pointer-events-none hidden sm:block" style={{ zIndex: 2 }}>
         <div className={`absolute top-8 left-8 w-16 h-16 border-l border-t ${theme === 'yellow' ? 'border-mitsu-fuso-yellow/12' : 'border-mitsu-red/12'}`} />
         <div className={`absolute bottom-8 right-8 w-16 h-16 border-r border-b ${theme === 'yellow' ? 'border-mitsu-fuso-yellow/12' : 'border-mitsu-red/12'}`} />
@@ -124,12 +124,12 @@ export default function PageHero({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight font-serif">
             {title.split(' ').map((word, i) => (
               <span key={i}>
                 {i > 0 && ' '}
                 {highlightWords.includes(word) ? (
-                  <span className={`${accentColor} font-black italic`}>{word}</span>
+                  <span className={`${accentColor} italic`}>{word}</span>
                 ) : (
                   word
                 )}
@@ -148,15 +148,15 @@ export default function PageHero({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="text-white/60 text-sm sm:text-lg md:text-xl max-w-2xl leading-relaxed font-medium"
+            className="text-white/40 text-sm sm:text-lg md:text-xl max-w-2xl leading-relaxed"
           >
             {subtitle}
           </motion.p>
         </motion.div>
       </motion.div>
 
-      {/* Bottom Fade with metallic accent */}
-      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white/40 to-transparent z-[3]" />
+      {/* Bottom Fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-12 bg-white/30 z-[3]" />
       
       {/* Bottom accent line */}
       <div className={`absolute bottom-0 left-0 right-0 h-px ${theme === 'yellow' ? 'bg-mitsu-fuso-yellow/20' : 'bg-mitsu-red/20'} z-[4]`} />
