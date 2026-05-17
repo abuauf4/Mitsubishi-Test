@@ -1,107 +1,56 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle, Truck, Sparkles, Zap } from 'lucide-react';
-import PageHero from '@/components/shared/PageHero';
 import VehicleCard from '@/components/shared/VehicleCard';
 import FleetSolution from '@/components/FleetSolution';
 import { VehicleData } from '@/data/vehicles';
-import type { HeroData } from '@/lib/fetch-hero';
-import { proxyBlobUrl } from '@/lib/image-utils';
 
 interface Props {
   commercial: VehicleData[];
-  initialHeroData?: HeroData;
+  initialHeroData?: any;
 }
 
-export default function CommercialPageClient({ commercial, initialHeroData }: Props) {
-  // Start with server-provided data if available, otherwise defaults
-  const defaultImage = '/images/l300.png';
-  const defaultTitle = 'Commercial Vehicles Mitsubishi';
-  const defaultSubtitle = 'Dari niaga ringan hingga heavy duty. Solusi armada terpercaya untuk bisnis Anda.';
-
-  const [heroImage, setHeroImage] = useState(initialHeroData?.imagePath || defaultImage);
-  const [heroTitle, setHeroTitle] = useState(initialHeroData?.title || defaultTitle);
-  const [heroSubtitle, setHeroSubtitle] = useState(initialHeroData?.subtitle || defaultSubtitle);
-
-  // Helper: resolve blob URLs (direct for public, proxy for private)
-  const prepareImageUrl = (url: string) => {
-    return proxyBlobUrl(url) || url;
-  };
-
-  useEffect(() => {
-    // If we already have server data, skip the fetch (unless it's static fallback)
-    if (initialHeroData && !initialHeroData.id?.startsWith('static-')) return;
-
-    async function fetchHero() {
-      try {
-        const res = await fetch('/api/hero?page=commercial', { cache: 'no-store' });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data && data.imagePath) {
-          setHeroImage(prepareImageUrl(data.imagePath));
-          if (data.title) setHeroTitle(data.title);
-          if (data.subtitle) setHeroSubtitle(data.subtitle);
-        }
-      } catch {
-        // Silently fall back to defaults
-      }
-    }
-    fetchHero();
-  }, [initialHeroData]);
-
+export default function CommercialPageClient({ commercial }: Props) {
   return (
     <>
-      {/* Hero */}
-      <PageHero
-        title={heroTitle}
-        subtitle={heroSubtitle}
-        backgroundImage={heroImage}
-        breadcrumbs={[
-          { label: 'Commercial Vehicles', href: '/commercial' },
-        ]}
-        accentColor="text-mitsu-fuso-yellow"
-        theme="yellow"
-        fallbackImage="/images/l300.png"
-      />
+      {/* Compact Header — no hero image */}
+      <section className="relative bg-mitsu-obsidian overflow-hidden">
+        <div className="absolute inset-0 luxury-pattern-yellow" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-mitsu-obsidian/50" />
+        {/* Decorative lines */}
+        <div className="absolute top-6 left-6 w-12 h-12 border-l border-t border-mitsu-fuso-yellow/15 pointer-events-none" />
+        <div className="absolute bottom-6 right-6 w-12 h-12 border-r border-b border-mitsu-fuso-yellow/15 pointer-events-none" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
+          <span className="inline-flex items-center gap-3 text-mitsu-fuso-yellow-dark text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase mb-4">
+            <Truck className="w-4 h-4" />
+            FUSO Commercial
+          </span>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight font-serif">
+            Lineup FUSO{' '}
+            <span className="text-mitsu-fuso-yellow-dark">Commercial</span>
+          </h1>
+          <p className="mt-3 text-white/40 text-sm sm:text-base max-w-xl">
+            Dari niaga ringan hingga heavy duty. Solusi armada terpercaya untuk bisnis Anda.
+          </p>
+          <div className="flex items-center gap-3 mt-4">
+            <div className="w-10 h-px bg-mitsu-fuso-yellow/40" />
+            <div className="w-1.5 h-1.5 bg-mitsu-fuso-yellow/40 rotate-45" />
+          </div>
+        </div>
+        {/* Bottom accent */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-mitsu-fuso-yellow/20" />
+      </section>
 
       {/* ==================== FUSO Commercial ==================== */}
-      <section className="relative py-24 sm:py-28 lg:py-32 bg-white overflow-hidden">
+      <section className="relative py-16 sm:py-20 lg:py-24 bg-white overflow-hidden">
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            viewport={{ once: true }}
-            className="mb-12 sm:mb-16"
-          >
-            <span className="inline-flex items-center gap-3 text-mitsu-fuso-yellow-dark text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase">
-              <Truck className="w-4 h-4" />
-              FUSO Commercial
-            </span>
-            <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark font-serif">
-              Lineup FUSO{' '}
-              <span className="text-mitsu-fuso-yellow-dark italic">Commercial</span>
-            </h2>
-            <p className="mt-4 text-gray-500 text-base sm:text-lg max-w-xl">
-              Solusi armada FUSO dari KTB — Canter, Fighter X, hingga Heavy Duty untuk bisnis skala besar.
-            </p>
-
-            {/* Ornamental divider */}
-            <div className="flex items-center gap-3 mt-5">
-              <div className="w-10 h-px bg-mitsu-fuso-yellow/40" />
-              <div className="w-1.5 h-1.5 bg-mitsu-fuso-yellow/40 rotate-45" />
-            </div>
-          </motion.div>
-
           {/* Quick Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="mb-10 flex flex-wrap gap-3"
           >
