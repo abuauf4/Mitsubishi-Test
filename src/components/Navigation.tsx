@@ -128,88 +128,66 @@ export default function Navigation() {
           </div>
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-14 sm:h-16">
-              {/* Logo - dynamic based on route */}
-              <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative flex items-center justify-center h-14 sm:h-16">
+              {/* Logo - absolute center */}
+              <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center group z-10">
                 {isHome ? (
-                  /* Home: show both Mitsubishi + FUSO logos */
-                  <>
-                    <div className="flex items-center gap-3">
-                      {hasPassengerLogo ? (
-                        <img
-                          src={passengerLogoSrc}
-                          alt="Mitsubishi"
-                          className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
-                          onError={() => setLogoError(prev => ({ ...prev, passenger: true }))}
-                        />
-                      ) : (
-                        <MitsubishiDiamond />
-                      )}
-                      <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
-                        MITSUBISHI
-                      </span>
-                    </div>
-                    <div className="w-px h-6 bg-white/20" />
-                    <div className="flex items-center gap-2">
-                      {hasCommercialLogo ? (
-                        <img
-                          src={commercialLogoSrc}
-                          alt="FUSO"
-                          className="w-10 h-5 sm:w-12 sm:h-6 object-contain"
-                          onError={() => setLogoError(prev => ({ ...prev, commercial: true }))}
-                        />
-                      ) : (
-                        <FusoLogo />
-                      )}
-                    </div>
-                  </>
-                ) : isPassenger ? (
-                  /* Passenger page: Mitsubishi logo only */
-                  <div className="flex items-center gap-3">
+                  /* Home: both logos side by side with divider */
+                  <div className="flex items-center gap-4">
                     {hasPassengerLogo ? (
                       <img
                         src={passengerLogoSrc}
                         alt="Mitsubishi"
-                        className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+                        className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
                         onError={() => setLogoError(prev => ({ ...prev, passenger: true }))}
                       />
                     ) : (
-                      <MitsubishiDiamond />
+                      <MitsubishiDiamond className="w-8 h-8 sm:w-10 sm:h-10" />
                     )}
-                    <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
-                      MITSUBISHI
-                    </span>
-                  </div>
-                ) : isCommercial ? (
-                  /* Commercial page: FUSO logo only */
-                  <div className="flex items-center gap-2">
+                    <div className="w-px h-8 bg-white/20" />
                     {hasCommercialLogo ? (
                       <img
                         src={commercialLogoSrc}
                         alt="FUSO"
-                        className="w-12 h-6 sm:w-16 sm:h-8 object-contain"
+                        className="w-14 h-6 sm:w-16 sm:h-8 object-contain"
                         onError={() => setLogoError(prev => ({ ...prev, commercial: true }))}
                       />
                     ) : (
-                      <FusoLogo className="w-16 h-8 sm:w-20 sm:h-10" />
+                      <FusoLogo className="w-14 h-6 sm:w-16 sm:h-8" />
                     )}
-                    <span className="text-[13px] sm:text-sm font-bold tracking-[0.2em] uppercase text-[#FFD600]">
-                      FUSO
-                    </span>
                   </div>
+                ) : isPassenger ? (
+                  /* Passenger page: Mitsubishi logo only */
+                  hasPassengerLogo ? (
+                    <img
+                      src={passengerLogoSrc}
+                      alt="Mitsubishi"
+                      className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                      onError={() => setLogoError(prev => ({ ...prev, passenger: true }))}
+                    />
+                  ) : (
+                    <MitsubishiDiamond className="w-8 h-8 sm:w-10 sm:h-10" />
+                  )
+                ) : isCommercial ? (
+                  /* Commercial page: FUSO logo only */
+                  hasCommercialLogo ? (
+                    <img
+                      src={commercialLogoSrc}
+                      alt="FUSO"
+                      className="w-14 h-6 sm:w-16 sm:h-8 object-contain"
+                      onError={() => setLogoError(prev => ({ ...prev, commercial: true }))}
+                    />
+                  ) : (
+                    <FusoLogo className="w-14 h-6 sm:w-16 sm:h-8" />
+                  )
                 ) : (
                   /* Other pages: Mitsubishi default */
-                  <div className="flex items-center gap-3">
-                    <MitsubishiDiamond />
-                    <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
-                      MITSUBISHI
-                    </span>
-                  </div>
+                  <MitsubishiDiamond className="w-8 h-8 sm:w-10 sm:h-10" />
                 )}
               </Link>
 
-              {/* Desktop Navigation */}
-              <div className="hidden lg:flex items-center gap-1">
+              {/* Desktop Navigation — pushed to right */}
+              <div className="hidden lg:flex items-center gap-1 ml-auto">
                 {navLinks.map((link) => {
                   const isActive = pathname === link.href || (link.isRoute && pathname === link.href);
                   return (
@@ -248,7 +226,7 @@ export default function Navigation() {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileOpen(true)}
-                className="lg:hidden p-2 rounded-xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center text-white hover:bg-white/10"
+                className="lg:hidden p-2 rounded-xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center text-white hover:bg-white/10 ml-auto"
                 aria-label="Buka menu navigasi"
               >
                 <Menu className="w-5 h-5" />
