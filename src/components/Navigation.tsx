@@ -5,7 +5,6 @@ import { AnimatePresence } from 'framer-motion';
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import Image from 'next/image';
 import MobileMenu from './MobileMenu';
 import AnnouncementBar from './AnnouncementBar';
 import { proxyBlobUrl } from '@/lib/image-utils';
@@ -69,13 +68,19 @@ export default function Navigation() {
       }
     }
     fetchConfig();
-  }, []);
+  }, [pathname]); // Re-fetch on route change so logos update after save
 
   // Resolve image URL from config
   const getConfigValue = (key: string, fallback: string): string => {
     const item = siteConfig.find(c => c.key === key);
     if (!item || !item.value) return fallback;
     return proxyBlobUrl(item.value) || item.value;
+  };
+
+  // Check if a logo has a custom uploaded value (not the default)
+  const hasCustomLogo = (key: string): boolean => {
+    const item = siteConfig.find(c => c.key === key);
+    return !!(item && item.value && item.value !== '/mitsubishi-logo.png' && item.value !== '');
   };
 
   // Determine which logos to show based on route
@@ -86,8 +91,8 @@ export default function Navigation() {
   const passengerLogoSrc = getConfigValue('logo_passenger', '/mitsubishi-logo.png');
   const commercialLogoSrc = getConfigValue('logo_commercial', '/mitsubishi-logo.png');
 
-  const isPassengerLogoExternal = passengerLogoSrc.startsWith('http') || passengerLogoSrc.startsWith('/api/');
-  const isCommercialLogoExternal = commercialLogoSrc.startsWith('http') || commercialLogoSrc.startsWith('/api/');
+  const hasPassengerLogo = hasCustomLogo('logo_passenger');
+  const hasCommercialLogo = hasCustomLogo('logo_commercial');
 
   const handleNavClick = useCallback((href: string, isRoute: boolean) => {
     setMobileOpen(false);
@@ -124,17 +129,14 @@ export default function Navigation() {
                   /* Home: show both Mitsubishi + FUSO logos */
                   <>
                     <div className="flex items-center gap-3">
-                      {passengerLogoSrc === '/mitsubishi-logo.png' ? (
-                        <MitsubishiDiamond />
-                      ) : (
-                        <Image
+                      {hasPassengerLogo ? (
+                        <img
                           src={passengerLogoSrc}
                           alt="Mitsubishi"
-                          width={32}
-                          height={32}
                           className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
-                          unoptimized={isPassengerLogoExternal}
                         />
+                      ) : (
+                        <MitsubishiDiamond />
                       )}
                       <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
                         MITSUBISHI
@@ -142,34 +144,28 @@ export default function Navigation() {
                     </div>
                     <div className="w-px h-6 bg-white/20" />
                     <div className="flex items-center gap-2">
-                      {commercialLogoSrc === '/mitsubishi-logo.png' ? (
-                        <FusoLogo />
-                      ) : (
-                        <Image
+                      {hasCommercialLogo ? (
+                        <img
                           src={commercialLogoSrc}
                           alt="FUSO"
-                          width={60}
-                          height={28}
                           className="w-10 h-5 sm:w-12 sm:h-6 object-contain"
-                          unoptimized={isCommercialLogoExternal}
                         />
+                      ) : (
+                        <FusoLogo />
                       )}
                     </div>
                   </>
                 ) : isPassenger ? (
                   /* Passenger page: Mitsubishi logo only */
                   <div className="flex items-center gap-3">
-                    {passengerLogoSrc === '/mitsubishi-logo.png' ? (
-                      <MitsubishiDiamond />
-                    ) : (
-                      <Image
+                    {hasPassengerLogo ? (
+                      <img
                         src={passengerLogoSrc}
                         alt="Mitsubishi"
-                        width={32}
-                        height={32}
                         className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
-                        unoptimized={isPassengerLogoExternal}
                       />
+                    ) : (
+                      <MitsubishiDiamond />
                     )}
                     <span className="text-[13px] sm:text-sm font-bold tracking-[0.3em] uppercase text-white">
                       MITSUBISHI
@@ -178,17 +174,14 @@ export default function Navigation() {
                 ) : isCommercial ? (
                   /* Commercial page: FUSO logo only */
                   <div className="flex items-center gap-2">
-                    {commercialLogoSrc === '/mitsubishi-logo.png' ? (
-                      <FusoLogo className="w-16 h-8 sm:w-20 sm:h-10" />
-                    ) : (
-                      <Image
+                    {hasCommercialLogo ? (
+                      <img
                         src={commercialLogoSrc}
                         alt="FUSO"
-                        width={80}
-                        height={32}
                         className="w-12 h-6 sm:w-16 sm:h-8 object-contain"
-                        unoptimized={isCommercialLogoExternal}
                       />
+                    ) : (
+                      <FusoLogo className="w-16 h-8 sm:w-20 sm:h-10" />
                     )}
                     <span className="text-[13px] sm:text-sm font-bold tracking-[0.2em] uppercase text-[#FFD600]">
                       FUSO
