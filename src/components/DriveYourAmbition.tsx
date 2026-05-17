@@ -66,49 +66,15 @@ function TypewriterText({ text, speed = 70, startDelay = 300, eraseSpeed = 40, p
 }
 
 export default function DriveYourAmbition() {
-  const [isVisible, setIsVisible] = useState(true);
-  const [hasSpace, setHasSpace] = useState(true);
-
-  useEffect(() => {
-    // Cycle visibility: show for 6s, hide for 2s
-    // When hidden, section collapses creating continuous scroll movement
-    const showDuration = 6000; // type + pause time
-    const hideDuration = 2000; // collapsed time
-
-    const cycle = () => {
-      setIsVisible(true);
-      setTimeout(() => {
-        setIsVisible(false);
-        setTimeout(() => {
-          cycle();
-        }, hideDuration);
-      }, showDuration);
-    };
-
-    // Start after initial animation completes
-    const startTimer = setTimeout(cycle, 6000);
-    return () => clearTimeout(startTimer);
-  }, []);
-
   return (
-    <section className="relative w-full bg-white overflow-hidden">
-      <div
-        className="transition-all duration-700 ease-in-out"
-        style={{
-          maxHeight: isVisible ? '200px' : '0px',
-          opacity: isVisible ? 1 : 0,
-          paddingTop: isVisible ? '24px' : '0px',
-          paddingBottom: isVisible ? '24px' : '0px',
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-mitsu-dark leading-none tracking-wider uppercase font-serif">
-            <TypewriterText text="Drive Your " speed={70} startDelay={300} eraseSpeed={35} pauseDuration={3000} />
-            <span className="text-mitsu-red">
-              <TypewriterText text="Ambition" speed={90} startDelay={300 + 11 * 70} eraseSpeed={35} pauseDuration={3000} />
-            </span>
-          </h1>
-        </div>
+    <section className="relative w-full bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 text-center">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-mitsu-dark leading-none tracking-wider uppercase font-serif min-h-[1.2em]">
+          <TypewriterText text="Drive Your " speed={70} startDelay={300} eraseSpeed={35} pauseDuration={3000} />
+          <span className="text-mitsu-red">
+            <TypewriterText text="Ambition" speed={90} startDelay={300 + 11 * 70} eraseSpeed={35} pauseDuration={3000} />
+          </span>
+        </h1>
       </div>
     </section>
   );

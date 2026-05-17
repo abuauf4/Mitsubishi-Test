@@ -16,23 +16,21 @@ interface DBCategory {
 
 function GatewayCard({
   href,
-  label,
   headline,
-  accentColor,
+  headlineColor,
   bgClass,
-  textClass,
-  borderColor,
   ctaText,
+  ctaColor,
+  ctaBorder,
   direction,
 }: {
   href: string;
-  label: string;
   headline: string;
-  accentColor: string;
+  headlineColor: string;
   bgClass: string;
-  textClass: string;
-  borderColor: string;
   ctaText: string;
+  ctaColor: string;
+  ctaBorder: string;
   direction: 'left' | 'right';
 }) {
   return (
@@ -45,19 +43,22 @@ function GatewayCard({
         className={`${bgClass} min-h-[320px] sm:min-h-[400px] lg:min-h-[480px] flex flex-col items-center justify-center relative`}
       >
         {/* Centered Headline */}
-        <h2 className={`text-6xl sm:text-7xl lg:text-8xl font-black leading-none tracking-tight ${textClass}`}>
+        <h2
+          className="text-6xl sm:text-7xl lg:text-8xl font-black leading-none tracking-tight"
+          style={{ color: headlineColor }}
+        >
           {headline}
         </h2>
 
         {/* CTA Bottom Right - outlined square */}
         <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8">
           <div
-            className="border-2 px-5 py-3 sm:px-6 sm:py-3.5 flex items-center gap-2.5 transition-all duration-200 group-hover:gap-3.5"
-            style={{ borderColor: accentColor }}
+            className={`border-2 px-5 py-3 sm:px-6 sm:py-3.5 flex items-center gap-2.5 transition-all duration-200 group-hover:gap-3.5`}
+            style={{ borderColor: ctaBorder }}
           >
             <span
               className="text-xs sm:text-sm font-bold tracking-[0.15em] uppercase"
-              style={{ color: accentColor }}
+              style={{ color: ctaColor }}
             >
               {ctaText}
             </span>
@@ -92,37 +93,34 @@ export default function AudienceGateway() {
         const isPassenger = cat.linkHref.includes('passenger');
         return {
           href: cat.linkHref || (isPassenger ? '/passenger' : '/commercial'),
-          label: cat.title || (isPassenger ? 'Passenger Cars' : 'Commercial Vehicles'),
-          headline: isPassenger ? 'LIFE.' : 'WORK.',
-          accentColor: isPassenger ? '#E60012' : '#FFD600',
+          headline: isPassenger ? 'PASSENGER' : 'FUSO',
+          headlineColor: isPassenger ? '#E60012' : '#FFD600',
           bgClass: isPassenger ? 'bg-black' : 'bg-white',
-          textClass: isPassenger ? 'text-white' : 'text-black',
-          borderColor: isPassenger ? '#E60012' : '#FFD600',
           ctaText: isPassenger ? 'Jelajahi Lineup' : 'Lihat Armada',
+          ctaColor: isPassenger ? '#E60012' : '#FFD600',
+          ctaBorder: isPassenger ? '#E60012' : '#FFD600',
           direction: (index % 2 === 0 ? 'left' : 'right') as 'left' | 'right',
         };
       })
     : [
         {
           href: '/passenger',
-          label: 'Passenger Cars',
-          headline: 'LIFE.',
-          accentColor: '#E60012',
+          headline: 'PASSENGER',
+          headlineColor: '#E60012',
           bgClass: 'bg-black',
-          textClass: 'text-white',
-          borderColor: '#E60012',
           ctaText: 'Jelajahi Lineup',
+          ctaColor: '#E60012',
+          ctaBorder: '#E60012',
           direction: 'left' as const,
         },
         {
           href: '/commercial',
-          label: 'Commercial Vehicles',
-          headline: 'WORK.',
-          accentColor: '#FFD600',
+          headline: 'FUSO',
+          headlineColor: '#FFD600',
           bgClass: 'bg-white',
-          textClass: 'text-black',
-          borderColor: '#FFD600',
           ctaText: 'Lihat Armada',
+          ctaColor: '#FFD600',
+          ctaBorder: '#FFD600',
           direction: 'right' as const,
         },
       ];
