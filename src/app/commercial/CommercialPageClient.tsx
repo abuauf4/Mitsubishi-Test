@@ -14,32 +14,32 @@ interface Props {
 export default function CommercialPageClient({ commercial }: Props) {
   return (
     <>
-      {/* Compact Header — no hero image */}
-      <section className="relative bg-mitsu-obsidian overflow-hidden">
-        <div className="absolute inset-0 luxury-pattern-yellow" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-mitsu-obsidian/50" />
+      {/* Compact Header — white background matching page */}
+      <section className="relative bg-white overflow-hidden">
+        <div className="absolute inset-0 luxury-pattern-light" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/50" />
         {/* Decorative lines */}
-        <div className="absolute top-6 left-6 w-12 h-12 border-l border-t border-mitsu-fuso-yellow/15 pointer-events-none" />
-        <div className="absolute bottom-6 right-6 w-12 h-12 border-r border-b border-mitsu-fuso-yellow/15 pointer-events-none" />
+        <div className="absolute top-6 left-6 w-12 h-12 border-l border-t border-mitsu-fuso-yellow/10 pointer-events-none" />
+        <div className="absolute bottom-6 right-6 w-12 h-12 border-r border-b border-mitsu-fuso-yellow/10 pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
           <span className="inline-flex items-center gap-3 text-mitsu-fuso-yellow-dark text-[10px] sm:text-xs font-bold tracking-[0.3em] uppercase mb-4">
             <Truck className="w-4 h-4" />
             FUSO Commercial
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight font-serif">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-mitsu-dark leading-tight font-serif">
             Lineup FUSO{' '}
             <span className="text-mitsu-fuso-yellow-dark">Commercial</span>
           </h1>
-          <p className="mt-3 text-white/40 text-sm sm:text-base max-w-xl">
+          <p className="mt-3 text-gray-500 text-sm sm:text-base max-w-xl">
             Dari niaga ringan hingga heavy duty. Solusi armada terpercaya untuk bisnis Anda.
           </p>
           <div className="flex items-center gap-3 mt-4">
-            <div className="w-10 h-px bg-mitsu-fuso-yellow/40" />
-            <div className="w-1.5 h-1.5 bg-mitsu-fuso-yellow/40 rotate-45" />
+            <div className="w-10 h-px bg-mitsu-fuso-yellow/30" />
+            <div className="w-1.5 h-1.5 bg-mitsu-fuso-yellow/30 rotate-45" />
           </div>
         </div>
         {/* Bottom accent */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-mitsu-fuso-yellow/20" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-100" />
       </section>
 
       {/* ==================== FUSO Commercial ==================== */}

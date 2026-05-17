@@ -120,14 +120,14 @@ export default function Navigation() {
   // Theme based on page context
   const isCommercialPage = isCommercial;
 
-  // Navbar background
+  // Navbar background — pure black like passenger card, white for commercial
   const navBg = isCommercialPage
     ? scrolled
       ? 'bg-white/95 backdrop-blur-md shadow-sm'
       : 'bg-white'
     : scrolled
-      ? 'bg-mitsu-obsidian/95 backdrop-blur-md'
-      : 'bg-mitsu-dark';
+      ? 'bg-black/95 backdrop-blur-md'
+      : 'bg-black';
 
   const borderColor = isCommercialPage ? 'border-black/5' : 'border-white/[0.04]';
 
@@ -177,7 +177,7 @@ export default function Navigation() {
                   {isHome ? (
                     /* Home: both logos side by side with divider */
                     <div className="flex items-center gap-4 sm:gap-6">
-                      {hasPassengerLogo ? (
+                      {!logoError['passenger'] ? (
                         <img
                           src={passengerLogoSrc}
                           alt="Mitsubishi"
@@ -188,7 +188,7 @@ export default function Navigation() {
                         <MitsubishiDiamond className="w-10 h-10 sm:w-12 sm:h-12" />
                       )}
                       <div className="w-px h-10 bg-white/20" />
-                      {hasCommercialLogo ? (
+                      {!logoError['commercial'] ? (
                         <img
                           src={commercialLogoSrc}
                           alt="FUSO"
@@ -200,8 +200,8 @@ export default function Navigation() {
                       )}
                     </div>
                   ) : isPassenger ? (
-                    /* Passenger page: Mitsubishi logo only */
-                    hasPassengerLogo ? (
+                    /* Passenger page: Mitsubishi logo only (use image like footer/sidebar) */
+                    !logoError['passenger'] ? (
                       <img
                         src={passengerLogoSrc}
                         alt="Mitsubishi"
@@ -213,7 +213,7 @@ export default function Navigation() {
                     )
                   ) : isCommercial ? (
                     /* Commercial page: FUSO logo only */
-                    hasCommercialLogo ? (
+                    !logoError['commercial'] ? (
                       <img
                         src={commercialLogoSrc}
                         alt="FUSO"
@@ -224,8 +224,17 @@ export default function Navigation() {
                       <FusoLogo className="w-20 h-8 sm:w-24 sm:h-10" color="#FFD600" />
                     )
                   ) : (
-                    /* Other pages: Mitsubishi default */
-                    <MitsubishiDiamond className="w-10 h-10 sm:w-12 sm:h-12" />
+                    /* Other pages: Mitsubishi logo (image like footer/sidebar) */
+                    !logoError['passenger'] ? (
+                      <img
+                        src={passengerLogoSrc}
+                        alt="Mitsubishi"
+                        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+                        onError={() => setLogoError(prev => ({ ...prev, passenger: true }))}
+                      />
+                    ) : (
+                      <MitsubishiDiamond className="w-10 h-10 sm:w-12 sm:h-12" />
+                    )
                   )}
                 </Link>
               </div>
