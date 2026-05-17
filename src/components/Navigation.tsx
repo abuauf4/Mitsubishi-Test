@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
@@ -54,23 +54,29 @@ export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
   const [siteConfig, setSiteConfig] = useState<SiteConfigItem[]>([]);
+  const [logoError, setLogoError] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     async function fetchConfig() {
       try {
-        const res = await fetch('/api/site-config');
+        const res = await fetch('/api/site-config', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
-          if (Array.isArray(data)) setSiteConfig(data);
+          if (Array.isArray(data)) {
+            setSiteConfig(data);
+            // Reset logo errors when config changes
+            setLogoError({});
+          }
         }
       } catch {
         // Use defaults
       }
     }
     fetchConfig();
-  }, [pathname]); // Re-fetch on route change so logos update after save
+  }, [pathname]);
 
-  // Resolve image URL from config
+  // Resolve image URL from config — for public blobs, return directly
+  // For private blobs, route through /api/image proxy
   const getConfigValue = (key: string, fallback: string): string => {
     const item = siteConfig.find(c => c.key === key);
     if (!item || !item.value) return fallback;
@@ -91,8 +97,8 @@ export default function Navigation() {
   const passengerLogoSrc = getConfigValue('logo_passenger', '/mitsubishi-logo.png');
   const commercialLogoSrc = getConfigValue('logo_commercial', '/mitsubishi-logo.png');
 
-  const hasPassengerLogo = hasCustomLogo('logo_passenger');
-  const hasCommercialLogo = hasCustomLogo('logo_commercial');
+  const hasPassengerLogo = hasCustomLogo('logo_passenger') && !logoError['passenger'];
+  const hasCommercialLogo = hasCustomLogo('logo_commercial') && !logoError['commercial'];
 
   const handleNavClick = useCallback((href: string, isRoute: boolean) => {
     setMobileOpen(false);
@@ -134,6 +140,7 @@ export default function Navigation() {
                           src={passengerLogoSrc}
                           alt="Mitsubishi"
                           className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+                          onError={() => setLogoError(prev => ({ ...prev, passenger: true }))}
                         />
                       ) : (
                         <MitsubishiDiamond />
@@ -149,6 +156,7 @@ export default function Navigation() {
                           src={commercialLogoSrc}
                           alt="FUSO"
                           className="w-10 h-5 sm:w-12 sm:h-6 object-contain"
+                          onError={() => setLogoError(prev => ({ ...prev, commercial: true }))}
                         />
                       ) : (
                         <FusoLogo />
@@ -163,6 +171,7 @@ export default function Navigation() {
                         src={passengerLogoSrc}
                         alt="Mitsubishi"
                         className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+                        onError={() => setLogoError(prev => ({ ...prev, passenger: true }))}
                       />
                     ) : (
                       <MitsubishiDiamond />
@@ -179,6 +188,7 @@ export default function Navigation() {
                         src={commercialLogoSrc}
                         alt="FUSO"
                         className="w-12 h-6 sm:w-16 sm:h-8 object-contain"
+                        onError={() => setLogoError(prev => ({ ...prev, commercial: true }))}
                       />
                     ) : (
                       <FusoLogo className="w-16 h-8 sm:w-20 sm:h-10" />
