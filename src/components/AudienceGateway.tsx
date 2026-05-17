@@ -23,6 +23,11 @@ function GatewayCard({
   subline,
   description,
   accentColor,
+  bgClass,
+  textClass,
+  subtextClass,
+  descriptionClass,
+  ctaHoverClass,
   direction,
 }: {
   href: string;
@@ -32,56 +37,53 @@ function GatewayCard({
   subline: string;
   description: string;
   accentColor: string;
+  bgClass: string;
+  textClass: string;
+  subtextClass: string;
+  descriptionClass: string;
+  ctaHoverClass: string;
   direction: 'left' | 'right';
 }) {
   return (
     <Link href={href} className="block group">
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: direction === 'right' ? 0.15 : 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        className="relative bg-mitsu-dark min-h-[340px] sm:min-h-[400px] flex flex-col justify-between p-8 sm:p-10 lg:p-12 transition-colors duration-300"
+        transition={{ duration: 0.4, delay: direction === 'right' ? 0.1 : 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        className={`${bgClass} min-h-[300px] sm:min-h-[360px] flex flex-col justify-between`}
       >
-        {/* Top section */}
         <div>
-          <div className="flex items-center gap-3 mb-8">
+          <div className="flex items-center gap-3 mb-6">
             <Icon className="w-5 h-5" style={{ color: accentColor }} />
-            <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-white/50">
+            <span className={`text-[11px] font-bold tracking-[0.2em] uppercase ${descriptionClass}`}>
               {label}
             </span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-white leading-[1.05] tracking-tight mb-4">
+          <h2 className={`text-3xl sm:text-4xl lg:text-[44px] font-black leading-[1.05] tracking-tight mb-3 ${textClass}`}>
             {headline}
             <br />
             <span style={{ color: accentColor }}>{subline}</span>
           </h2>
 
-          <p className="text-white/40 text-sm leading-relaxed max-w-sm">
+          <p className={`text-sm leading-relaxed max-w-sm ${descriptionClass}`}>
             {description}
           </p>
         </div>
 
-        {/* Bottom CTA */}
         <div className="flex items-center gap-2 mt-8">
           <span
-            className="text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-300 group-hover:text-white"
+            className={`text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-200 ${ctaHoverClass}`}
             style={{ color: accentColor }}
           >
             {label === 'Passenger Cars' ? 'Jelajahi Lineup' : 'Lihat Armada'}
           </span>
           <ArrowRight
-            className="w-3.5 h-3.5 transition-all duration-300 group-hover:translate-x-1.5"
+            className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1"
             style={{ color: accentColor }}
           />
         </div>
-
-        {/* Left accent stripe */}
-        <div
-          className="absolute left-0 top-0 bottom-0 w-[3px] transition-all duration-300 group-hover:w-[5px]"
-          style={{ backgroundColor: accentColor }}
-        />
       </motion.div>
     </Link>
   );
@@ -119,6 +121,11 @@ export default function AudienceGateway() {
             ? 'MPV keluarga, SUV tangguh, hingga kendaraan listrik. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.'
             : 'FUSO Commercial dari Canter hingga Heavy Duty untuk UMKM hingga enterprise.'),
           accentColor: isPassenger ? '#E60012' : '#FFD600',
+          bgClass: isPassenger ? 'bg-black' : 'bg-white',
+          textClass: isPassenger ? 'text-white' : 'text-black',
+          subtextClass: isPassenger ? 'text-white' : 'text-black',
+          descriptionClass: isPassenger ? 'text-white/40' : 'text-black/40',
+          ctaHoverClass: isPassenger ? 'group-hover:text-white' : 'group-hover:text-black',
           direction: (index % 2 === 0 ? 'left' : 'right') as 'left' | 'right',
         };
       })
@@ -131,6 +138,11 @@ export default function AudienceGateway() {
           subline: 'yang Lebih Baik',
           description: 'MPV keluarga, SUV tangguh, hingga kendaraan listrik. Temukan kendaraan yang tepat untuk setiap perjalanan Anda.',
           accentColor: '#E60012',
+          bgClass: 'bg-black',
+          textClass: 'text-white',
+          subtextClass: 'text-white',
+          descriptionClass: 'text-white/40',
+          ctaHoverClass: 'group-hover:text-white',
           direction: 'left' as const,
         },
         {
@@ -141,6 +153,11 @@ export default function AudienceGateway() {
           subline: 'Lebih Kuat',
           description: 'FUSO Commercial dari Canter hingga Heavy Duty untuk UMKM hingga enterprise.',
           accentColor: '#FFD600',
+          bgClass: 'bg-white',
+          textClass: 'text-black',
+          subtextClass: 'text-black',
+          descriptionClass: 'text-black/40',
+          ctaHoverClass: 'group-hover:text-black',
           direction: 'right' as const,
         },
       ];
@@ -158,12 +175,10 @@ export default function AudienceGateway() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16">
-        <div className={`grid ${cards.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'} gap-px bg-white/10`}>
-          {cards.map((card, index) => (
-            <GatewayCard key={card.href + '-' + index} {...card} />
-          ))}
-        </div>
+      <div className={`grid ${cards.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2'}`}>
+        {cards.map((card, index) => (
+          <GatewayCard key={card.href + '-' + index} {...card} />
+        ))}
       </div>
     </section>
   );
