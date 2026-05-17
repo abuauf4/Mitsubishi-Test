@@ -3,9 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * Upload images to Vercel Blob Storage.
  *
- * IMPORTANT: The Vercel Blob store is configured as PRIVATE,
- * so we MUST use access: 'private' when uploading.
- * Public access on a private store will throw an error.
+ * The store was migrated from private to public.
+ * Use access: 'public' so URLs are directly accessible.
  */
 
 export async function POST(request: NextRequest) {
@@ -35,9 +34,9 @@ export async function POST(request: NextRequest) {
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const pathname = `uploads/${timestamp}-${sanitizedName}`;
 
-    // MUST use access: 'private' because the store is private
+    // Store is public — uploaded URLs are directly accessible without signing
     const blob = await put(pathname, file, {
-      access: 'private',
+      access: 'public',
       token,
       addRandomSuffix: true,
     });
@@ -51,14 +50,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Upload error:', error);
 
-    // Provide helpful error messages
     const message = error?.message || 'Upload failed';
-    if (message.includes('public access on a private store')) {
-      return NextResponse.json(
-        { error: 'Cannot use public access on a private store. The upload route has been configured for private access.', hint: 'This should be fixed now — please try again.' },
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
       { error: message },
