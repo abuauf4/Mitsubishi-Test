@@ -17,8 +17,9 @@ import {
   Camera,
   Database,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -36,6 +37,30 @@ const navItems = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [logoSrc, setLogoSrc] = useState('/mitsubishi-logo.png');
+
+  useEffect(() => {
+    // Try localStorage cache first
+    try {
+      const cached = localStorage.getItem('logo_logo_passenger');
+      if (cached) setLogoSrc(proxyBlobUrl(cached) || cached);
+    } catch {}
+
+    // Fetch fresh from API
+    fetch('/api/site-config', { cache: 'no-store' })
+      .then(res => res.ok ? res.json() : [])
+      .then(data => {
+        if (Array.isArray(data)) {
+          const item = data.find((c: any) => c.key === 'logo_passenger');
+          if (item && item.value) {
+            const url = proxyBlobUrl(item.value) || item.value;
+            setLogoSrc(url);
+            try { localStorage.setItem('logo_logo_passenger', item.value); } catch {}
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const isActive = (href: string) => {
     if (href === '/admin') return pathname === '/admin';
@@ -48,9 +73,9 @@ export default function AdminSidebar() {
       <div className="p-4 border-b border-white/10">
         <Link href="/admin" className="flex items-center gap-3">
           <img
-            src="/mitsubishi-logo.png"
+            src={logoSrc}
             alt="Mitsubishi Motor Indonesia Logo"
-            className="w-10 h-10 object-contain rounded-lg"
+            className="h-10 w-auto object-contain rounded-lg"
           />
           <div>
             <h1 className="text-white font-bold text-sm">MITSUBISHI</h1>

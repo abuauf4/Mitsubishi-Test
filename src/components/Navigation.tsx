@@ -49,12 +49,34 @@ interface SiteConfigItem {
   page: string;
 }
 
+  // Helper: get cached logo from localStorage to prevent flash
+  const getCachedLogo = (key: string, fallback: string): string => {
+    if (typeof window === 'undefined') return fallback;
+    try {
+      const cached = localStorage.getItem(`logo_${key}`);
+      return cached || fallback;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const setCachedLogo = (key: string, value: string) => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(`logo_${key}`, value);
+    } catch {
+      // Ignore storage errors
+    }
+  };
+
 export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  // Initialize with localStorage cache to prevent flash
   const [siteConfig, setSiteConfig] = useState<SiteConfigItem[]>([]);
+  const [logoLoaded, setLogoLoaded] = useState(false);
   const [logoError, setLogoError] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -66,11 +88,18 @@ export default function Navigation() {
           if (Array.isArray(data)) {
             setSiteConfig(data);
             setLogoError({});
+            // Cache logo URLs to localStorage
+            data.forEach((item: SiteConfigItem) => {
+              if (item.key && item.value) {
+                setCachedLogo(item.key, item.value);
+              }
+            });
           }
         }
       } catch {
         // Use defaults
       }
+      setLogoLoaded(true);
     }
     fetchConfig();
   }, [pathname]);
@@ -83,8 +112,12 @@ export default function Navigation() {
 
   const getConfigValue = (key: string, fallback: string): string => {
     const item = siteConfig.find(c => c.key === key);
-    if (!item || !item.value) return fallback;
-    return proxyBlobUrl(item.value) || item.value;
+    if (item && item.value) {
+      return proxyBlobUrl(item.value) || item.value;
+    }
+    // Fallback to localStorage cache before using default
+    const cached = getCachedLogo(key, fallback);
+    return cached;
   };
 
   const hasCustomLogo = (key: string): boolean => {
@@ -176,27 +209,27 @@ export default function Navigation() {
                 <Link href="/" className="flex items-center justify-center group">
                   {isHome ? (
                     /* Home: both logos side by side with divider */
-                    <div className="flex items-center gap-4 sm:gap-6">
+                    <div className="flex items-center gap-5 sm:gap-8">
                       {!logoError['passenger'] ? (
                         <img
                           src={passengerLogoSrc}
                           alt="Mitsubishi"
-                          className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+                          className="h-10 sm:h-12 w-auto object-contain"
                           onError={() => setLogoError(prev => ({ ...prev, passenger: true }))}
                         />
                       ) : (
                         <MitsubishiDiamond className="w-10 h-10 sm:w-12 sm:h-12" />
                       )}
-                      <div className="w-px h-10 bg-white/20" />
+                      <div className="w-px h-12 bg-white/20" />
                       {!logoError['commercial'] ? (
                         <img
                           src={commercialLogoSrc}
                           alt="FUSO"
-                          className="w-16 h-7 sm:w-20 sm:h-9 object-contain"
+                          className="h-10 sm:h-12 w-auto object-contain"
                           onError={() => setLogoError(prev => ({ ...prev, commercial: true }))}
                         />
                       ) : (
-                        <FusoLogo className="w-16 h-7 sm:w-20 sm:h-9" color="#FFD600" />
+                        <FusoLogo className="w-24 h-10 sm:w-28 sm:h-12" color="#FFD600" />
                       )}
                     </div>
                   ) : isPassenger ? (
@@ -217,11 +250,11 @@ export default function Navigation() {
                       <img
                         src={commercialLogoSrc}
                         alt="FUSO"
-                        className="w-20 h-8 sm:w-24 sm:h-10 object-contain"
+                        className="h-12 sm:h-14 w-auto object-contain"
                         onError={() => setLogoError(prev => ({ ...prev, commercial: true }))}
                       />
                     ) : (
-                      <FusoLogo className="w-20 h-8 sm:w-24 sm:h-10" color="#FFD600" />
+                      <FusoLogo className="w-28 h-12 sm:w-32 sm:h-14" color="#FFD600" />
                     )
                   ) : (
                     /* Other pages: Mitsubishi logo (image like footer/sidebar) */

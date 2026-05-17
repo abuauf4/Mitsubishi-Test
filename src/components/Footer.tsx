@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUp, Globe, Camera, Mail, Send, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 const footerLinks = {
   kendaraan: {
@@ -59,6 +60,30 @@ export default function Footer() {
 
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [logoSrc, setLogoSrc] = useState('/mitsubishi-logo.png');
+
+  useEffect(() => {
+    // Try to get cached logo from localStorage first (prevents flash)
+    try {
+      const cached = localStorage.getItem('logo_logo_passenger');
+      if (cached) setLogoSrc(proxyBlobUrl(cached) || cached);
+    } catch {}
+
+    // Then fetch fresh from API
+    fetch('/api/site-config', { cache: 'no-store' })
+      .then(res => res.ok ? res.json() : [])
+      .then(data => {
+        if (Array.isArray(data)) {
+          const item = data.find((c: any) => c.key === 'logo_passenger');
+          if (item && item.value) {
+            const url = proxyBlobUrl(item.value) || item.value;
+            setLogoSrc(url);
+            try { localStorage.setItem('logo_logo_passenger', item.value); } catch {}
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,9 +109,9 @@ export default function Footer() {
           <div className="col-span-2 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3 mb-5">
               <img
-                src="/mitsubishi-logo.png"
+                src={logoSrc}
                 alt="Mitsubishi Motor Indonesia Logo"
-                className="w-8 h-8 object-contain"
+                className="h-8 w-auto object-contain"
               />
               <div>
                 <span className="text-white font-bold text-sm tracking-[0.2em] font-serif">MITSUBISHI</span>

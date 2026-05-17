@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { proxyBlobUrl } from '@/lib/image-utils';
 
 interface NavLink {
   label: string;
@@ -20,6 +22,33 @@ interface MobileMenuProps {
 export default function MobileMenu({ links, onClose, onNavClick, variant = 'default' }: MobileMenuProps) {
   const isCommercial = variant === 'commercial';
 
+  const [logoSrc, setLogoSrc] = useState('/mitsubishi-logo.png');
+
+  useEffect(() => {
+    const cacheKey = isCommercial ? 'logo_logo_commercial' : 'logo_logo_passenger';
+    // Try localStorage cache first
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) setLogoSrc(proxyBlobUrl(cached) || cached);
+    } catch {}
+
+    // Fetch fresh from API
+    fetch('/api/site-config', { cache: 'no-store' })
+      .then(res => res.ok ? res.json() : [])
+      .then(data => {
+        if (Array.isArray(data)) {
+          const configKey = isCommercial ? 'logo_commercial' : 'logo_passenger';
+          const item = data.find((c: any) => c.key === configKey);
+          if (item && item.value) {
+            const url = proxyBlobUrl(item.value) || item.value;
+            setLogoSrc(url);
+            try { localStorage.setItem(cacheKey, item.value); } catch {}
+          }
+        }
+      })
+      .catch(() => {});
+  }, [isCommercial]);
+
   const accentColor = isCommercial ? '#FFD600' : '#E60012';
   const bgClass = isCommercial ? 'bg-white' : 'bg-white';
   const textMain = isCommercial ? 'text-mitsu-dark' : 'text-mitsu-dark';
@@ -30,9 +59,6 @@ export default function MobileMenu({ links, onClose, onNavClick, variant = 'defa
   const logoBrand = isCommercial ? 'FUSO' : 'MITSUBISHI';
   const logoSub = isCommercial ? 'Commercial Vehicles' : 'Motor Indonesia';
   const logoSubColor = isCommercial ? 'text-mitsu-fuso-yellow/60' : 'text-mitsu-red/40';
-  const logoIcon = isCommercial
-    ? <FusoDiamondIcon />
-    : <MitsuDiamondIcon />;
 
   return (
     <>
@@ -58,12 +84,16 @@ export default function MobileMenu({ links, onClose, onNavClick, variant = 'defa
         <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ backgroundColor: accentColor }} />
 
         <div className={`flex items-center justify-between p-4 border-b ${border}`}>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              {logoIcon}
+          <div className="flex items-center gap-2">
+            <img
+              src={logoSrc}
+              alt={logoBrand}
+              className="h-8 w-auto object-contain"
+            />
+            <div className="flex flex-col">
               <span className={`${textMain} font-bold tracking-[0.15em] text-sm font-serif`}>{logoBrand}</span>
+              <span className={`${logoSubColor} text-[9px] tracking-[0.1em] uppercase`}>{logoSub}</span>
             </div>
-            <span className={`${logoSubColor} text-[9px] ml-9 tracking-[0.1em] uppercase`}>{logoSub}</span>
           </div>
           <button
             onClick={onClose}
@@ -108,25 +138,5 @@ export default function MobileMenu({ links, onClose, onNavClick, variant = 'defa
         </div>
       </motion.div>
     </>
-  );
-}
-
-function MitsuDiamondIcon() {
-  return (
-    <svg viewBox="0 0 100 100" className="w-7 h-7 object-contain" aria-label="Mitsubishi">
-      <g transform="translate(50, 50)">
-        <polygon fill="#E60012" points="0,-34 -12,-10 0,0 12,-10" />
-        <polygon fill="#E60012" points="12,-10 0,0 12,22 24,0" />
-        <polygon fill="#E60012" points="-12,-10 0,0 -12,22 -24,0" />
-      </g>
-    </svg>
-  );
-}
-
-function FusoDiamondIcon() {
-  return (
-    <svg viewBox="0 0 120 40" className="w-7 h-7 object-contain" aria-label="FUSO">
-      <text x="0" y="30" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="36" fill="#FFD600" letterSpacing="2">FUSO</text>
-    </svg>
   );
 }
