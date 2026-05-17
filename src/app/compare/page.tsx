@@ -82,7 +82,7 @@ export default function ComparePage() {
           transition={{ duration: 0.5 }}
         >
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-mitsu-red/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-mitsu-red/10 flex items-center justify-center">
               <Shuffle className="w-5 h-5 text-mitsu-red" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-mitsu-dark font-serif">Bandingkan Kendaraan</h1>
@@ -98,7 +98,7 @@ export default function ComparePage() {
             className="mt-6 flex flex-wrap items-center gap-3"
           >
             {selected.map(v => (
-              <div key={v.slug} className="flex items-center gap-2 px-3 py-2 bg-mitsu-red/5 border border-mitsu-red/15 rounded-xl">
+              <div key={v.slug} className="flex items-center gap-2 px-3 py-2 bg-mitsu-red/5 border border-mitsu-red/15 rounded-lg">
                 <span className="text-xs font-bold text-mitsu-dark">{v.name}</span>
                 <button
                   onClick={() => toggleVehicle(v)}
@@ -111,7 +111,7 @@ export default function ComparePage() {
             {selected.length >= 2 && (
               <button
                 onClick={() => setShowSelector(false)}
-                className="px-4 py-2 bg-mitsu-red text-white text-xs font-bold rounded-xl hover:bg-mitsu-red/80 transition-colors cursor-pointer"
+                className="px-4 py-2 bg-mitsu-red text-white text-xs font-bold rounded-lg hover:bg-mitsu-red/80 transition-colors cursor-pointer"
               >
                 Lihat Perbandingan
               </button>
@@ -137,7 +137,7 @@ export default function ComparePage() {
                     key={v.slug}
                     onClick={() => !isFull && toggleVehicle(v)}
                     disabled={isFull}
-                    className={`text-left p-4 rounded-xl border transition-all duration-300 cursor-pointer ${
+                    className={`text-left p-4 rounded-lg border transition-all duration-300 cursor-pointer ${
                       selected_
                         ? isCommercial
                           ? 'border-mitsu-fuso-yellow/30 bg-mitsu-fuso-yellow/5 shadow-sm'
@@ -345,7 +345,7 @@ export default function ComparePage() {
             {/* CTA per vehicle */}
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {selected.map(v => (
-                <div key={v.slug} className={`p-5 rounded-xl border ${
+                <div key={v.slug} className={`p-5 rounded-lg border ${
                   v.category === 'commercial' ? 'border-mitsu-fuso-yellow/15 bg-mitsu-fuso-yellow/3' : 'border-mitsu-red/10 bg-mitsu-red/3'
                 }`}>
                   <p className="text-sm font-bold text-mitsu-dark mb-1">Mitsubishi {v.name}</p>
@@ -389,7 +389,7 @@ export default function ComparePage() {
             <p className="text-gray-400 text-sm">Pilih minimal 2 kendaraan untuk mulai membandingkan</p>
             <button
               onClick={() => setShowSelector(true)}
-              className="mt-4 px-6 py-2.5 bg-mitsu-red text-white text-sm font-bold rounded-xl hover:bg-mitsu-red/80 transition-colors cursor-pointer"
+              className="mt-4 px-6 py-2.5 bg-mitsu-red text-white text-sm font-bold rounded-lg hover:bg-mitsu-red/80 transition-colors cursor-pointer"
             >
               Pilih Kendaraan
             </button>

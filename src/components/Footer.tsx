@@ -108,7 +108,7 @@ export default function Footer() {
                     key={social.label}
                     href={social.href}
                     aria-label={social.label}
-                    className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/3 hover:bg-mitsu-red/10 text-white/20 hover:text-mitsu-red transition-all duration-400 hover:scale-110 border border-white/5 hover:border-mitsu-red/15"
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/3 hover:bg-mitsu-red/10 text-white/20 hover:text-mitsu-red transition-all duration-400 hover:scale-110 border border-white/5 hover:border-mitsu-red/15"
                   >
                     <IconComponent className="w-4 h-4" />
                   </a>
@@ -199,7 +199,7 @@ export default function Footer() {
         </div>
 
         {/* Newsletter Section */}
-        <div className="mb-10 p-6 rounded-2xl border border-white/5 bg-white/2">
+        <div className="mb-10 p-6 rounded-lg border border-white/5 bg-white/2">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
             <div className="flex-1 min-w-0">
               <h4 className="text-white font-bold text-sm font-serif">Dapatkan Informasi Terbaru</h4>
@@ -210,7 +210,7 @@ export default function Footer() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-green-500/10 border border-green-500/20 rounded-xl"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-green-500/10 border border-green-500/20 rounded-lg"
                 >
                   <CheckCircle className="w-4 h-4 text-green-400" />
                   <span className="text-green-400 text-xs font-semibold">Berhasil berlangganan!</span>
@@ -222,12 +222,12 @@ export default function Footer() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Masukkan email Anda"
-                    className="flex-1 sm:w-56 px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/20 focus:outline-none focus:border-mitsu-red/40 focus:ring-1 focus:ring-mitsu-red/20 transition-all"
+                    className="flex-1 sm:w-56 px-3.5 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white text-xs placeholder:text-white/20 focus:outline-none focus:border-mitsu-red/40 focus:ring-1 focus:ring-mitsu-red/20 transition-all"
                     required
                   />
                   <button
                     type="submit"
-                    className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-mitsu-red hover:bg-mitsu-red/80 text-white text-xs font-bold rounded-xl transition-all hover:scale-105 active:scale-95 min-h-[40px]"
+                    className="flex items-center justify-center gap-1.5 px-4 py-2.5 bg-mitsu-red hover:bg-mitsu-red/80 text-white text-xs font-bold rounded-lg transition-all hover:scale-105 active:scale-95 min-h-[40px]"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Kirim</span>
@@ -251,7 +251,7 @@ export default function Footer() {
               onClick={scrollToTop}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-4 py-2 bg-white/3 hover:bg-mitsu-red/8 text-white/25 hover:text-mitsu-red rounded-xl transition-colors text-xs font-semibold min-h-[44px] border border-white/5 hover:border-mitsu-red/15 tracking-wider uppercase"
+              className="flex items-center gap-2 px-4 py-2 bg-white/3 hover:bg-mitsu-red/8 text-white/25 hover:text-mitsu-red rounded-lg transition-colors text-xs font-semibold min-h-[44px] border border-white/5 hover:border-mitsu-red/15 tracking-wider uppercase"
             >
               <ArrowUp className="w-3.5 h-3.5" />
               Kembali ke Atas

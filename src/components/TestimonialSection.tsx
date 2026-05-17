@@ -92,7 +92,7 @@ export default function TestimonialSection() {
               transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true, margin: '-30px' }}
             >
-              <div className="h-full p-5 sm:p-6 rounded-xl card-light hover-red-border-light transition-all duration-400 flex flex-col">
+              <div className="h-full p-5 sm:p-6 rounded-lg card-light hover-red-border-light transition-all duration-400 flex flex-col">
                 {/* Quote icon */}
                 <Quote className={`w-6 h-6 ${index < 3 ? 'text-mitsu-red/15' : 'text-mitsu-fuso-yellow/15'} mb-3`} />
 

@@ -89,7 +89,7 @@ export default function GallerySection() {
         <div className="flex gap-2 mb-8">
           <button
             onClick={() => setActiveTab('delivery')}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
               activeTab === 'delivery'
                 ? 'bg-mitsu-red text-white shadow-lg shadow-mitsu-red/25'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -98,7 +98,7 @@ export default function GallerySection() {
             <Truck className="w-4 h-4" />
             Serah Terima
             {deliveries.length > 0 && (
-              <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+              <span className={`px-1.5 py-0.5 rounded text-xs ${
                 activeTab === 'delivery' ? 'bg-white/20' : 'bg-gray-200'
               }`}>
                 {deliveries.length}
@@ -107,7 +107,7 @@ export default function GallerySection() {
           </button>
           <button
             onClick={() => setActiveTab('article')}
-            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
               activeTab === 'article'
                 ? 'bg-mitsu-fuso-yellow text-mitsu-dark shadow-lg shadow-mitsu-fuso-yellow/25'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -116,7 +116,7 @@ export default function GallerySection() {
             <FileText className="w-4 h-4" />
             Artikel
             {articles.length > 0 && (
-              <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+              <span className={`px-1.5 py-0.5 rounded text-xs ${
                 activeTab === 'article' ? 'bg-black/10' : 'bg-gray-200'
               }`}>
                 {articles.length}
@@ -148,7 +148,7 @@ export default function GallerySection() {
                 className="group cursor-pointer"
                 onClick={() => setSelectedItem(item)}
               >
-                <div className={`relative overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 ${
+                <div className={`relative overflow-hidden rounded-lg bg-white shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 ${
                   activeTab === 'delivery' ? 'aspect-square' : ''
                 }`}>
                   {/* Image */}
@@ -244,7 +244,7 @@ export default function GallerySection() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="relative bg-white rounded-2xl overflow-hidden max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="relative bg-white rounded-lg overflow-hidden max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}

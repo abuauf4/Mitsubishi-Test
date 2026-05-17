@@ -61,7 +61,7 @@ export default function CommercialPageClient({ commercial }: Props) {
             ].map((stat) => {
               const IconComponent = stat.icon;
               return (
-                <span key={stat.label} className="inline-flex items-center gap-2 px-4 py-2 bg-mitsu-fuso-yellow/5 border border-mitsu-fuso-yellow/10 text-mitsu-fuso-yellow-dark text-[10px] font-bold rounded-xl tracking-wider uppercase">
+                <span key={stat.label} className="inline-flex items-center gap-2 px-4 py-2 bg-mitsu-fuso-yellow/5 border border-mitsu-fuso-yellow/10 text-mitsu-fuso-yellow-dark text-[10px] font-bold rounded-lg tracking-wider uppercase">
                   <IconComponent className="w-3.5 h-3.5" />
                   {stat.label}
                 </span>
@@ -116,7 +116,7 @@ export default function CommercialPageClient({ commercial }: Props) {
               href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20ingin%20konsultasi%20kebutuhan%20fleet%20untuk%20bisnis%20saya"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-mitsu-dark hover:bg-mitsu-onyx text-mitsu-fuso-yellow font-bold rounded-xl transition-all duration-400 min-h-[44px] text-base shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 tracking-wide"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-mitsu-dark hover:bg-mitsu-onyx text-mitsu-fuso-yellow font-bold rounded-lg transition-all duration-400 min-h-[44px] text-base shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 tracking-wide"
             >
               <MessageCircle className="w-5 h-5" />
               Konsultasi Gratis

@@ -58,12 +58,12 @@ export default function FleetSolution() {
           viewport={{ once: true }}
           className="max-w-4xl mx-auto"
         >
-          <div className="relative card-light-yellow border border-mitsu-fuso-yellow/10 rounded-3xl overflow-hidden">
-            <div className="bg-white rounded-3xl p-6 sm:p-8">
+          <div className="relative card-light-yellow border border-mitsu-fuso-yellow/10 rounded-lg overflow-hidden">
+            <div className="bg-white rounded-lg p-6 sm:p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
                 <div>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="p-3 bg-mitsu-fuso-yellow/5 rounded-2xl border border-mitsu-fuso-yellow/10">
+                    <div className="p-3 bg-mitsu-fuso-yellow/5 rounded-lg border border-mitsu-fuso-yellow/10">
                       <Building2 className="w-6 h-6 text-mitsu-fuso-yellow-dark" />
                     </div>
                     <div>
@@ -93,9 +93,9 @@ export default function FleetSolution() {
                   </ul>
                 </div>
 
-                <div className="relative bg-mitsu-fuso-yellow/8 border border-mitsu-fuso-yellow/10 rounded-2xl p-6 sm:p-8 flex flex-col justify-center overflow-hidden">
+                <div className="relative bg-mitsu-fuso-yellow/8 border border-mitsu-fuso-yellow/10 rounded-lg p-6 sm:p-8 flex flex-col justify-center overflow-hidden">
                   {/* Top accent bar */}
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-fuso-yellow rounded-t-2xl" />
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-fuso-yellow rounded-t-lg" />
 
                   <div className="relative z-10">
                     <Building2 className="w-12 h-12 text-mitsu-fuso-yellow-dark mb-4" />
@@ -107,7 +107,7 @@ export default function FleetSolution() {
                       href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20ingin%20konsultasi%20kebutuhan%20fleet%20untuk%20bisnis%20saya"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-sm w-full active:scale-[0.98]"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all duration-400 min-h-[44px] text-sm w-full active:scale-[0.98]"
                     >
                       <MessageCircle className="w-4 h-4" />
                       Konsultasi Gratis

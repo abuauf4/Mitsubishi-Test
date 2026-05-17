@@ -201,7 +201,7 @@ export default function CommercialVehicles() {
                   className="group"
                 >
                   <a href={getVehicleLink(vehicle)} className="block">
-                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-mitsu-red/50 transition-all duration-500 card-shine-red">
+                    <div className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 hover:border-mitsu-red/50 transition-all duration-500 card-shine-red">
                       {/* Vehicle Image */}
                       <div className="relative h-[280px] sm:h-[300px] vehicle-image-bg overflow-hidden">
                         <img
@@ -278,7 +278,7 @@ export default function CommercialVehicles() {
                   className="group"
                 >
                   <a href={getVehicleLink(vehicle)} className="block">
-                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-mitsu-fuso-yellow/50 transition-all duration-500 card-shine-yellow">
+                    <div className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 hover:border-mitsu-fuso-yellow/50 transition-all duration-500 card-shine-yellow">
                       {/* Vehicle Image */}
                       <div className="relative h-[280px] sm:h-[300px] vehicle-image-bg-yellow overflow-hidden">
                         <img

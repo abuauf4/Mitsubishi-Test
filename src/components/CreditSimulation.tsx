@@ -71,12 +71,12 @@ export default function CreditSimulation({
         viewport={{ once: true }}
         className="max-w-4xl mx-auto"
       >
-        <div className={`relative ${cardClass} rounded-3xl p-6 sm:p-8 overflow-hidden ${shineClass}`}>
+        <div className={`relative ${cardClass} rounded-lg p-6 sm:p-8 overflow-hidden ${shineClass}`}>
           {/* Top accent */}
           <div className={`absolute top-0 left-0 right-0 h-[2px] ${isYellow ? 'bg-mitsu-fuso-yellow' : 'bg-mitsu-red'}`} />
 
           <div className="flex items-center gap-3 mb-8">
-            <div className={`p-3 ${accentLight} rounded-2xl ${accentBorder}`}>
+            <div className={`p-3 ${accentLight} rounded-lg ${accentBorder}`}>
               <Calculator className={`w-6 h-6 ${accentText}`} />
             </div>
             <div>
@@ -99,7 +99,7 @@ export default function CreditSimulation({
                   max="2000"
                   value={creditPrice}
                   onChange={(e) => setCreditPrice(parseInt(e.target.value))}
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                  className="w-full h-1.5 rounded appearance-none cursor-pointer"
                   style={{ background: getSliderBackground(creditPrice, 150, 2000) }}
                 />
                 <div className="flex justify-between text-[10px] text-gray-300 mt-2 uppercase tracking-wider">
@@ -120,7 +120,7 @@ export default function CreditSimulation({
                   step="5"
                   value={creditDP}
                   onChange={(e) => setCreditDP(parseInt(e.target.value))}
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                  className="w-full h-1.5 rounded appearance-none cursor-pointer"
                   style={{ background: getSliderBackground(creditDP, 10, 80) }}
                 />
                 <div className="flex justify-between text-[10px] text-gray-300 mt-2 uppercase tracking-wider">
@@ -141,7 +141,7 @@ export default function CreditSimulation({
                   step="12"
                   value={creditTenor}
                   onChange={(e) => setCreditTenor(parseInt(e.target.value))}
-                  className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                  className="w-full h-1.5 rounded appearance-none cursor-pointer"
                   style={{ background: getSliderBackground(creditTenor, 12, 72) }}
                 />
                 <div className="flex justify-between text-[10px] text-gray-300 mt-2 uppercase tracking-wider">
@@ -152,11 +152,11 @@ export default function CreditSimulation({
             </div>
 
             {/* Result */}
-            <div className="relative bg-mitsu-light border border-gray-100 rounded-2xl p-6 sm:p-8 flex flex-col justify-center overflow-hidden">
+            <div className="relative bg-mitsu-light border border-gray-100 rounded-lg p-6 sm:p-8 flex flex-col justify-center overflow-hidden">
               <div className={`absolute top-0 right-0 w-40 h-40 ${isYellow ? 'bg-mitsu-fuso-yellow/5' : 'bg-mitsu-red/5'} rounded-full blur-3xl`} />
               <div className={`absolute bottom-0 left-0 w-28 h-28 ${isYellow ? 'bg-mitsu-fuso-yellow/3' : 'bg-mitsu-red/3'} rounded-full blur-2xl`} />
 
-              <div className={`absolute top-0 left-0 right-0 h-[2px] ${isYellow ? 'bg-mitsu-fuso-yellow' : 'bg-mitsu-red'} rounded-t-2xl`} />
+              <div className={`absolute top-0 left-0 right-0 h-[2px] ${isYellow ? 'bg-mitsu-fuso-yellow' : 'bg-mitsu-red'} rounded-t-lg`} />
 
               <div className="relative z-10">
                 <p className="text-gray-400 text-sm mb-2">Estimasi Angsuran Bulanan</p>
@@ -183,7 +183,7 @@ export default function CreditSimulation({
                   href={`https://wa.me/6281234567890?text=${encodeURIComponent(`Halo Andi, saya ingin konsultasi kredit${vehicleName ? ` ${vehicleName}` : ''} Rp ${creditPrice} Juta, DP ${creditDP}%, tenor ${creditTenor} bulan`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-6 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-sm w-full active:scale-[0.98]"
+                  className="mt-6 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all duration-400 min-h-[44px] text-sm w-full active:scale-[0.98]"
                 >
                   <MessageCircle className="w-4 h-4" />
                   Chat Saya untuk Penawaran

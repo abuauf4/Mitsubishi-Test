@@ -61,7 +61,7 @@ export default function PassengerPageClient({ vehicles }: Props) {
             ].map((stat) => {
               const IconComponent = stat.icon;
               return (
-                <span key={stat.label} className="inline-flex items-center gap-2 px-4 py-2 bg-mitsu-red/5 border border-mitsu-red/10 text-mitsu-red text-[10px] font-bold rounded-xl tracking-wider uppercase">
+                <span key={stat.label} className="inline-flex items-center gap-2 px-4 py-2 bg-mitsu-red/5 border border-mitsu-red/10 text-mitsu-red text-[10px] font-bold rounded-lg tracking-wider uppercase">
                   <IconComponent className="w-3.5 h-3.5" />
                   {stat.label}
                 </span>
@@ -69,7 +69,7 @@ export default function PassengerPageClient({ vehicles }: Props) {
             })}
             <Link
               href="/compare"
-              className="ml-auto inline-flex items-center gap-2 px-5 py-2.5 bg-mitsu-red/5 border border-mitsu-red/15 text-mitsu-red text-xs font-bold rounded-xl tracking-wide hover:bg-mitsu-red/10 hover:border-mitsu-red/25 transition-all cursor-pointer"
+              className="ml-auto inline-flex items-center gap-2 px-5 py-2.5 bg-mitsu-red/5 border border-mitsu-red/15 text-mitsu-red text-xs font-bold rounded-lg tracking-wide hover:bg-mitsu-red/10 hover:border-mitsu-red/25 transition-all cursor-pointer"
             >
               <Shuffle className="w-4 h-4" />
               Bandingkan Kendaraan
@@ -106,7 +106,7 @@ export default function PassengerPageClient({ vehicles }: Props) {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-mitsu-red/10 mb-6">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-lg bg-mitsu-red/10 mb-6">
               <Mail className="w-7 h-7 text-mitsu-red" />
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-mitsu-dark font-serif mb-3">
@@ -119,11 +119,11 @@ export default function PassengerPageClient({ vehicles }: Props) {
               <input
                 type="email"
                 placeholder="Masukkan email Anda"
-                className="flex-1 px-4 py-3.5 rounded-xl bg-white border border-gray-200 text-mitsu-dark placeholder-gray-400 text-sm focus:outline-none focus:border-mitsu-red/50 focus:ring-1 focus:ring-mitsu-red/30 transition-all"
+                className="flex-1 px-4 py-3.5 rounded-lg bg-white border border-gray-200 text-mitsu-dark placeholder-gray-400 text-sm focus:outline-none focus:border-mitsu-red/50 focus:ring-1 focus:ring-mitsu-red/30 transition-all"
               />
               <button
                 type="submit"
-                className="px-6 py-3.5 bg-mitsu-red hover:bg-mitsu-red/80 text-white font-bold rounded-xl transition-all text-sm tracking-wide hover:scale-[1.02] active:scale-[0.98] min-h-[44px] whitespace-nowrap cursor-pointer"
+                className="px-6 py-3.5 bg-mitsu-red hover:bg-mitsu-red/80 text-white font-bold rounded-lg transition-all text-sm tracking-wide hover:scale-[1.02] active:scale-[0.98] min-h-[44px] whitespace-nowrap cursor-pointer"
               >
                 Berlangganan
               </button>
@@ -154,7 +154,7 @@ export default function PassengerPageClient({ vehicles }: Props) {
               href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20tertarik%20dengan%20kendaraan%20passenger%20Mitsubishi"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-base tracking-wide hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all duration-400 min-h-[44px] text-base tracking-wide hover:scale-105 active:scale-95"
             >
               <MessageCircle className="w-5 h-5" />
               Hubungi Sales Consultant

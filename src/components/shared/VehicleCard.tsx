@@ -68,13 +68,13 @@ export default function VehicleCard({
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{ transform, transition: transform ? 'none' : 'transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1)' }}
-        className={`group rounded-2xl overflow-hidden ${
+        className={`group rounded-lg overflow-hidden ${
           useYellowAccent
             ? 'card-light-yellow hover-yellow-border-light'
             : 'card-light-red hover-red-border-light'
         } transition-all duration-500`}
       >
-        <div className="rounded-2xl overflow-hidden bg-white">
+        <div className="rounded-lg overflow-hidden bg-white">
           {/* Vehicle Image - clickable */}
           <Link href={detailPath} className="block">
             <div className={`relative h-[200px] sm:h-[240px] overflow-hidden ${useYellowAccent ? 'vehicle-image-bg-light-yellow' : 'vehicle-image-bg-light'}`}>

@@ -69,7 +69,7 @@ function CountdownTimer() {
         { value: timeLeft.seconds, label: 'Detik' },
       ].map((item, i) => (
         <div key={item.label} className="text-center">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-white shadow-sm border border-gray-100 rounded-xl">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-white shadow-sm border border-gray-100 rounded-lg">
             <span className="text-lg sm:text-xl font-bold text-mitsu-red font-mono">
               {String(item.value).padStart(2, '0')}
             </span>
@@ -132,7 +132,7 @@ export default function PromoSection() {
           viewport={{ once: true }}
           className="flex justify-center mb-14 sm:mb-18"
         >
-          <div className="inline-flex items-center gap-3 px-6 py-4 bg-mitsu-red/5 border border-mitsu-red/10 rounded-2xl">
+          <div className="inline-flex items-center gap-3 px-6 py-4 bg-mitsu-red/5 border border-mitsu-red/10 rounded-lg">
             <Clock className="w-5 h-5 text-mitsu-red" />
             <span className="text-gray-500 text-sm font-medium">Berakhir dalam:</span>
             <CountdownTimer />
@@ -152,8 +152,8 @@ export default function PromoSection() {
                 viewport={{ once: true, margin: '-50px' }}
                 className="group"
               >
-                <div className="relative rounded-2xl overflow-hidden border border-gray-100 hover:border-mitsu-red/20 hover:shadow-lg hover:shadow-mitsu-red/5 transition-all duration-500">
-                  <div className="bg-white rounded-2xl">
+                <div className="relative rounded-lg overflow-hidden border border-gray-100 hover:border-mitsu-red/20 hover:shadow-lg hover:shadow-mitsu-red/5 transition-all duration-500">
+                  <div className="bg-white rounded-lg">
                     {/* Top Gradient Bar */}
                     <div className={`h-[2px] ${promo.accentColor}`} />
 
@@ -178,7 +178,7 @@ export default function PromoSection() {
                         href={`https://wa.me/6281234567890?text=${encodeURIComponent(`Halo Andi, saya tertarik dengan promo ${promo.title}`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full flex items-center justify-center gap-2 py-3.5 btn-mitsu-red rounded-xl transition-all duration-400 min-h-[44px] text-sm tracking-wide group-hover:shadow-lg group-hover:shadow-mitsu-red/15 active:scale-[0.98] font-bold"
+                        className="w-full flex items-center justify-center gap-2 py-3.5 btn-mitsu-red rounded-lg transition-all duration-400 min-h-[44px] text-sm tracking-wide group-hover:shadow-lg group-hover:shadow-mitsu-red/15 active:scale-[0.98] font-bold"
                       >
                         Dapatkan Penawaran
                         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

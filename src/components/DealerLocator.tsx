@@ -92,7 +92,7 @@ export default function DealerLocator() {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
-            className="relative rounded-3xl overflow-hidden bg-gray-50 min-h-[380px] sm:min-h-[480px] border border-gray-200/50"
+            className="relative rounded-lg overflow-hidden bg-gray-50 min-h-[380px] sm:min-h-[480px] border border-gray-200/50"
           >
             {/* Stylized Map */}
             <div className="absolute inset-0 flex items-center justify-center">
@@ -109,7 +109,7 @@ export default function DealerLocator() {
 
                 {/* Map pin markers */}
                 <div className="absolute top-[25%] left-[30%] flex flex-col items-center">
-                  <div className="w-10 h-10 bg-mitsu-red rounded-xl flex items-center justify-center shadow-lg shadow-mitsu-red/30 red-pulse">
+                  <div className="w-10 h-10 bg-mitsu-red rounded-lg flex items-center justify-center shadow-lg shadow-mitsu-red/30 red-pulse">
                     <MapPin className="w-5 h-5 text-white" />
                   </div>
                   <span className="mt-1.5 text-xs font-semibold text-mitsu-dark bg-white px-2.5 py-1 rounded-lg shadow-sm border border-gray-100">Jakarta</span>
@@ -140,7 +140,7 @@ export default function DealerLocator() {
                 </div>
 
                 {/* Center branding */}
-                <div className="absolute top-4 left-4 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-xl shadow-sm border border-gray-100">
+                <div className="absolute top-4 left-4 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-sm border border-gray-100">
                   <img src="/mitsubishi-logo.png" alt="Mitsubishi" className="w-5 h-5 object-contain" />
                   <span className="text-xs font-bold text-mitsu-dark tracking-wide">MITSUBISHI DEALER</span>
                 </div>
@@ -163,7 +163,7 @@ export default function DealerLocator() {
                 value={searchCity}
                 onChange={(e) => setSearchCity(e.target.value)}
                 placeholder="Cari berdasarkan kota..."
-                className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-gray-200 focus:border-mitsu-red focus:ring-2 focus:ring-mitsu-red/20 text-sm outline-none transition-all min-h-[44px] bg-white shadow-sm"
+                className="w-full pl-11 pr-4 py-3.5 rounded-lg border border-gray-200 focus:border-mitsu-red focus:ring-2 focus:ring-mitsu-red/20 text-sm outline-none transition-all min-h-[44px] bg-white shadow-sm"
               />
             </div>
 
@@ -182,7 +182,7 @@ export default function DealerLocator() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
                     viewport={{ once: true }}
-                    className="p-4 sm:p-5 bg-white rounded-2xl border border-gray-100 hover:border-mitsu-red/20 hover:shadow-lg transition-all duration-300 group"
+                    className="p-4 sm:p-5 bg-white rounded-lg border border-gray-100 hover:border-mitsu-red/20 hover:shadow-lg transition-all duration-300 group"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -204,7 +204,7 @@ export default function DealerLocator() {
                         href={`https://maps.google.com/?q=${encodeURIComponent(dealer.address)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 px-3 py-2 text-mitsu-red hover:bg-mitsu-red/5 rounded-xl transition-colors text-xs font-medium min-h-[44px] min-w-[44px] justify-center border border-transparent hover:border-mitsu-red/10"
+                        className="flex items-center gap-1.5 px-3 py-2 text-mitsu-red hover:bg-mitsu-red/5 rounded-lg transition-colors text-xs font-medium min-h-[44px] min-w-[44px] justify-center border border-transparent hover:border-mitsu-red/10"
                       >
                         <Navigation className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">Petunjuk</span>

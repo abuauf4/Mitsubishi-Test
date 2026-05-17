@@ -164,7 +164,7 @@ export default function Navigation() {
               <div className="flex-1 flex items-center">
                 <button
                   onClick={() => setMobileOpen(true)}
-                  className={`lg:hidden p-2 rounded-xl transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${mobileBtnClass}`}
+                  className={`lg:hidden p-2 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${mobileBtnClass}`}
                   aria-label="Buka menu navigasi"
                 >
                   <Menu className="w-5 h-5" />
@@ -280,7 +280,7 @@ export default function Navigation() {
                     href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20ingin%20bertanya%20tentang%20kendaraan%20Mitsubishi"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`ml-4 px-6 py-2.5 ${ctaBtnClass} text-xs font-bold rounded-xl transition-all duration-400 min-h-[44px] flex items-center gap-2`}
+                    className={`ml-4 px-6 py-2.5 ${ctaBtnClass} text-xs font-bold rounded-lg transition-all duration-400 min-h-[44px] flex items-center gap-2`}
                   >
                     <Phone className="w-3.5 h-3.5" />
                     Hubungi Kami

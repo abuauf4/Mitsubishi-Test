@@ -198,7 +198,7 @@ export default function PassengerCars() {
               className="flex-shrink-0 w-[300px] sm:w-[340px] lg:w-[380px] group"
             >
               <a href={getVehicleLink(vehicle)} className="block">
-                <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100">
+                <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100">
                   {/* Vehicle Image */}
                   <div className="relative h-[320px] sm:h-[360px] vehicle-image-bg overflow-hidden">
                     <img
@@ -207,7 +207,7 @@ export default function PassengerCars() {
                       className="w-full h-full object-cover relative z-[1] transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute top-4 left-4 z-[2]">
-                      <span className="inline-block px-3 py-1 bg-mitsu-red text-white text-xs font-semibold rounded-full">
+                      <span className="inline-block px-3 py-1 bg-mitsu-red text-white text-xs font-semibold rounded">
                         {vehicle.price}
                       </span>
                     </div>
@@ -225,7 +225,7 @@ export default function PassengerCars() {
                       {vehicle.specs.map((spec) => (
                         <span
                           key={spec}
-                          className="px-3 py-1 bg-gray-100 text-mitsu-text/70 text-xs font-medium rounded-full"
+                          className="px-3 py-1 bg-gray-100 text-mitsu-text/70 text-xs font-medium rounded"
                         >
                           {spec}
                         </span>

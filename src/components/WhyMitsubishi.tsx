@@ -143,13 +143,13 @@ export default function WhyMitsubishi() {
                 viewport={{ once: true, margin: '-50px' }}
                 className="group"
               >
-                <div className={`relative p-6 sm:p-7 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:border-mitsu-red/30 hover:bg-white/8 hover:-translate-y-1 transition-all duration-500 card-shine-red`}>
+                <div className={`relative p-6 sm:p-7 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm hover:border-mitsu-red/30 hover:bg-white/8 hover:-translate-y-1 transition-all duration-500 card-shine-red`}>
                   {/* Top accent line */}
-                  <div className={`absolute top-0 left-0 right-0 h-[2px] ${value.accentColor} opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-t-2xl`} />
+                  <div className={`absolute top-0 left-0 right-0 h-[2px] ${value.accentColor} opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-t-lg`} />
                   
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-5">
-                      <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl ${value.iconBg} group-hover:scale-110 transition-transform duration-400 border border-white/10`}>
+                      <div className={`inline-flex items-center justify-center w-14 h-14 rounded-lg ${value.iconBg} group-hover:scale-110 transition-transform duration-400 border border-white/10`}>
                         <IconComponent className={`w-7 h-7 ${value.iconColor}`} />
                       </div>
                       <div className="text-right">

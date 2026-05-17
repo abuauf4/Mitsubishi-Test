@@ -183,7 +183,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
               {/* Main Image Container — swipeable */}
               <div
                 ref={imageContainerRef}
-                className={`relative aspect-[16/10] rounded-2xl overflow-hidden border ${isCommercial ? 'vehicle-image-bg-light-yellow border-gray-200/60' : 'vehicle-image-bg-light border-gray-200/60'} ${visibleColors.length > 1 ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
+                className={`relative aspect-[16/10] rounded-lg overflow-hidden border ${isCommercial ? 'vehicle-image-bg-light-yellow border-gray-200/60' : 'vehicle-image-bg-light border-gray-200/60'} ${visibleColors.length > 1 ? 'cursor-grab active:cursor-grabbing select-none' : ''}`}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 onMouseDown={handleMouseDown}
@@ -337,7 +337,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
-                        className={`group p-3 rounded-xl border transition-all duration-300 cursor-default ${
+                        className={`group p-3 rounded-lg border transition-all duration-300 cursor-default ${
                           isCommercial
                             ? 'border-mitsu-fuso-yellow/15 bg-mitsu-fuso-yellow/3 hover:border-mitsu-fuso-yellow/30 hover:bg-mitsu-fuso-yellow/5'
                             : 'border-mitsu-red/10 bg-mitsu-red/3 hover:border-mitsu-red/20 hover:bg-mitsu-red/5'
@@ -366,7 +366,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.4 }}
-                  className="mt-4 p-3 rounded-xl border border-green-200 bg-green-50/80"
+                  className="mt-4 p-3 rounded-lg border border-green-200 bg-green-50/80"
                 >
                   <div className="flex items-start gap-2.5">
                     <Tag className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
@@ -386,7 +386,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                     <button
                       key={variant.name}
                       onClick={() => { setSelectedVariant(i); setSelectedColor(0); }}
-                      className={`w-full text-left p-3.5 rounded-xl border transition-all duration-300 cursor-pointer ${
+                      className={`w-full text-left p-3.5 rounded-lg border transition-all duration-300 cursor-pointer ${
                         selectedVariant === i
                           ? isCommercial
                             ? 'border-mitsu-fuso-yellow/40 bg-mitsu-fuso-yellow/5 shadow-sm'
@@ -422,7 +422,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
 
               {/* Selected Variant Highlights */}
               {vehicle.variants[selectedVariant] && (
-                <div className="mt-4 p-4 rounded-xl bg-mitsu-light border border-gray-100">
+                <div className="mt-4 p-4 rounded-lg bg-mitsu-light border border-gray-100">
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Highlight {vehicle.variants[selectedVariant].name}</p>
                   <div className="grid grid-cols-2 gap-2">
                     {vehicle.variants[selectedVariant].highlights.map((h) => (
@@ -458,14 +458,14 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   href={waLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-300 text-sm tracking-wide hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all duration-300 text-sm tracking-wide hover:scale-[1.02] active:scale-[0.98] min-h-[44px]"
                 >
                   <MessageCircle className="w-4 h-4" />
                   WhatsApp
                 </a>
                 <Link
                   href="/#test-drive"
-                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 ${isCommercial ? 'btn-fuso-yellow' : 'btn-mitsu-red'} rounded-xl transition-all duration-300 text-sm tracking-wide hover:scale-[1.02] active:scale-[0.98] min-h-[44px] font-bold`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 ${isCommercial ? 'btn-fuso-yellow' : 'btn-mitsu-red'} rounded-lg transition-all duration-300 text-sm tracking-wide hover:scale-[1.02] active:scale-[0.98] min-h-[44px] font-bold`}
                 >
                   Test Drive
                   <ChevronRight className="w-4 h-4" />
@@ -532,7 +532,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.08, duration: 0.5 }}
-                          className={`group p-5 rounded-xl border transition-all duration-400 ${
+                          className={`group p-5 rounded-lg border transition-all duration-400 ${
                             isCommercial
                               ? 'card-light-yellow hover-yellow-border-light'
                               : 'card-light-red hover-red-border-light'
@@ -559,7 +559,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {vehicle.specs.slice(0, 2).flatMap((s) => s.items).slice(0, 8).map((item) => (
-                      <div key={item.label} className="p-3.5 rounded-xl bg-mitsu-light border border-gray-100">
+                      <div key={item.label} className="p-3.5 rounded-lg bg-mitsu-light border border-gray-100">
                         <p className="text-[10px] text-gray-400 uppercase tracking-wider font-medium">{item.label}</p>
                         <p className="text-sm font-bold text-mitsu-dark mt-0.5">{item.value}</p>
                       </div>
@@ -574,7 +574,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                       <div className={`w-1 h-6 rounded-full ${isCommercial ? 'bg-mitsu-fuso-yellow' : 'bg-mitsu-red'}`} />
                       <h2 className="text-xl sm:text-2xl font-bold text-mitsu-dark font-serif">Mitsubishi Connect</h2>
                     </div>
-                    <div className={`p-6 rounded-2xl border ${
+                    <div className={`p-6 rounded-lg border ${
                       isCommercial ? 'border-mitsu-fuso-yellow/15 bg-gradient-to-br from-mitsu-fuso-yellow/5 to-transparent' : 'border-mitsu-red/10 bg-gradient-to-br from-mitsu-red/5 to-transparent'
                     }`}>
                       <p className="text-sm text-gray-500 leading-relaxed mb-4">{vehicle.mitsubishiConnect.description}</p>
@@ -596,7 +596,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                     <div className={`w-1 h-6 rounded-full ${isCommercial ? 'bg-mitsu-fuso-yellow' : 'bg-mitsu-red'}`} />
                     <h2 className="text-xl sm:text-2xl font-bold text-mitsu-dark font-serif">Tampilan 360°</h2>
                   </div>
-                  <div className={`relative aspect-[16/7] rounded-2xl overflow-hidden border-2 border-dashed ${
+                  <div className={`relative aspect-[16/7] rounded-lg overflow-hidden border-2 border-dashed ${
                     isCommercial ? 'border-mitsu-fuso-yellow/20' : 'border-mitsu-red/20'
                   } bg-gradient-to-br ${isCommercial ? 'from-mitsu-fuso-yellow/5 to-mitsu-light' : 'from-mitsu-red/5 to-mitsu-light'}`}>
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
@@ -625,7 +625,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.08, duration: 0.4 }}
-                            className={`group p-4 rounded-xl border transition-all duration-300 cursor-default ${
+                            className={`group p-4 rounded-lg border transition-all duration-300 cursor-default ${
                               isCommercial
                                 ? 'border-mitsu-fuso-yellow/15 bg-white hover:border-mitsu-fuso-yellow/30 hover:shadow-sm'
                                 : 'border-mitsu-red/10 bg-white hover:border-mitsu-red/20 hover:shadow-sm'
@@ -702,7 +702,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.06, duration: 0.4 }}
-                            className={`p-4 rounded-xl border transition-all duration-300 ${
+                            className={`p-4 rounded-lg border transition-all duration-300 ${
                               isCommercial
                                 ? 'border-mitsu-fuso-yellow/15 bg-gradient-to-br from-mitsu-fuso-yellow/3 to-transparent hover:border-mitsu-fuso-yellow/25'
                                 : 'border-mitsu-red/10 bg-gradient-to-br from-mitsu-red/3 to-transparent hover:border-mitsu-red/20'
@@ -772,13 +772,13 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                           transition={{ duration: 0.3 }}
                           className="mx-8 sm:mx-12"
                         >
-                          <div className={`p-6 sm:p-8 rounded-2xl border ${
+                          <div className={`p-6 sm:p-8 rounded-lg border ${
                             isCommercial
                               ? 'border-mitsu-fuso-yellow/15 bg-gradient-to-br from-mitsu-fuso-yellow/5 to-transparent'
                               : 'border-mitsu-red/10 bg-gradient-to-br from-mitsu-red/5 to-transparent'
                           }`}>
                             <div className="flex items-start gap-4">
-                              <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
+                              <div className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${
                                 isCommercial ? 'bg-mitsu-fuso-yellow/10' : 'bg-mitsu-red/8'
                               }`}>
                                 <Sparkles className={`w-6 h-6 ${isCommercial ? 'text-mitsu-fuso-yellow-dark' : 'text-mitsu-red'}`} />
@@ -787,7 +787,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                                 <div className="flex items-center gap-3 mb-2">
                                   <h3 className="text-lg sm:text-xl font-bold text-mitsu-dark font-serif">{vehicle.detailItems[detailIndex].title}</h3>
                                   {vehicle.detailItems[detailIndex].note && (
-                                    <span className={`px-2 py-0.5 text-[9px] font-bold rounded-full whitespace-nowrap ${
+                                    <span className={`px-2 py-0.5 text-[9px] font-bold rounded whitespace-nowrap ${
                                       isCommercial
                                         ? 'bg-mitsu-fuso-yellow/10 text-mitsu-fuso-yellow-dark'
                                         : 'bg-mitsu-red/10 text-mitsu-red'
@@ -840,7 +840,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                           <button
                             key={item.title}
                             onClick={() => setDetailIndex(i)}
-                            className={`text-left p-4 rounded-xl border transition-all duration-300 cursor-pointer ${
+                            className={`text-left p-4 rounded-lg border transition-all duration-300 cursor-pointer ${
                               detailIndex === i
                                 ? isCommercial
                                   ? 'border-mitsu-fuso-yellow/30 bg-mitsu-fuso-yellow/5 shadow-sm'
@@ -899,7 +899,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: i * 0.05, duration: 0.4 }}
-                          className="relative aspect-[4/3] rounded-xl overflow-hidden group"
+                          className="relative aspect-[4/3] rounded-lg overflow-hidden group"
                         >
                           <Image
                             src={img.image}
@@ -934,7 +934,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: i * 0.05, duration: 0.4 }}
-                          className="relative aspect-[4/3] rounded-xl overflow-hidden group"
+                          className="relative aspect-[4/3] rounded-lg overflow-hidden group"
                         >
                           <Image
                             src={img.image}
@@ -969,7 +969,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: i * 0.05, duration: 0.4 }}
-                          className="relative aspect-[4/3] rounded-xl overflow-hidden group"
+                          className="relative aspect-[4/3] rounded-lg overflow-hidden group"
                         >
                           <Image
                             src={img.image}
@@ -1004,7 +1004,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                           initial={{ opacity: 0, scale: 0.95 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: i * 0.05, duration: 0.4 }}
-                          className="relative aspect-[4/3] rounded-xl overflow-hidden group"
+                          className="relative aspect-[4/3] rounded-lg overflow-hidden group"
                         >
                           <Image
                             src={img.image}
@@ -1039,7 +1039,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 </div>
                 <div className="space-y-3">
                   {vehicle.specs.map((specGroup, i) => (
-                    <div key={specGroup.category} className={`rounded-xl border overflow-hidden transition-all duration-300 ${
+                    <div key={specGroup.category} className={`rounded-lg border overflow-hidden transition-all duration-300 ${
                       expandedSpec === i ? 'border-gray-200 shadow-sm' : 'border-gray-100'
                     }`}>
                       <button
@@ -1173,7 +1173,7 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 {/* Price Summary */}
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {vehicle.variants.map((v, i) => (
-                    <div key={v.name} className={`p-4 rounded-xl border transition-all duration-300 ${
+                    <div key={v.name} className={`p-4 rounded-lg border transition-all duration-300 ${
                       i === vehicle.variants.length - 1
                         ? isCommercial ? 'border-mitsu-fuso-yellow/30 bg-mitsu-fuso-yellow/5' : 'border-mitsu-red/20 bg-mitsu-red/5'
                         : 'border-gray-100 bg-white'
@@ -1237,14 +1237,14 @@ export default function VehicleDetailPage({ vehicle }: Props) {
                 href={waLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2.5 px-8 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all text-sm tracking-wide hover:scale-105 active:scale-95 min-h-[44px]"
+                className="flex items-center gap-2.5 px-8 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all text-sm tracking-wide hover:scale-105 active:scale-95 min-h-[44px]"
               >
                 <MessageCircle className="w-5 h-5" />
                 Hubungi via WhatsApp
               </a>
               <Link
                 href="/#test-drive"
-                className={`flex items-center gap-2 px-8 py-3.5 ${isCommercial ? 'btn-fuso-yellow' : 'btn-mitsu-red'} rounded-xl transition-all text-sm tracking-wide hover:scale-105 active:scale-95 min-h-[44px] font-bold`}
+                className={`flex items-center gap-2 px-8 py-3.5 ${isCommercial ? 'btn-fuso-yellow' : 'btn-mitsu-red'} rounded-lg transition-all text-sm tracking-wide hover:scale-105 active:scale-95 min-h-[44px] font-bold`}
               >
                 Jadwalkan Test Drive
               </Link>

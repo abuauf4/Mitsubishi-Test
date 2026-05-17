@@ -152,7 +152,7 @@ export default function SalesConsultant() {
             viewport={{ once: true }}
             className="lg:col-span-2"
           >
-            <div className="relative card-light-red rounded-3xl p-6 sm:p-8 overflow-hidden card-shine-red">
+            <div className="relative card-light-red rounded-lg p-6 sm:p-8 overflow-hidden card-shine-red">
               {/* Red top accent */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-red" />
               
@@ -164,7 +164,7 @@ export default function SalesConsultant() {
                 {/* Photo + Name */}
                 <div className="flex flex-col items-center mb-6">
                   {/* Half-body photo */}
-                  <div className="relative w-36 sm:w-44 h-48 sm:h-56 rounded-2xl overflow-hidden border-2 border-mitsu-red/15 shadow-lg shadow-mitsu-red/5 mb-4">
+                  <div className="relative w-36 sm:w-44 h-48 sm:h-56 rounded-lg overflow-hidden border-2 border-mitsu-red/15 shadow-lg shadow-mitsu-red/5 mb-4">
                     <Image
                       src={photoSrc}
                       alt={`${sales.name} - ${sales.title}`}
@@ -177,7 +177,7 @@ export default function SalesConsultant() {
                       }}
                     />
                     {/* Online indicator */}
-                    <div className="absolute bottom-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-green-500/90 rounded-full">
+                    <div className="absolute bottom-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-green-500/90 rounded">
                       <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                       <span className="text-white text-[9px] font-bold">Online</span>
                     </div>
@@ -243,7 +243,7 @@ export default function SalesConsultant() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="group relative flex items-center gap-2.5 p-3 rounded-xl card-light hover-red-border-light transition-all duration-400"
+                    className="group relative flex items-center gap-2.5 p-3 rounded-lg card-light hover-red-border-light transition-all duration-400"
                   >
                     <div className={`w-8 h-8 rounded-lg ${contact.gradient} ${contact.hoverGradient} flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-300`}>
                       <IconComponent className="w-4 h-4 text-white" />
@@ -258,7 +258,7 @@ export default function SalesConsultant() {
             </div>
 
             {/* Main CTA */}
-            <div className="relative card-light-red rounded-xl p-5 overflow-hidden card-shine-red">
+            <div className="relative card-light-red rounded-lg p-5 overflow-hidden card-shine-red">
               {/* Red top accent */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-red" />
               <div className="absolute top-0 right-0 w-40 h-40 bg-mitsu-red/5 rounded-full blur-3xl" />
@@ -287,7 +287,7 @@ export default function SalesConsultant() {
             </div>
 
             {/* Dealer Info */}
-            <div className="mt-3 p-4 card-light rounded-xl hover-red-border-light transition-all duration-400">
+            <div className="mt-3 p-4 card-light rounded-lg hover-red-border-light transition-all duration-400">
               <div className="flex items-start gap-3">
                 <div className="w-9 h-9 bg-mitsu-red/8 rounded-lg flex items-center justify-center flex-shrink-0 border border-mitsu-red/10">
                   <MapPin className="w-4 h-4 text-mitsu-red" />

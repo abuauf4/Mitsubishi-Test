@@ -90,7 +90,7 @@ export default function SmartFeatures() {
 
         {/* Tabs */}
         <div className="flex justify-center mb-8 sm:mb-10">
-          <div className="flex bg-white rounded-xl p-1.5 shadow-sm border border-gray-100">
+          <div className="flex bg-white rounded-lg p-1.5 shadow-sm border border-gray-100">
             {tabs.map((tab) => {
               const IconComponent = tab.icon;
               return (
@@ -121,9 +121,9 @@ export default function SmartFeatures() {
         >
           {/* Vehicle Finder */}
           {activeTab === 'finder' && (
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 bg-mitsu-red/10 rounded-xl">
+                <div className="p-2.5 bg-mitsu-red/10 rounded-lg">
                   <Car className="w-5 h-5 text-mitsu-red" />
                 </div>
                 <div>
@@ -189,7 +189,7 @@ export default function SmartFeatures() {
                   filteredVehicles.map((v) => (
                     <div
                       key={v.name}
-                      className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-mitsu-red/5 hover:border-mitsu-red/20 border border-transparent transition-all cursor-pointer group"
+                      className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-mitsu-red/5 hover:border-mitsu-red/20 border border-transparent transition-all cursor-pointer group"
                     >
                       <div className="p-2 bg-white rounded-lg shadow-sm">
                         <Car className="w-5 h-5 text-mitsu-red" />
@@ -208,9 +208,9 @@ export default function SmartFeatures() {
 
           {/* Credit Simulation */}
           {activeTab === 'credit' && (
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 bg-mitsu-red/10 rounded-xl">
+                <div className="p-2.5 bg-mitsu-red/10 rounded-lg">
                   <Calculator className="w-5 h-5 text-mitsu-red" />
                 </div>
                 <div>
@@ -280,7 +280,7 @@ export default function SmartFeatures() {
                 </div>
 
                 {/* Result */}
-                <div className="bg-mitsu-dark rounded-2xl p-6 sm:p-8 text-white flex flex-col justify-center">
+                <div className="bg-mitsu-dark rounded-lg p-6 sm:p-8 text-white flex flex-col justify-center">
                   <p className="text-white/60 text-sm mb-2">Estimasi Angsuran Bulanan</p>
                   <p className="text-3xl sm:text-4xl font-bold mb-1">
                     Rp {monthlyPayment.toLocaleString('id-ID')}
@@ -318,9 +318,9 @@ export default function SmartFeatures() {
 
           {/* Fleet Solution */}
           {activeTab === 'fleet' && (
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 bg-mitsu-red/10 rounded-xl">
+                <div className="p-2.5 bg-mitsu-red/10 rounded-lg">
                   <Building2 className="w-5 h-5 text-mitsu-red" />
                 </div>
                 <div>
@@ -356,7 +356,7 @@ export default function SmartFeatures() {
                   </ul>
                 </div>
 
-                <div className="bg-mitsu-dark rounded-2xl p-6 sm:p-8 text-white flex flex-col justify-center">
+                <div className="bg-mitsu-dark rounded-lg p-6 sm:p-8 text-white flex flex-col justify-center">
                   <Building2 className="w-10 h-10 text-mitsu-red mb-4" />
                   <h4 className="text-xl font-bold mb-2">Butuh Solusi Fleet?</h4>
                   <p className="text-white/60 text-sm mb-6">

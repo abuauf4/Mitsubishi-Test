@@ -93,7 +93,7 @@ export default function TestDriveCTA() {
             </p>
 
             <div className="mt-8 grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 bg-white border border-gray-100 shadow-sm rounded-xl p-4">
+              <div className="flex items-center gap-3 bg-white border border-gray-100 shadow-sm rounded-lg p-4">
                 <div className="p-2 bg-mitsu-red/5 rounded-lg border border-mitsu-red/10">
                   <Car className="w-5 h-5 text-mitsu-red" />
                 </div>
@@ -102,7 +102,7 @@ export default function TestDriveCTA() {
                   <p className="text-gray-400 text-xs">Tanpa biaya</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 bg-white border border-gray-100 shadow-sm rounded-xl p-4">
+              <div className="flex items-center gap-3 bg-white border border-gray-100 shadow-sm rounded-lg p-4">
                 <div className="p-2 bg-mitsu-red/5 rounded-lg border border-mitsu-red/10">
                   <MapPin className="w-5 h-5 text-mitsu-red" />
                 </div>
@@ -118,7 +118,7 @@ export default function TestDriveCTA() {
               href="https://wa.me/6281234567890?text=Halo%20Andi,%20saya%20ingin%20test%20drive%20Mitsubishi"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-3 px-7 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all duration-400 min-h-[44px] text-sm tracking-wide hover:scale-105 active:scale-95"
+              className="mt-8 inline-flex items-center gap-3 px-7 py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all duration-400 min-h-[44px] text-sm tracking-wide hover:scale-105 active:scale-95"
             >
               <MessageCircle className="w-5 h-5" />
               Chat via WhatsApp
@@ -132,9 +132,9 @@ export default function TestDriveCTA() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true }}
           >
-            <div className="relative card-light-red rounded-3xl p-6 sm:p-8 shadow-2xl card-shine-red">
+            <div className="relative card-light-red rounded-lg p-6 sm:p-8 shadow-2xl card-shine-red">
               {/* Red top accent */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-red rounded-t-3xl" />
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-mitsu-red rounded-t-lg" />
 
               <h3 className="text-xl font-bold text-mitsu-dark mb-1 font-serif">Jadwalkan Test Drive</h3>
               <p className="text-gray-400 text-sm mb-6">Isi formulir dan sales consultant kami akan menghubungi Anda.</p>
@@ -167,7 +167,7 @@ export default function TestDriveCTA() {
                         value={formData.nama}
                         onChange={(e) => handleChange('nama', e.target.value)}
                         placeholder="Masukkan nama Anda"
-                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-mitsu-red/30 focus:ring-2 focus:ring-mitsu-red/10 text-sm outline-none transition-all min-h-[44px] bg-mitsu-light text-mitsu-dark placeholder:text-gray-300"
+                        className="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-200 focus:border-mitsu-red/30 focus:ring-2 focus:ring-mitsu-red/10 text-sm outline-none transition-all min-h-[44px] bg-mitsu-light text-mitsu-dark placeholder:text-gray-300"
                       />
                     </div>
                   </div>
@@ -184,7 +184,7 @@ export default function TestDriveCTA() {
                         value={formData.phone}
                         onChange={(e) => handleChange('phone', e.target.value)}
                         placeholder="08xxxxxxxxxx"
-                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-mitsu-red/30 focus:ring-2 focus:ring-mitsu-red/10 text-sm outline-none transition-all min-h-[44px] bg-mitsu-light text-mitsu-dark placeholder:text-gray-300"
+                        className="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-200 focus:border-mitsu-red/30 focus:ring-2 focus:ring-mitsu-red/10 text-sm outline-none transition-all min-h-[44px] bg-mitsu-light text-mitsu-dark placeholder:text-gray-300"
                       />
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export default function TestDriveCTA() {
                       required
                       value={formData.kendaraan}
                       onChange={(e) => handleChange('kendaraan', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-mitsu-red/30 focus:ring-2 focus:ring-mitsu-red/10 text-sm outline-none transition-all min-h-[44px] bg-mitsu-light text-gray-600"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-mitsu-red/30 focus:ring-2 focus:ring-mitsu-red/10 text-sm outline-none transition-all min-h-[44px] bg-mitsu-light text-gray-600"
                     >
                       <option value="" className="bg-white">-- Pilih Kendaraan --</option>
                       {vehicleOptions.map((group) => (
@@ -218,7 +218,7 @@ export default function TestDriveCTA() {
                       required
                       value={formData.dealer}
                       onChange={(e) => handleChange('dealer', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-mitsu-red/30 focus:ring-2 focus:ring-mitsu-red/10 text-sm outline-none transition-all min-h-[44px] bg-mitsu-light text-gray-600"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-mitsu-red/30 focus:ring-2 focus:ring-mitsu-red/10 text-sm outline-none transition-all min-h-[44px] bg-mitsu-light text-gray-600"
                     >
                       <option value="" className="bg-white">-- Pilih Dealer --</option>
                       {dealerOptions.map((d) => (
@@ -229,7 +229,7 @@ export default function TestDriveCTA() {
 
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center gap-2 py-3.5 btn-mitsu-red rounded-xl transition-all duration-400 min-h-[44px] text-sm tracking-wide mt-2 active:scale-[0.98] font-bold"
+                    className="w-full flex items-center justify-center gap-2 py-3.5 btn-mitsu-red rounded-lg transition-all duration-400 min-h-[44px] text-sm tracking-wide mt-2 active:scale-[0.98] font-bold"
                   >
                     <Send className="w-4 h-4" />
                     Jadwalkan Sekarang
