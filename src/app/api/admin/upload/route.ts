@@ -40,11 +40,18 @@ export async function POST(request: NextRequest) {
       addRandomSuffix: true,
     });
 
+    // For private blobs, return the proxy URL so browser can display it
+    // /api/image?url=... redirects to a signed URL automatically
+    const displayUrl = blob.url.includes('.private.blob.vercel-storage.com')
+      ? `/api/image?url=${encodeURIComponent(blob.url)}`
+      : blob.url;
+
     return NextResponse.json({
-      path: blob.url,
-      url: blob.url,
+      path: displayUrl,
+      url: displayUrl,
       pathname: blob.pathname,
       size: blob.size,
+      rawUrl: blob.url,
     });
   } catch (error: any) {
     console.error('Upload error:', error);
